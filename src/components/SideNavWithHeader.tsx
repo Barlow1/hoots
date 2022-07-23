@@ -36,6 +36,7 @@ import {
   IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { routes } from "../routes";
+import Logo from "../assets/Logo.svg";
 
 interface LinkItemProps {
   name: string;
@@ -68,7 +69,7 @@ export default function SidebarWithHeader({
         onClose={onClose}
         returnFocusOnClose={false}
         onOverlayClick={onClose}
-        size="full"
+        size="xs"
       >
         <DrawerContent>
           <SidebarContent onClose={onClose} />
@@ -76,7 +77,7 @@ export default function SidebarWithHeader({
       </Drawer>
       {/* mobilenav */}
       <MobileNav onOpen={onOpen} />
-      <Box ml={{ base: 0, md: '6.5em' }} p="4">
+      <Box ml={{ base: 0, md: "6.5em" }} p="4">
         {children}
       </Box>
     </Box>
@@ -99,10 +100,19 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       h="full"
       {...rest}
     >
-      <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-          Logo
-        </Text>
+      <Flex
+        h="20"
+        alignItems="center"
+        mx="5"
+        justifyContent={{ base: "space-between", md: "center" }}
+      >
+        <Link
+          href={routes.home}
+          style={{ textDecoration: "none", display: "flex" }}
+          _focus={{ boxShadow: "none" }}
+        >
+          <img src={Logo} alt="Hoots Logo" />
+        </Link>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
@@ -122,16 +132,25 @@ interface NavItemProps extends FlexProps {
 const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
   return (
     <Flex align="center" p="4" mx="4" {...rest}>
-      <Tooltip label={children.toString()} hasArrow placement="right">
+      <Tooltip
+        label={children.toString()}
+        hasArrow
+        placement="right"
+        display={{ base: "none", md: "block" }}
+      >
         <Link
           href={link}
-          style={{ textDecoration: "none" }}
+          style={{ textDecoration: "none", display: "flex" }}
           _focus={{ boxShadow: "none" }}
         >
           <IconButton
             aria-label={children.toString()}
             icon={icon && <FontAwesomeIcon icon={icon} />}
+            mr={{ base: ".3em", md: "0" }}
           />
+          <Text my="auto" display={{ base: "flex", md: "none" }}>
+            {children}
+          </Text>
         </Link>
       </Tooltip>
     </Flex>
@@ -162,15 +181,14 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         icon={<HamburgerIcon />}
       />
 
-      <Text
+      <Link
         display={{ base: "flex", md: "none" }}
-        fontSize="2xl"
-        fontFamily="monospace"
-        fontWeight="bold"
+        href={routes.home}
+        style={{ textDecoration: "none" }}
+        _focus={{ boxShadow: "none" }}
       >
-        Logo
-      </Text>
-
+        <img src={Logo} alt="Hoots Logo" />
+      </Link>
       <HStack spacing={{ base: "0", md: "6" }}>
         <IconButton
           size="lg"
