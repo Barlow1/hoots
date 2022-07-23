@@ -33,12 +33,18 @@ export const MeetHome = () => {
                 <Heading as='h4' size='md'>Upcoming Meeting</Heading>
                 <Text>12345</Text>
                 <Flex>
-                  <Button colorScheme='green' size='lg' variant='solid'>
-                    Join
-                  </Button>
-                  <Button colorScheme='red' size='lg' variant='solid'>
-                    Reject
-                  </Button>
+                  <Wrap>
+                    <WrapItem>
+                      <Button colorScheme='green' size='lg' variant='solid'>
+                        Join
+                      </Button>
+                    </WrapItem>
+                    <WrapItem>
+                      <Button colorScheme='red' size='lg' variant='solid'>
+                        Reject
+                      </Button>
+                    </WrapItem>
+                  </Wrap>
                 </Flex>
               </Stack>
             </WrapItem>
