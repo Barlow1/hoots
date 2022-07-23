@@ -1,23 +1,23 @@
-import { LoaderFn, MakeGenerics, useMatch } from "@tanstack/react-location";
 import * as React from 'react';
-import { Box, Button, Link, Grid, Text, Stack, Heading, Avatar, Flex, Spacer, Wrap, WrapItem, ButtonGroup, GridItem } from '@chakra-ui/react';
 import { CSSProperties } from "react";
 import MeetDeets from "./MeetDeets";
 import MeetTable, { IMeetTableRowProps } from "./MeetTable";
 import { AddIcon } from '@chakra-ui/icons'
-
-
-interface Props {
-  roomId: string;
-  username: string;
-  updateRoomId?: React.Dispatch<React.SetStateAction<string | undefined>>;
-  updateUsername: React.Dispatch<React.SetStateAction<string>>;
-  updateTokens: React.Dispatch<
-    React.SetStateAction<{ clientToken: string; refreshToken: string }>
-  >;
-  clientToken: string;
-  refreshToken: string;
-}
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  Button,
+  Box,
+  Text,
+  Flex,
+  Spacer,
+} from '@chakra-ui/react'
 
 const headingStyle: CSSProperties = {
   color: "#A0AEC0",
@@ -54,11 +54,17 @@ export interface IMeetHomeProps {
 
 export const MeetHome = (props: IMeetHomeProps) => {
   const [allMeetingData, setAllMeetingData] = React.useState(props.meetingData || mockData);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   React.useEffect(() => {
     if (props.meetingData) {
       setAllMeetingData(props.meetingData);
     }
   }, []);
+
+  const handleClick = (e: any) => {
+    console.log(e);
+  }
 
   return (
     <Box>
@@ -70,13 +76,30 @@ export const MeetHome = (props: IMeetHomeProps) => {
       <Flex justify={'end'}>
         <Box paddingRight={'32px'}>
           <Spacer />
-          <Button color='white' bg={'brand.200'} size={'lg'}>
+          <Button color='white' bg={'brand.200'} size={'lg'} onClick={onOpen}>
             <Text style={{ paddingRight: '10px' }}>New Meeting</Text>
             <AddIcon />
           </Button>
         </Box>
       </Flex>
       <MeetTable rows={allMeetingData} />
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Modal Title</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            test
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={onClose}>
+              Close
+            </Button>
+            <Button variant='ghost'>Secondary Action</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };
