@@ -57,10 +57,14 @@ export interface IGoalsContainerProps {
 }
 export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
   return (
-    <Box style={{ width: "100%", height: "100%" }}>
+    <Box style={{ width: "100%", height: "100%", padding: "2rem" }}>
       <Box style={{ width: "100%", textAlign: "right" }}>
-        <Button backgroundColor={"brand.500"} style={{ color: "white", margin: '1rem' }}>
-          Add Goal <AddIcon style={{}} />
+        <Button
+          backgroundColor={"brand.500"}
+          _hover={{ bg: "brand.200" }}
+          style={{ color: "white", margin: "1rem" }}
+        >
+          Add Goal <AddIcon style={{ marginLeft: "0.5em" }} />
         </Button>
       </Box>
       <Grid
