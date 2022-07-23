@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
 
 import { Routes } from "generouted";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
