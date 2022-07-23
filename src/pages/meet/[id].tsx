@@ -9,7 +9,7 @@ export const loader: LoaderFn<Route> = async ({ params }) => {
   return { id: params.id };
 };
 
-export const MentorPage = () => {
+export const RoomPage = () => {
   const { data } = useMatch<Route>();
   console.log(data);
   return (
@@ -19,4 +19,4 @@ export const MentorPage = () => {
   );
 };
 
-export default MentorPage;
+export default RoomPage;
