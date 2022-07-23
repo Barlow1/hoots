@@ -1,4 +1,5 @@
 import { LoaderFn, MakeGenerics, useMatch } from "@tanstack/react-location";
+import * as React from 'react';
 import { Box, Button, Link, Grid, Text, Stack, Heading, Avatar, Flex, Spacer, Wrap, WrapItem, ButtonGroup, GridItem } from '@chakra-ui/react';
 import { CSSProperties } from "react";
 
@@ -17,6 +18,7 @@ interface Props {
 const headingStyle: CSSProperties = {
   color: "#A0AEC0",
   fontWeight: "700",
+  paddingBottom: "5px"
 }
 
 const pad = '5';
@@ -27,7 +29,7 @@ export const MeetDeets = () => {
       <Grid
         h='200px'
         templateRows='repeat(2, 1fr)'
-        templateColumns='repeat(5, 1fr)'
+        templateColumns='repeat(4, 1fr)'
         gap={4}
       >
         <GridItem rowSpan={2} colSpan={1}>
@@ -60,8 +62,14 @@ export const MeetDeets = () => {
             Mentor
           </Heading>
           <Flex dir="row" flexWrap={'nowrap'}>
-            <Avatar size='sm' />
-            <Text>Mentor Name</Text>
+            <Wrap>
+              <WrapItem>
+                <Avatar size='sm' />
+              </WrapItem>
+              <WrapItem>
+                <Text>Mentor Name</Text>
+              </WrapItem>
+            </Wrap>
           </Flex>
         </GridItem>
         <GridItem rowSpan={2} colSpan={1} p={pad}>

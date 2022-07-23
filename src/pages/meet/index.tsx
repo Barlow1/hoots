@@ -1,7 +1,9 @@
 import { LoaderFn, MakeGenerics, useMatch } from "@tanstack/react-location";
+import * as React from 'react';
 import { Box, Button, Link, Grid, Text, Stack, Heading, Avatar, Flex, Spacer, Wrap, WrapItem, ButtonGroup, GridItem } from '@chakra-ui/react';
 import { CSSProperties } from "react";
 import MeetDeets from "./MeetDeets";
+import MeetTable, { IMeetTableRowProps } from "./MeetTable";
 
 interface Props {
   roomId: string;
@@ -20,10 +22,30 @@ const headingStyle: CSSProperties = {
   fontWeight: "700",
 }
 
-export const MeetHome = () => {
+export const MeetHome = (props: any) => {
+  const mockData: IMeetTableRowProps[] = [
+    {
+      id: '12345',
+      name: 'Matt Dodds',
+      time: 'August 1st, 2022'
+    },
+    {
+      id: '12345',
+      name: 'Matt Dodds',
+      time: 'September 1st, 2022'
+    },
+    {
+      id: '23456',
+      name: 'Jim Patel',
+      time: 'January 1st, 2023'
+    },
+  ]
+
   return (
     <Box>
       <MeetDeets />
+      <Button colorScheme={'purple'}></Button>
+      <MeetTable rows={mockData} />
     </Box>
   );
 };
