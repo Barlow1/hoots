@@ -4,6 +4,8 @@ import { Box, Button, Link, Grid, Text, Stack, Heading, Avatar, Flex, Spacer, Wr
 import { CSSProperties } from "react";
 import MeetDeets from "./MeetDeets";
 import MeetTable, { IMeetTableRowProps } from "./MeetTable";
+import { AddIcon } from '@chakra-ui/icons'
+
 
 interface Props {
   roomId: string;
@@ -40,12 +42,6 @@ const mockData: IMeetTableRowProps[] = [
   },
 ]
 
-const mockMeetingData = {
-  mentorId: '42069',
-  mentorName: 'Christian Barlow',
-  upcomingMeetingTime: 'April 20, 2023',
-}
-
 export interface IMeetingData {
   id: string;
   name: string;
@@ -58,6 +54,12 @@ export interface IMeetHomeProps {
 
 export const MeetHome = (props: IMeetHomeProps) => {
   const [allMeetingData, setAllMeetingData] = React.useState(props.meetingData || mockData);
+  React.useEffect(() => {
+    if (props.meetingData) {
+      setAllMeetingData(props.meetingData);
+    }
+  }, []);
+
   return (
     <Box>
       <MeetDeets
@@ -65,7 +67,15 @@ export const MeetHome = (props: IMeetHomeProps) => {
         mentorName={allMeetingData[0].name}
         upcomingMeetingTime={allMeetingData[0].time}
       />
-      <Button colorScheme={'purple'}>New Meeting</Button>
+      <Flex justify={'end'}>
+        <Box paddingRight={'32px'}>
+          <Spacer />
+          <Button color='white' bg={'brand.200'} size={'lg'}>
+            <Text style={{ paddingRight: '10px' }}>New Meeting</Text>
+            <AddIcon />
+          </Button>
+        </Box>
+      </Flex>
       <MeetTable rows={allMeetingData} />
     </Box>
   );

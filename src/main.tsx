@@ -10,8 +10,9 @@ const colors = {
     500: "#805ad5",
     200: "#9f7aea",
   },
-  fail: {
-    300: "#FC8181",
+  buttons: {
+    fail: "#FC8181",
+    disabled: "#cbd5e0",
   },
 };
 

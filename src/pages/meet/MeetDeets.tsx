@@ -2,6 +2,8 @@ import { LoaderFn, MakeGenerics, useMatch } from "@tanstack/react-location";
 import * as React from 'react';
 import { Box, Button, Link, Grid, Text, Stack, Heading, Avatar, Flex, Spacer, Wrap, WrapItem, ButtonGroup, GridItem } from '@chakra-ui/react';
 import { CSSProperties } from "react";
+import { CloseIcon, PhoneIcon } from '@chakra-ui/icons'
+
 
 interface Props {
   roomId: string;
@@ -50,7 +52,7 @@ export const MeetDeets = (props: IMeetDeetsProps) => {
                 <WrapItem>
                   <Stack>
                     <Heading as='h4' size='md'>Upcoming Meeting</Heading>
-                    <Link>{mentorId}</Link>
+                    <Link href={`./mentor/${mentorId}`}>{mentorId}</Link>
                   </Stack>
                 </WrapItem>
               </Wrap>
@@ -58,11 +60,13 @@ export const MeetDeets = (props: IMeetDeetsProps) => {
             <Spacer />
             <Box p={pad}>
               <ButtonGroup gap='2'>
-                <Button colorScheme='green' size='lg' variant='solid'>
-                  Join
+                <Button backgroundColor={'brand.200'} color='white' size='lg' variant='solid'>
+                  <Text style={{ paddingRight: '10px' }}>Join</Text>
+                  <PhoneIcon />
                 </Button>
-                <Button colorScheme='red' size='lg' variant='solid'>
-                  Reject
+                <Button backgroundColor={'buttons.fail'} color='white' size='lg' variant='solid'>
+                  <Text style={{ paddingRight: '10px' }}>Reject</Text>
+                  <CloseIcon />
                 </Button>
               </ButtonGroup>
             </Box>
