@@ -1,5 +1,5 @@
 import { LoaderFn, MakeGenerics, useMatch } from "@tanstack/react-location";
-import { Box, Button, SimpleGrid, Text, Stack, Heading, Avatar, Flex } from '@chakra-ui/react';
+import { Box, Button, SimpleGrid, Text, Stack, Heading, Avatar, Flex, Wrap, WrapItem } from '@chakra-ui/react';
 import { CSSProperties } from "react";
 
 interface Props {
@@ -24,37 +24,41 @@ const boxStyle: CSSProperties = {
 
 export const MeetHome = () => {
   return (
-    <Box style={boxStyle}>
+    <Box style={boxStyle} borderWidth='1px' borderRadius='lg' overflow='hidden'>
       <SimpleGrid columns={4} spacing={10}>
         <Box>
-          <Stack>
-            <Text>12345</Text>
-            <Text>12345</Text>
-            <Flex>
-              <Button colorScheme='green' size='lg'>
-                Join
-              </Button>
-              <Button colorScheme='red' size='lg'>
-                Reject
-              </Button>
-            </Flex>
-          </Stack>
+          <Wrap>
+            <WrapItem>
+              <Stack>
+                <Heading as='h4' size='md'>Upcoming Meeting</Heading>
+                <Text>12345</Text>
+                <Flex>
+                  <Button colorScheme='green' size='lg' variant='solid'>
+                    Join
+                  </Button>
+                  <Button colorScheme='red' size='lg' variant='solid'>
+                    Reject
+                  </Button>
+                </Flex>
+              </Stack>
+            </WrapItem>
+          </Wrap>
         </Box>
         <Box>
-          <Heading as='h6' size='xs'>
+          <Heading as='h6' size='s'>
             Mentor
           </Heading>
-          <Avatar>B</Avatar>
+          <Avatar size='sm' />
           <Text></Text>
         </Box>
         <Box>
-          <Heading as='h6' size='xs'>
+          <Heading as='h6' size='s'>
             Date
           </Heading>
           <Text>August 1st, 2022</Text>
         </Box>
         <Box>
-          <Heading as='h6' size='xs'>
+          <Heading as='h6' size='s'>
             Time
           </Heading>
           <Text>5:30 PM</Text>
