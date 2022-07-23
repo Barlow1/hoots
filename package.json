@@ -10,9 +10,11 @@
     "start": "npm run dev"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.4",
     "@chakra-ui/react": "^2.2.4",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
+    "eslint": "^8.20.0",
     "framer-motion": "^6.5.1",
     "generouted": "^1.4.0",
     "react": "^18.2.0",
