@@ -22,30 +22,51 @@ const headingStyle: CSSProperties = {
   fontWeight: "700",
 }
 
-export const MeetHome = (props: any) => {
-  const mockData: IMeetTableRowProps[] = [
-    {
-      id: '12345',
-      name: 'Matt Dodds',
-      time: 'August 1st, 2022'
-    },
-    {
-      id: '12345',
-      name: 'Matt Dodds',
-      time: 'September 1st, 2022'
-    },
-    {
-      id: '23456',
-      name: 'Jim Patel',
-      time: 'January 1st, 2023'
-    },
-  ]
+const mockData: IMeetTableRowProps[] = [
+  {
+    id: '12345',
+    name: 'Matt Dodds',
+    time: 'August 1st, 2022'
+  },
+  {
+    id: '12345',
+    name: 'Matt Dodds',
+    time: 'September 1st, 2022'
+  },
+  {
+    id: '23456',
+    name: 'Jim Patel',
+    time: 'January 1st, 2023'
+  },
+]
 
+const mockMeetingData = {
+  mentorId: '42069',
+  mentorName: 'Christian Barlow',
+  upcomingMeetingTime: 'April 20, 2023',
+}
+
+export interface IMeetingData {
+  id: string;
+  name: string;
+  time: string;
+}
+
+export interface IMeetHomeProps {
+  meetingData: IMeetingData[];
+}
+
+export const MeetHome = (props: IMeetHomeProps) => {
+  const [allMeetingData, setAllMeetingData] = React.useState(props.meetingData || mockData);
   return (
     <Box>
-      <MeetDeets />
-      <Button colorScheme={'purple'}></Button>
-      <MeetTable rows={mockData} />
+      <MeetDeets
+        mentorId={allMeetingData[0].id}
+        mentorName={allMeetingData[0].name}
+        upcomingMeetingTime={allMeetingData[0].time}
+      />
+      <Button colorScheme={'purple'}>New Meeting</Button>
+      <MeetTable rows={allMeetingData} />
     </Box>
   );
 };
