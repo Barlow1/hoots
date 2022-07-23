@@ -21,9 +21,20 @@ const headingStyle: CSSProperties = {
   paddingBottom: "5px"
 }
 
+export interface IMeetDeetsProps {
+  mentorId: string;
+  mentorName: string;
+  upcomingMeetingTime: string;
+}
+
 const pad = '5';
 
-export const MeetDeets = () => {
+export const MeetDeets = (props: IMeetDeetsProps) => {
+  const {
+    mentorId,
+    mentorName,
+    upcomingMeetingTime
+  } = props;
   return (
     <Box borderWidth='1px' borderRadius='lg' overflow='hidden' m='8'>
       <Grid
@@ -39,7 +50,7 @@ export const MeetDeets = () => {
                 <WrapItem>
                   <Stack>
                     <Heading as='h4' size='md'>Upcoming Meeting</Heading>
-                    <Link>12345</Link>
+                    <Link>{mentorId}</Link>
                   </Stack>
                 </WrapItem>
               </Wrap>
@@ -67,7 +78,7 @@ export const MeetDeets = () => {
                 <Avatar size='sm' />
               </WrapItem>
               <WrapItem>
-                <Text>Mentor Name</Text>
+                <Text>{mentorName}</Text>
               </WrapItem>
             </Wrap>
           </Flex>
@@ -76,7 +87,7 @@ export const MeetDeets = () => {
           <Heading as='h6' size='s' style={headingStyle}>
             Date
           </Heading>
-          <Text>August 1st, 2022</Text>
+          <Text>{upcomingMeetingTime}</Text>
         </GridItem>
         <GridItem rowSpan={2} colSpan={1} p={pad}>
           <Heading as='h6' size='s' style={headingStyle}>
