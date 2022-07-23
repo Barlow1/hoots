@@ -1,14 +1,13 @@
-import { useState } from "react";
-import "../App.css";
+import { Heading, Text } from "@chakra-ui/react";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <div className="App">
       <div>
-        <h1>Hoots</h1>
-        <p>Find a mentor who gives a hoot!</p>
+        <Heading as="h1" size="4xl" noOfLines={1}>
+          Hoots
+        </Heading>
+        <Text fontSize="md">Find a mentor who gives a hoot!</Text>
       </div>
     </div>
   );
