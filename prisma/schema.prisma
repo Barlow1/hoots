@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Mentor {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
   bio        String
   company    String
   cost       Int
@@ -21,9 +21,27 @@ model Mentor {
 }
 
 model Meeting {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  mentor     Mentor?  @relation(fields: [mentorId], references: [id])
-  mentorId   String   @db.ObjectId
-  date       String
-  time       String
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  mentor   Mentor? @relation(fields: [mentorId], references: [id])
+  mentorId String  @db.ObjectId
+  date     String
+  time     String
+}
+
+model User {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  firstName String
+  lastName  String
+  password  String
+  industry  String
+  experience Int
+  mentorPreferences MentorPreference
+  bio String
+  email String @unique
+  img String
+}
+
+type MentorPreference {
+  experience Int
+  cost Int
 }

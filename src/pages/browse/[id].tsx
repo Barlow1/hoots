@@ -1,4 +1,4 @@
-import { ArrowBackIcon } from "@chakra-ui/icons";
+import { ArrowBackIcon, TimeIcon } from "@chakra-ui/icons";
 import {
   Avatar,
   Box,
@@ -41,18 +41,27 @@ export const MentorPage = () => {
   const location = useLocation();
   const { data } = useMatch<Route>();
   const mentor = data.mentor;
-  console.log(data);
   return (
     <Box justifyContent={"center"} key={mentor?.id}>
-      <Button
-        as={Link}
-        onClick={() => {
-          location.history.back();
-        }}
-        leftIcon={<ArrowBackIcon />}
-      >
-        Back
-      </Button>
+      <Flex w="full" justifyContent={'space-between'} mb="5">
+        <Button
+          as={Link}
+          onClick={() => {
+            location.history.back();
+          }}
+          leftIcon={<ArrowBackIcon />}
+        >
+          Back
+        </Button>
+        <Button
+          backgroundColor={"brand.500"}
+          _hover={{ bg: "brand.200" }}
+          style={{ color: "white" }}
+          float="right"
+        >
+          Book <TimeIcon style={{ marginLeft: "0.5em" }} />
+        </Button>
+      </Flex>
       <Flex justifyContent={"center"}>
         <Flex direction={"column"}>
           <Flex justifyContent={"center"}>
@@ -67,7 +76,11 @@ export const MentorPage = () => {
           <Text>💲 {mentor?.cost}</Text>
           <HStack spacing={2}>
             {mentor?.tags.map((tag) => {
-              return <Tag key={tag} background="brand.500" color="white">{tag}</Tag>;
+              return (
+                <Tag key={tag} background="brand.500" color="white">
+                  {tag}
+                </Tag>
+              );
             })}
           </HStack>
           <Text>{mentor?.bio}</Text>

@@ -45,9 +45,6 @@ const Browse = () => {
   const onChange = async (e: any) => {
     const value = e.target.value;
     const baseUrl = import.meta.env.VITE_API_URL;
-    console.log("value", value);
-    console.log("mentors", mentors);
-    console.log("data mentors", data.mentors);
     if (value) {
       const searchResults = await fetch(
         `${baseUrl}/.netlify/functions/search?query=${value}`
@@ -62,9 +59,7 @@ const Browse = () => {
           alert("Failed to update mentors, please try again in a few minutes.");
         });
       setMentors(searchResults);
-      console.log("setting to fetched mentors", searchResults);
     } else if (loadedMentors) {
-      console.log("resetting to data mentors", loadedMentors);
       setMentors(loadedMentors);
     }
   };
@@ -75,7 +70,6 @@ const Browse = () => {
       debouncedChangeHandler.cancel();
     };
   }, []);
-  console.log("rendered mentors", mentors);
   return (
     <div>
       <Heading as="h1" size="xl">
@@ -92,13 +86,13 @@ const Browse = () => {
       </Box>
       
       {mentors && (
-        <Grid templateColumns="repeat(3, 1fr)" gap={5} pt="5">
+        <Grid templateColumns={{base: "repeat(1, 1fr)", md: "repeat(3, 1fr)"}} gap={5} pt="5">
           {mentors?.map((mentor) => {
             return (
               <GridItem key={mentor.id}>
                 <Link to={`${routes.browse}/${mentor.id}`}>
                   <Box
-                    maxW="lg"
+                    maxW={{base: "full", md: "md"}}
                     borderWidth="1px"
                     borderRadius="lg"
                     overflow="hidden"
