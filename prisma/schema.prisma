@@ -7,6 +7,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+type GoalMilestones {
+  date String
+  name String
+}
+
+type UserMentorPreferences {
+  cost       Int
+  experience Int
+}
+
+model Goal {
+  id         String           @id @default(auto()) @map("_id") @db.ObjectId
+  dueDate    String
+  milestones GoalMilestones[]
+  name       String
+  notes      String
+  /// Multiple data types found: Int: 25%, BigInt: 75% out of 4 sampled entries
+  progress   Json
+  userId     String
+}
+
+model Meeting {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  date     String
+  mentorId String
+  time     String
+}
+
 model Mentor {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   bio        String
@@ -17,13 +45,17 @@ model Mentor {
   name       String
   occupation String
   tags       String[]
-  meeting    Meeting[]
 }
 
-model Meeting {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  mentor     Mentor?  @relation(fields: [mentorId], references: [id])
-  mentorId   String   @db.ObjectId
-  date       String
-  time       String
+model User {
+  id                String                @id @default(auto()) @map("_id") @db.ObjectId
+  bio               String
+  email             String                @unique
+  experience        Int
+  firstName         String
+  img               String
+  industry          String
+  lastName          String
+  mentorPreferences UserMentorPreferences
+  password          String
 }

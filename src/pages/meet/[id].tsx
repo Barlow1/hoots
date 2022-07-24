@@ -23,12 +23,12 @@ export const RoomPage = () => {
 
     return isEditing ? (
       <ButtonGroup padding='2' size='sm'>
-        <IconButton bgColor='brand.500' color='white' icon={<CheckIcon />} {...getSubmitButtonProps()} />
-        <IconButton bgColor='brand.500' color='white' icon={<CloseIcon />} {...getCancelButtonProps()} />
+        <IconButton aria-label='submit' bgColor='brand.500' color='white' icon={<CheckIcon />} {...getSubmitButtonProps()} />
+        <IconButton aria-label='cancel' bgColor='brand.500' color='white' icon={<CloseIcon />} {...getCancelButtonProps()} />
       </ButtonGroup>
     ) : (
       <Flex padding='2'>
-        <IconButton bgColor='brand.500' color='white' size='sm' icon={<EditIcon />} {...getEditButtonProps()} />
+        <IconButton aria-label='edit' bgColor='brand.500' color='white' size='sm' icon={<EditIcon />} {...getEditButtonProps()} />
       </Flex>
     )
   }
