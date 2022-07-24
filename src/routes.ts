@@ -3,6 +3,5 @@ export const routes = {
   browse: "/browse",
   meet: "/meet",
   goals: "/goals",
-  // milestones: `/goals/${id}`,
   newUser: "/new-user-form"
 };
