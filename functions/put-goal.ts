@@ -9,6 +9,7 @@ const CORS_HEADERS = {
 
 const handler: Handler = async (event, context) => {
   const id = event.queryStringParameters?.id;
+  const body = JSON.parse(event.body ?? "{}");
   const userId = event.queryStringParameters?.userId;
   if (event.httpMethod === "OPTIONS") {
     return {
@@ -23,14 +24,39 @@ const handler: Handler = async (event, context) => {
   try {
     let response;
     if (id) {
-      response = await prisma.goal.findUnique({
+      response = await prisma.goal.upsert({
         where: {
-          id,
+          id: id,
+        },
+        update: {
+          name: body.name,
+          userId: body.userId,
+          dueDate: body.dueDate,
+          notes: body.notes,
+          milestones: body.milestones,
+        },
+        create: {
+          name: body.name,
+          userId: body.userId,
+          dueDate: body.dueDate,
+          notes: body.notes,
+          progress: 0,
+          milestones: [],
         },
       });
     } else {
-      response = await prisma.goal.findMany({ where: { userId } });
+      response = await prisma.goal.create({
+        data: {
+          name: body.name,
+          userId: body.userId,
+          dueDate: body.dueDate,
+          notes: body.notes,
+          progress: 0,
+          milestones: [],
+        },
+      });
     }
+
     return {
       statusCode: 200,
       body: JSON.stringify(response),
@@ -40,7 +66,7 @@ const handler: Handler = async (event, context) => {
       },
     };
   } catch (error) {
-    console.error("Failed to get goals", error.message);
+    console.error("Failed to put goal", error.message);
     throw error;
   } finally {
     await prisma.$disconnect();
