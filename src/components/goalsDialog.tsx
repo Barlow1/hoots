@@ -5,17 +5,15 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
-  useDisclosure,
   Button,
   FormControl,
   FormLabel,
-  FormErrorMessage,
   Stack,
   Input,
   Textarea,
   Box,
 } from "@chakra-ui/react";
-import { Field, Form, Formik } from "formik";
+import { Field, Formik } from "formik";
 import { UserGoal } from "../pages/goals";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -35,16 +33,16 @@ export const GoalsDialog = ({
   setIsDialogOpen,
   index,
 }: GoalsDialogProps) => {
-    const onClose = () => {
-        setIsDialogOpen(false);
-    };
+  const onClose = () => {
+    setIsDialogOpen(false);
+  };
   const cancelRef = React.useRef(null);
-  let nameInput = index ? userGoals[index].name : "";
-  let dateInput = index ? userGoals[index].dueDate : "";
+  let nameInput = index || index === 0 ? userGoals[index].name : "";
+  let dateInput = index || index === 0 ? userGoals[index].dueDate : "";
   let notesInput =
-    index && userGoals[index].notes ? userGoals[index].notes : "";
-  const isNameError = !!nameInput;
-  const isDateError = !!dateInput;
+    (index || index === 0) && userGoals[index].notes
+      ? userGoals[index].notes
+      : "";
 
   return (
     <AlertDialog
@@ -88,25 +86,17 @@ export const GoalsDialog = ({
                 <Stack spacing={3}>
                   <Field name="nameInput">
                     {({ field }:{[key:string]:any}) => (
-                      <FormControl isRequired isInvalid={isNameError}>
+                      <FormControl>
                         <FormLabel>Name</FormLabel>
                         <Input {...field} placeholder={"Enter new goal"} />
-                        {isNameError && (
-                          <FormErrorMessage>Name is required.</FormErrorMessage>
-                        )}
                       </FormControl>
                     )}
                   </Field>
                   <Field name="dateInput">
                     {({ field }:{[key:string]:any}) => (
-                      <FormControl isRequired isInvalid={isDateError}>
+                      <FormControl>
                         <FormLabel>Due</FormLabel>
                         <Input {...field} placeholder={"Enter due date"} />
-                        {isDateError && (
-                          <FormErrorMessage>
-                            Due date is required.
-                          </FormErrorMessage>
-                        )}
                       </FormControl>
                     )}
                   </Field>
@@ -121,19 +111,25 @@ export const GoalsDialog = ({
                       </FormControl>
                     )}
                   </Field>
-                  <Box style={{width: '100%', textAlign: 'right'}}>
+                  <Box style={{ width: "100%", textAlign: "right" }}>
                     <Button
                       colorScheme="gray"
                       ref={cancelRef}
                       onClick={onClose}
-                      style={{marginRight: '2rem'}}
+                      style={{ marginRight: "2rem" }}
                     >
                       Cancel
-                      <FontAwesomeIcon style={{marginLeft: '1rem'}} icon={faXmark} />
+                      <FontAwesomeIcon
+                        style={{ marginLeft: "1rem" }}
+                        icon={faXmark}
+                      />
                     </Button>
                     <Button type="submit" colorScheme="blue" onClick={onClose}>
                       Save
-                      <FontAwesomeIcon style={{marginLeft: '1rem'}} icon={faFloppyDisk} />
+                      <FontAwesomeIcon
+                        style={{ marginLeft: "1rem" }}
+                        icon={faFloppyDisk}
+                      />
                     </Button>
                   </Box>
                 </Stack>
