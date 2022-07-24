@@ -1,17 +1,11 @@
-import {
-  Box,
-  Button,
-  Grid,
-  GridItem,
-  Progress,
-  useStyles,
-} from "@chakra-ui/react";
+import { Box, Button, Grid, GridItem, Progress } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import * as React from "react";
 export interface UserGoal {
-  goal: string;
+  name: string;
   dueDate: string;
   progress: number;
+  notes?: string;
 }
 
 const GoalsPage = () => {
@@ -19,27 +13,27 @@ const GoalsPage = () => {
   React.useEffect(() => {
     setUserGoals([
       {
-        goal: "Learn React and Redux",
+        name: "Learn React and Redux",
         dueDate: "December 1st, 2023",
         progress: 75,
       },
       {
-        goal: "Get an internship",
+        name: "Get an internship",
         dueDate: "June 10th, 2023",
         progress: 100,
       },
       {
-        goal: "Create a portfolio page",
+        name: "Create a portfolio page",
         dueDate: "January 1st, 2023",
         progress: 100,
       },
       {
-        goal: "Learn Javascript",
+        name: "Learn Javascript",
         dueDate: "August 21st, 2022",
         progress: 100,
       },
     ]);
-  });
+  }, []);
 
   return (
     <>
@@ -72,7 +66,7 @@ export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
         style={{
           border: "2px solid #E2E8F0",
           borderRadius: "10px",
-          padding: "1rem",
+          padding: "0rem 1rem 1rem 1rem",
         }}
       >
         <GridItem style={{ padding: "1rem", fontWeight: "bold" }}>
@@ -89,7 +83,7 @@ export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
             <>
               <GoalsItem
                 key={`goal-${index}`}
-                goal={item.goal}
+                name={item.name}
                 dueDate={item.dueDate}
                 progress={item.progress}
               />
@@ -101,10 +95,10 @@ export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
   );
 };
 
-export const GoalsItem = ({ goal, dueDate, progress }: UserGoal) => {
+export const GoalsItem = ({ name, dueDate, progress }: UserGoal) => {
   return (
     <>
-      <GridItem style={gridItemStyle}>{goal}</GridItem>
+      <GridItem style={gridItemStyle}>{name}</GridItem>
       <GridItem style={gridItemStyle}>{dueDate}</GridItem>
       <GridItem style={{ ...gridItemStyle, textAlign: "right" }}>
         {progress < 100 && (
