@@ -8,6 +8,7 @@ const CORS_HEADERS = {
 };
 
 const handler: Handler = async (event, context) => {
+  const { id } = event.queryStringParameters || {};
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -19,17 +20,21 @@ const handler: Handler = async (event, context) => {
   await prisma.$connect();
 
   try {
-    const mentors = await prisma.mentor.findMany();
+    const mentors = await prisma.mentor.findUnique({
+      where: {
+        id,
+      },
+    });
     return {
       statusCode: 200,
       body: JSON.stringify(mentors),
       headers: {
         ...CORS_HEADERS,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     };
   } catch (error) {
-    console.error("Failed to get mentors", error.message);
+    console.error("Failed to get mentor", error.message);
     throw error;
   } finally {
     await prisma.$disconnect();

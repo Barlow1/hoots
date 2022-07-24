@@ -11,7 +11,6 @@ import {
   TableContainer,
   Link
 } from '@chakra-ui/react'
-import { CSSProperties } from "react";
 
 export interface IMeetTableProps {
   rows: IMeetTableRowProps[];
@@ -20,6 +19,7 @@ export interface IMeetTableProps {
 export interface IMeetTableRowProps {
   id: string;
   name: string;
+  date: string;
   time: string;
 }
 
@@ -30,10 +30,13 @@ export const MeetTableRow = (props: IMeetTableRowProps):JSX.Element => {
         <Link>{props.id}</Link>
       </Td>
       <Td>{props.name}</Td>
+      <Td>{props.date}</Td>
       <Td>{props.time}</Td>
     </Tr>
   )
 }
+
+
 
 export const MeetTable = (props: IMeetTableProps) => {
   return (
@@ -45,10 +48,11 @@ export const MeetTable = (props: IMeetTableProps) => {
               <Th>ID</Th>
               <Th>Mentor</Th>
               <Th>Date</Th>
+              <Th>Time</Th>
             </Tr>
           </Thead>
           <Tbody>
-            {props.rows.map(r => <MeetTableRow id={r.id} name={r.name} time={r.time} />)}
+            {props.rows.map(r => <MeetTableRow id={r.id} name={r.name} date={r.date} time={r.time} />)}
           </Tbody>
         </Table>
       </TableContainer>
