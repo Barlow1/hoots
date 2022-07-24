@@ -7,41 +7,96 @@ import {
 } from "@chakra-ui/icons";
 import * as React from "react";
 import { GoalsDialog } from "../../components/goalsDialog";
+import {
+  Link,
+  LoaderFn,
+  MakeGenerics,
+  useMatch,
+} from "@tanstack/react-location";
+import { routes } from "../../routes";
+
 export interface UserGoal {
-  name: string;
-  dueDate: string;
+  name?: string;
+  dueDate?: string;
   progress: number;
   notes?: string;
+  milestones?: [
+    {
+      name?: string;
+      date?: string;
+    }
+  ];
 }
 
-const GoalsPage = () => {
-  const [userGoals, setUserGoals] = React.useState<UserGoal[]>([]);
+type Route = MakeGenerics<{
+  LoaderData: { goals: UserGoal[] };
+  Params: { id: string };
+}>;
 
-  React.useEffect(() => {
-    setUserGoals([
-      {
-        name: "Learn React and Redux",
-        dueDate: "December 1st, 2023",
-        progress: 75,
-      },
-      {
-        name: "Get an internship",
-        dueDate: "June 10th, 2023",
-        progress: 100,
-      },
-      {
-        name: "Create a portfolio page",
-        dueDate: "January 1st, 2023",
-        progress: 100,
-      },
-      {
-        name: "Learn Javascript",
-        dueDate: "August 21st, 2022",
-        progress: 100,
-      },
-    ]);
-    console.log(userGoals);
-  }, []);
+export const loader: LoaderFn<Route> = async () => {
+  // const baseUrl = import.meta.env.VITE_API_URL;
+  // const goals = await fetch(`${baseUrl}/.netlify/functions/get-goals`)
+  //   .then((goals) => goals.json())
+  //   .catch(() => {
+  //     alert("Failed to get goals, please try again in a few minutes.");
+  //   });
+
+  const goals = [
+    {
+      name: "Learn React and Redux",
+      dueDate: "December 1st, 2023",
+      progress: 75,
+    },
+    {
+      name: "Get an internship",
+      dueDate: "June 10th, 2023",
+      progress: 100,
+    },
+    {
+      name: "Create a portfolio page",
+      dueDate: "January 1st, 2023",
+      progress: 100,
+    },
+    {
+      name: "Learn Javascript",
+      dueDate: "August 21st, 2022",
+      progress: 100,
+    },
+  ];
+  return { goals: goals as UserGoal[] };
+};
+
+const GoalsPage = () => {
+  const { data } = useMatch<Route>();
+  const [userGoals, setUserGoals] = React.useState<UserGoal[]>(
+    data.goals ?? []
+  );
+
+  // React.useEffect(() => {
+  //   setUserGoals([
+  //     {
+  //       name: "Learn React and Redux",
+  //       dueDate: "December 1st, 2023",
+  //       progress: 75,
+  //     },
+  //     {
+  //       name: "Get an internship",
+  //       dueDate: "June 10th, 2023",
+  //       progress: 100,
+  //     },
+  //     {
+  //       name: "Create a portfolio page",
+  //       dueDate: "January 1st, 2023",
+  //       progress: 100,
+  //     },
+  //     {
+  //       name: "Learn Javascript",
+  //       dueDate: "August 21st, 2022",
+  //       progress: 100,
+  //     },
+  //   ]);
+  //   console.log(userGoals);
+  // }, []);
 
   return (
     <>
@@ -114,8 +169,8 @@ export const GoalsContainer = ({
           return (
             <GoalsItem
               key={`goal-${index}`}
-              name={item.name}
-              dueDate={item.dueDate}
+              name={item.name ?? ""}
+              dueDate={item.dueDate ?? ""}
               progress={item.progress}
               index={index}
               openDialog={openDialog}
@@ -161,9 +216,11 @@ export const GoalsItem = ({
 }: GoalsItemProps) => {
   return (
     <>
-      <GridItem colSpan={1} style={gridItemStyle}>
-        <ChevronRightIcon />
-      </GridItem>
+      <Link to={`${routes.goals}/${index}`}>
+        <GridItem colSpan={1} style={gridItemStyle}>
+          <ChevronRightIcon />
+        </GridItem>
+      </Link>
       <GridItem colSpan={4} style={gridItemStyle}>
         {name}
       </GridItem>
