@@ -17,6 +17,8 @@ import { Field, Form, Formik } from "formik";
 import { UserGoal } from "../pages/goals";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { Goal } from "@prisma/client";
+import { useUser } from "./UserContext";
 
 export interface GoalsDialogProps {
   userGoals: UserGoal[];
@@ -25,6 +27,20 @@ export interface GoalsDialogProps {
   setIsDialogOpen: Function;
   index?: number;
 }
+
+const putGoal = async ({ goal }: { goal: Partial<Goal> }) => {
+  const baseUrl = import.meta.env.VITE_API_URL;
+  const response = await fetch(`${baseUrl}/.netlify/functions/put-goal`, {
+    method: "PUT",
+    body: JSON.stringify(goal),
+  })
+    .then((goals) => goals.json())
+    .catch(() => {
+      alert("Failed to put goal, please try again in a few minutes.");
+    });
+
+  return response;
+};
 
 export const GoalsDialog = ({
   userGoals,
@@ -44,6 +60,8 @@ export const GoalsDialog = ({
       ? userGoals[index].notes
       : "";
 
+      const {user} = useUser();
+
   return (
     <AlertDialog
       isOpen={isDialogOpen}
@@ -59,30 +77,23 @@ export const GoalsDialog = ({
           <AlertDialogBody>
             <Formik
               initialValues={{ nameInput, dateInput, notesInput }}
-              onSubmit={(values, actions) => {
-                setTimeout(() => {
-                  console.log(index);
-                  console.log(values);
-                  let newUserGoals: UserGoal[] = [...userGoals];
-                  if (index || index === 0) {
-                    newUserGoals[index] = {
-                      ...newUserGoals[index],
-                      name: values.nameInput,
-                      dueDate: values.dateInput,
-                      notes: values.notesInput,
-                    };
-                  } else {
-                    newUserGoals.push({
-                      name: values.nameInput,
-                      dueDate: values.dateInput,
-                      notes: values.notesInput,
-                      progress: 0,
-                    });
-                  }
-                  setUserGoals(newUserGoals);
-                  actions.setSubmitting(false);
-                  onClose();
-                }, 1000);
+              onSubmit={async (values, actions) => {
+                console.log(index);
+                console.log(values);
+                let newUserGoals: UserGoal[] = [...userGoals];
+                const goal = await putGoal({
+                  goal: {
+                    name: values.nameInput ?? null,
+                    dueDate: values.dateInput ?? null,
+                    notes: values.notesInput ?? null,
+                    progress: 0,
+                    userId: user.id
+                  },
+                });
+                newUserGoals.push(goal);
+                setUserGoals(newUserGoals);
+                actions.setSubmitting(false);
+                onClose();
               }}
             >
               {(props) => (
