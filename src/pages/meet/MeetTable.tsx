@@ -41,7 +41,7 @@ export const MeetTableRow = (props: IMeetTableRowProps):JSX.Element => {
 
 export const MeetTable = (props: IMeetTableProps) => {
   return (
-    <Box borderWidth='1px' borderRadius='lg' overflow='hidden' m='8'>
+    <Box borderWidth='1px' borderRadius='lg' overflow='hidden' m='8' boxShadow='2xl'>
       <TableContainer maxW={'100%'}>
         <Table variant='simple'>
           <Thead>

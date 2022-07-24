@@ -101,7 +101,7 @@ export const MeetHome = (props: IMeetHomeProps) => {
   }
 
   return (
-    <Box>
+    <Box boxShadow='2xl'>
       <MeetDeets
         mentorId={allMeetingData[0].id}
         mentorName={allMeetingData[0].name}
