@@ -19,6 +19,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@tanstack/react-location": "^3.7.4",
     "eslint": "^8.20.0",
+    "formik": "^2.2.9",
     "framer-motion": "^6.5.1",
     "generouted": "^1.4.0",
     "react": "^18.2.0",
