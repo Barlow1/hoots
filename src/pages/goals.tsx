@@ -65,9 +65,7 @@ export const GoalsContainer = ({
     setIsDialogOpen(true);
   };
   return (
-    <Box
-      style={{ width: "90%", height: "100%", padding: "2rem", margin: "auto" }}
-    >
+    <Box style={{ width: "90%", height: "100%", margin: "auto" }}>
       <Box style={{ width: "100%", textAlign: "right" }}>
         <Button
           backgroundColor={"brand.500"}
@@ -112,6 +110,8 @@ export const GoalsContainer = ({
                 name={item.name}
                 dueDate={item.dueDate}
                 progress={item.progress}
+                index={index}
+                openDialog={openDialog}
               />
             </>
           );
@@ -128,7 +128,21 @@ export const GoalsContainer = ({
   );
 };
 
-export const GoalsItem = ({ name, dueDate, progress }: UserGoal) => {
+export interface GoalsItemProps {
+  name: string;
+  dueDate: string;
+  progress: number;
+  index: number;
+  openDialog: Function;
+}
+
+export const GoalsItem = ({
+  name,
+  dueDate,
+  progress,
+  index,
+  openDialog,
+}: GoalsItemProps) => {
   return (
     <>
       <GridItem colSpan={2} style={gridItemStyle}>
@@ -160,11 +174,14 @@ export const GoalsItem = ({ name, dueDate, progress }: UserGoal) => {
           justifyContent: "space-evenly",
         }}
       >
-        <Button style={{ backgroundColor: "#3182CE" }}>
-          <EditIcon style={{color: "white"}}/>
+        <Button
+          style={{ backgroundColor: "#3182CE" }}
+          onClick={() => openDialog(index)}
+        >
+          <EditIcon style={{ color: "white" }} />
         </Button>
         <Button style={{ backgroundColor: "#E53E3E" }}>
-          <DeleteIcon style={{color: "white"}}/>
+          <DeleteIcon style={{ color: "white" }} />
         </Button>
       </GridItem>
     </>
