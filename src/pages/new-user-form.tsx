@@ -24,8 +24,6 @@ import {
   Link,
   IconButton,
 } from "@chakra-ui/react";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Field, Form, Formik } from "formik";
 import { useState } from "react";
 import Logo from "../assets/Logo.svg";
@@ -33,8 +31,6 @@ import { routes } from "../routes";
 
 
 const NewUserForm = () => {
-  // console.log(brand.200)
-
   const IndustryList = ['Marketing', 'Engineering', 'Product Design', 'Small Buisness'];
   const [sliderValue, setSliderValue] = useState<any>(0);
   const [showTooltip, setShowTooltip] = useState(false);
