@@ -216,16 +216,16 @@ export const GoalsItem = ({
 }: GoalsItemProps) => {
   return (
     <>
-      <Link to={`${routes.goals}/${index}`}>
-        <GridItem colSpan={1} style={gridItemStyle}>
+      <GridItem colSpan={1} style={gridItemStyle}>
+        <Link to={`${routes.goals}/${index}`}>
           <ChevronRightIcon />
-        </GridItem>
-      </Link>
-      <GridItem colSpan={4} style={gridItemStyle}>
-        {name}
+        </Link>
       </GridItem>
       <GridItem colSpan={4} style={gridItemStyle}>
-        {dueDate}
+        <Link to={`${routes.goals}/${index}`}>{name}</Link>
+      </GridItem>
+      <GridItem colSpan={4} style={gridItemStyle}>
+      <Link to={`${routes.goals}/${index}`}>{dueDate}</Link>
       </GridItem>
       <GridItem
         colSpan={4}
