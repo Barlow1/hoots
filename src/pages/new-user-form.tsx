@@ -15,8 +15,17 @@ import {
   NumberDecrementStepper,
   Stack,
   Textarea,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  Tooltip,
+  SliderMark,
 } from "@chakra-ui/react";
 import { Field, Form, Formik } from "formik";
+import { useState } from "react";
+import Logo from "../assets/Logo.svg";
+
 // import { colors } from '../main'
 /*
 About Me:
@@ -32,13 +41,15 @@ Desired Mentor:
 
 const NewUserForm = () => {
   // console.log(brand.200)
-  const IndustryList = ['Marketing', 'Engineering', 'Product Design', 'Small Buisness']
+  const IndustryList = ['Marketing', 'Engineering', 'Product Design', 'Small Buisness'];
+  const [sliderValue, setSliderValue] = useState<any>(0);
+  const [showTooltip, setShowTooltip] = useState(false);
   return (
     <Box   margin='30%'
     width='50%' boxShadow='2xl' padding='3' maxW='sm' borderWidth='1px' borderRadius='lg' overflow='hidden'>  
       <Text style={{fontWeight: 'bold'}}>About Me</Text>
     <Formik
-      initialValues={{ firstName: '', lastName: '', industry: '', experience: ''}}
+      initialValues={{ firstName: '', lastName: '', industry: '', experience: '', bio: '', mentorPrice: '', mentorExperience: ''}}
       onSubmit={(values, actions) => {
         setTimeout(() => {
           alert(JSON.stringify(values, null, 2))
@@ -104,11 +115,86 @@ const NewUserForm = () => {
               {({ field }) => (
                   <FormControl>
                     <FormLabel>Tell us about yourself!</FormLabel>
-                    <Textarea size='sm' {...field} placeholder="I work at...&#10;I am currently learning...&#10;I'm looking for a mentor with skills in..." />
+                    <Textarea size='sm' {...field} placeholder="I work at...💼&#10;I am currently learning...📚&#10;I'm looking for a mentor with skills in...🧑🏽‍🏫" />
                   </FormControl>
               )}
           </Field>
-          <Button marginTop='5px' background='brand.200' textColor='white' isLoading={props.isSubmitting} type='submit'>
+          {/* <Text style={{fontWeight: 'bold'}}>Desired Mentor</Text> */}
+          <Field name='mentorExperience'>
+              {({ field, form }) => (
+                  <FormControl>
+                    <FormLabel>Desired Mentor Experience</FormLabel>
+                    <NumberInput 
+                      min={0}     
+                      {...field}    
+                      onChange={(val) =>
+                        form.setFieldValue(field.name, val)
+                    }>
+                      <NumberInputField {...field} placeholder='Mentors Experience'/>
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                    </NumberInput>
+                  </FormControl>
+              )}
+          </Field>
+          <Field name='mentorPrice'>
+              {({ field, form }) => (
+                  <FormControl>
+                    <FormLabel>Desired Mentor Monthly Cost</FormLabel>   
+                    <Slider 
+                      {...field} 
+                      aria-label='slider-ex-2'  
+                      onChange={(val) => {
+                        if(val <= 10 ) {
+                          setSliderValue('Free');
+                        }
+                        else if (val > 10 && val <= 30) {
+                          setSliderValue('💰');
+                        }
+                        else if (val > 30 && val <= 50) {
+                          setSliderValue('💰💰');
+                        }
+                        else if (val > 50 && val <= 70) {
+                          setSliderValue('💰💰💰');
+                        }
+                        else if (val > 70 && val <= 90) {
+                          setSliderValue('💰💰💰💰');
+                        }
+                        else{
+                          setSliderValue('💰💰💰💰💰');
+                        }
+                        form.setFieldValue(field.name, val)}}       
+                      onMouseEnter={() => setShowTooltip(true)}
+                      onMouseLeave={() => setShowTooltip(false)}
+                    >
+                      <SliderTrack bg='brand.200' >
+                        <SliderFilledTrack bg='brand.900'/>
+                      </SliderTrack>
+                      <Tooltip
+                        hasArrow
+                        bg='brand.200'
+                        color='white'
+                        placement='top'
+                        isOpen={showTooltip}
+                        label={sliderValue}
+                      >
+                      <SliderThumb boxSize={6}>
+                        <img src={Logo} alt="Hoots Logo" />
+                      </SliderThumb>
+                      </Tooltip>
+                    </Slider>
+                  </FormControl>
+              )}
+          </Field>
+          <Button 
+            marginTop='5px' 
+            background='brand.200' 
+            textColor='white' 
+            isLoading={props.isSubmitting} 
+            type='submit'
+          >
             Submit
           </Button>
           </Stack>
