@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { CSSProperties } from "react";
 import MeetDeets from "./MeetDeets";
-import MeetTable, { IMeetTableRowProps } from "./MeetTable";
+import MeetTable from "./MeetTable";
 import { AddIcon } from '@chakra-ui/icons'
 import {
   Modal,
@@ -17,12 +17,14 @@ import {
   Text,
   Flex,
   Spacer,
+  Select,
+  Stack,
+  Heading,
+  Textarea,
+  Input,
 } from '@chakra-ui/react'
-
-const headingStyle: CSSProperties = {
-  color: "#A0AEC0",
-  fontWeight: "700",
-}
+import { LoaderFn, MakeGenerics, useMatch } from "@tanstack/react-location";
+import { Meeting } from "@prisma/client";
 
 const mockData: IMeetingData[] = [
   {
@@ -44,6 +46,22 @@ const mockData: IMeetingData[] = [
     time: '5:15 PM',
   },
 ]
+
+type Route = MakeGenerics<{
+  LoaderData: { meetings: Meeting[] };
+  Params: { id: string };
+}>;
+
+export const loader: LoaderFn<Route> = async () => {
+  const baseUrl = import.meta.env.VITE_API_URL;
+  const meetings = await fetch(`${baseUrl}/.netlify/functions/get-meetings`)
+    .then((meeting) => meeting.json())
+    .catch(() => {
+      alert("Failed to get meetings, please try again in a few minutes.");
+    });
+
+  return { meetings: meetings as Meeting[] };
+};
 
 export interface IMeetingData {
   id: string;
@@ -91,17 +109,36 @@ export const MeetHome = (props: IMeetHomeProps) => {
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>New Meeting</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            test
+            <Stack spacing={3}>
+              <Heading as='h5' size='sm'>
+                Mentor
+              </Heading>
+              <Select placeholder='Select...' size='md'>
+                <option value='option1'>Linus Torvalds</option>
+                <option value='option2'>Option 2</option>
+                <option value='option3'>Option 3</option>
+              </Select>
+              <Heading as='h5' size='sm'>
+                When
+              </Heading>
+              <Input />
+              <Heading as='h5' size='sm'>
+                Notes
+              </Heading>
+              <Textarea />
+            </Stack>
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={onClose}>
-              Close
+            <Button backgroundColor={'brand.200'} color='white' size='lg' mr={3} onClick={onClose}>
+              Save
             </Button>
-            <Button variant='ghost'>Secondary Action</Button>
+            <Button backgroundColor={'buttons.fail'} color='white' size='lg' onClick={onClose}>
+              Cancel
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

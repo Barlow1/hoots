@@ -20,7 +20,7 @@ const theme = extendTheme({ colors });
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <ChakraProvider theme={theme}>
+    <ChakraProvider theme={theme} portalZIndex={40}>
       <Routes />
     </ChakraProvider>
   </React.StrictMode>
