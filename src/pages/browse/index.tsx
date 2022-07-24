@@ -1,4 +1,16 @@
-import { Avatar, Box, Flex, Heading, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Flex,
+  FormLabel,
+  Grid,
+  GridItem,
+  Heading,
+  HStack,
+  Input,
+  Tag,
+  Text,
+} from "@chakra-ui/react";
 import { Mentor } from "@prisma/client";
 import {
   Link,
@@ -6,7 +18,9 @@ import {
   MakeGenerics,
   useMatch,
 } from "@tanstack/react-location";
+import { useEffect, useMemo, useState } from "react";
 import { routes } from "../../routes";
+import debounce from "lodash.debounce";
 
 type Route = MakeGenerics<{
   LoaderData: { mentors: Mentor[] };
@@ -26,39 +40,104 @@ export const loader: LoaderFn<Route> = async () => {
 
 const Browse = () => {
   const { data } = useMatch<Route>();
+  const loadedMentors = useMemo(() => data.mentors, []);
+  const [mentors, setMentors] = useState<Mentor[] | undefined>(data.mentors);
+  const onChange = async (e: any) => {
+    const value = e.target.value;
+    const baseUrl = import.meta.env.VITE_API_URL;
+    console.log("value", value);
+    console.log("mentors", mentors);
+    console.log("data mentors", data.mentors);
+    if (value) {
+      const searchResults = await fetch(
+        `${baseUrl}/.netlify/functions/search?query=${value}`
+      )
+        .then((results) => results.json())
+        .then((results) => {
+          return results.map((response: any) => {
+            return { ...response, id: response._id.$oid };
+          });
+        })
+        .catch(() => {
+          alert("Failed to update mentors, please try again in a few minutes.");
+        });
+      setMentors(searchResults);
+      console.log("setting to fetched mentors", searchResults);
+    } else if (loadedMentors) {
+      console.log("resetting to data mentors", loadedMentors);
+      setMentors(loadedMentors);
+    }
+  };
+
+  const debouncedChangeHandler = useMemo(() => debounce(onChange, 300), []);
+  useEffect(() => {
+    return () => {
+      debouncedChangeHandler.cancel();
+    };
+  }, []);
+  console.log("rendered mentors", mentors);
   return (
     <div>
       <Heading as="h1" size="xl">
         Browse
       </Heading>
-      {data.mentors?.map((mentor) => {
-        return (
-          <Link to={`${routes.browse}/${mentor.id}`}>
-            <Box
-              maxW="sm"
-              borderWidth="1px"
-              borderRadius="lg"
-              overflow="hidden"
-              key={mentor.id}
-              p="5"
-              _hover={{ backgroundColor: "gray.100"}}
-            >
-              <Flex justifyContent={"center"}>
-                <Avatar size="md" src={mentor.img} />
-              </Flex>
+      <Box pt="5">
+        <Input
+          name="search"
+          onChange={debouncedChangeHandler}
+          placeholder="Search..."
+          maxW="200"
+        ></Input>
+        <FormLabel color="gray.500" fontSize={'xs'} ml="1"htmlFor="search">Hint: try searching for "React"</FormLabel>
+      </Box>
+      
+      {mentors && (
+        <Grid templateColumns="repeat(3, 1fr)" gap={5} pt="5">
+          {mentors?.map((mentor) => {
+            return (
+              <GridItem key={mentor.id}>
+                <Link to={`${routes.browse}/${mentor.id}`}>
+                  <Box
+                    maxW="lg"
+                    borderWidth="1px"
+                    borderRadius="lg"
+                    overflow="hidden"
+                    key={mentor.id}
+                    p="5"
+                    h="100%"
+                    _hover={{ backgroundColor: "gray.100" }}
+                  >
+                    <Flex justifyContent={"center"}>
+                      <Avatar size="md" src={mentor.img} />
+                    </Flex>
 
-              <Heading as="h2" size="lg" noOfLines={1}>
-                {mentor.name}
-              </Heading>
-              <Text>💼 {mentor.occupation}</Text>
-              <Text>🏢 {mentor.company}</Text>
-              <Text>🕒 {mentor.experience} years</Text>
-              <Text>💲 {mentor.cost}</Text>
-              <Text noOfLines={3}>{mentor.bio}</Text>
-            </Box>
-          </Link>
-        );
-      })}
+                    <Heading as="h2" size="lg" noOfLines={1}>
+                      {mentor.name}
+                    </Heading>
+                    <Text>💼 {mentor.occupation}</Text>
+                    <Text>🏢 {mentor.company}</Text>
+                    <Text>🕒 {mentor.experience} years</Text>
+                    <Text>💲 {mentor.cost || "FREE"}</Text>
+                    <HStack spacing={2}>
+                      {mentor.tags.map((tag) => {
+                        return (
+                          <Tag key={tag} background="brand.500" color="white">
+                            {tag}
+                          </Tag>
+                        );
+                      })}
+                    </HStack>
+                    <Text noOfLines={3}>{mentor.bio}</Text>
+                  </Box>
+                </Link>
+              </GridItem>
+            );
+          })}
+        </Grid>
+      )}
+      {!mentors?.length && (
+        <Text>No results found. Please update your search and try again.</Text>
+      )}
     </div>
   );
 };

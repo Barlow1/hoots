@@ -1,6 +1,23 @@
-import { Avatar, Box, Flex, Heading, Image, Text } from "@chakra-ui/react";
+import { ArrowBackIcon } from "@chakra-ui/icons";
+import {
+  Avatar,
+  Box,
+  Button,
+  Flex,
+  Heading,
+  HStack,
+  Image,
+  Tag,
+  Text,
+} from "@chakra-ui/react";
 import { Mentor } from "@prisma/client";
-import { LoaderFn, MakeGenerics, useMatch } from "@tanstack/react-location";
+import {
+  Link,
+  LoaderFn,
+  MakeGenerics,
+  useLocation,
+  useMatch,
+} from "@tanstack/react-location";
 
 type Route = MakeGenerics<{
   LoaderData: { mentor: Mentor };
@@ -21,25 +38,42 @@ export const loader: LoaderFn<Route> = async ({ params }) => {
 };
 
 export const MentorPage = () => {
+  const location = useLocation();
   const { data } = useMatch<Route>();
   const mentor = data.mentor;
   console.log(data);
   return (
-    <Flex justifyContent={"center"} key={mentor?.id}>
-      <Flex direction={"column"}>
-        <Flex justifyContent={"center"}>
-          <Avatar size="3xl" src={mentor?.img} />
+    <Box justifyContent={"center"} key={mentor?.id}>
+      <Button
+        as={Link}
+        onClick={() => {
+          location.history.back();
+        }}
+        leftIcon={<ArrowBackIcon />}
+      >
+        Back
+      </Button>
+      <Flex justifyContent={"center"}>
+        <Flex direction={"column"}>
+          <Flex justifyContent={"center"}>
+            <Avatar size="3xl" src={mentor?.img} />
+          </Flex>
+          <Heading as="h2" size="lg" noOfLines={1}>
+            {mentor?.name}
+          </Heading>
+          <Text>💼 {mentor?.occupation}</Text>
+          <Text>🏢 {mentor?.company}</Text>
+          <Text>🕒 {mentor?.experience} years</Text>
+          <Text>💲 {mentor?.cost}</Text>
+          <HStack spacing={2}>
+            {mentor?.tags.map((tag) => {
+              return <Tag key={tag} background="brand.500" color="white">{tag}</Tag>;
+            })}
+          </HStack>
+          <Text>{mentor?.bio}</Text>
         </Flex>
-        <Heading as="h2" size="lg" noOfLines={1}>
-          {mentor?.name}
-        </Heading>
-        <Text>💼 {mentor?.occupation}</Text>
-        <Text>🏢 {mentor?.company}</Text>
-        <Text>🕒 {mentor?.experience} years</Text>
-        <Text>💲 {mentor?.cost}</Text>
-        <Text>{mentor?.bio}</Text>
       </Flex>
-    </Flex>
+    </Box>
   );
 };
 

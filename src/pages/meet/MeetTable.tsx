@@ -27,7 +27,8 @@ export const MeetTableRow = (props: IMeetTableRowProps):JSX.Element => {
   return (
     <Tr>
       <Td>
-        <Link>{props.id}</Link>
+        <Link
+        href={`/meet/${props.id}`}>{props.id}</Link>
       </Td>
       <Td>{props.name}</Td>
       <Td>{props.date}</Td>

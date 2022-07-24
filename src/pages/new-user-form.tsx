@@ -1,9 +1,7 @@
 import {
   FormControl,
   FormLabel,
-  //   FormErrorMessage,
   Input,
-  FormHelperText,
   Box,
   Text,
   Button,
@@ -20,9 +18,7 @@ import {
   SliderFilledTrack,
   SliderThumb,
   Tooltip,
-  SliderMark,
   Link,
-  IconButton,
 } from "@chakra-ui/react";
 import { Field, Form, Formik } from "formik";
 import { useState } from "react";
