@@ -34,35 +34,35 @@ type Route = MakeGenerics<{
 }>;
 
 export const loader: LoaderFn<Route> = async () => {
-  // const baseUrl = import.meta.env.VITE_API_URL;
-  // const goals = await fetch(`${baseUrl}/.netlify/functions/get-goals`)
-  //   .then((goals) => goals.json())
-  //   .catch(() => {
-  //     alert("Failed to get goals, please try again in a few minutes.");
-  //   });
+  const baseUrl = import.meta.env.VITE_API_URL;
+  const goals = await fetch(`${baseUrl}/.netlify/functions/get-goals?userId=${'62dd1c79a37e9f2bf551fe38'}`)
+    .then((goals) => goals.json())
+    .catch(() => {
+      alert("Failed to get goals, please try again in a few minutes.");
+    });
 
-  const goals = [
-    {
-      name: "Learn React and Redux",
-      dueDate: "December 1st, 2023",
-      progress: 75,
-    },
-    {
-      name: "Get an internship",
-      dueDate: "June 10th, 2023",
-      progress: 100,
-    },
-    {
-      name: "Create a portfolio page",
-      dueDate: "January 1st, 2023",
-      progress: 100,
-    },
-    {
-      name: "Learn Javascript",
-      dueDate: "August 21st, 2022",
-      progress: 100,
-    },
-  ];
+  // const goals = [
+  //   {
+  //     name: "Learn React and Redux",
+  //     dueDate: "December 1st, 2023",
+  //     progress: 75,
+  //   },
+  //   {
+  //     name: "Get an internship",
+  //     dueDate: "June 10th, 2023",
+  //     progress: 100,
+  //   },
+  //   {
+  //     name: "Create a portfolio page",
+  //     dueDate: "January 1st, 2023",
+  //     progress: 100,
+  //   },
+  //   {
+  //     name: "Learn Javascript",
+  //     dueDate: "August 21st, 2022",
+  //     progress: 100,
+  //   },
+  // ];
   return { goals: goals as UserGoal[] };
 };
 

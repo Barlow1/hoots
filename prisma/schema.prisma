@@ -39,9 +39,26 @@ model User {
   bio String
   email String @unique
   img String
+  goals Goal[]
+}
+
+model Goal {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String?
+  dueDate String?
+  progress Int?
+  notes String?
+  milestones Milestone[]
+  userId String
+  user User @relation(fields: [userId], references: [id])
 }
 
 type MentorPreference {
   experience Int
   cost Int
+}
+
+type Milestone {
+      name String
+      date String
 }
