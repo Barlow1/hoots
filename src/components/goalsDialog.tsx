@@ -13,7 +13,7 @@ import {
   Textarea,
   Box,
 } from "@chakra-ui/react";
-import { Field, Formik } from "formik";
+import { Field, Form, Formik } from "formik";
 import { UserGoal } from "../pages/goals";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -61,8 +61,10 @@ export const GoalsDialog = ({
               initialValues={{ nameInput, dateInput, notesInput }}
               onSubmit={(values, actions) => {
                 setTimeout(() => {
-                  let newUserGoals: UserGoal[] = userGoals;
-                  if (index) {
+                  console.log(index);
+                  console.log(values);
+                  let newUserGoals: UserGoal[] = [...userGoals];
+                  if (index || index === 0) {
                     newUserGoals[index] = {
                       ...newUserGoals[index],
                       name: values.nameInput,
@@ -77,61 +79,68 @@ export const GoalsDialog = ({
                       progress: 0,
                     });
                   }
-                  setUserGoals();
+                  setUserGoals(newUserGoals);
                   actions.setSubmitting(false);
+                  onClose();
                 }, 1000);
               }}
             >
               {(props) => (
                 <Stack spacing={3}>
-                  <Field name="nameInput">
-                    {({ field }:{[key:string]:any}) => (
-                      <FormControl>
-                        <FormLabel>Name</FormLabel>
-                        <Input {...field} placeholder={"Enter new goal"} />
-                      </FormControl>
-                    )}
-                  </Field>
-                  <Field name="dateInput">
-                    {({ field }:{[key:string]:any}) => (
-                      <FormControl>
-                        <FormLabel>Due</FormLabel>
-                        <Input {...field} placeholder={"Enter due date"} />
-                      </FormControl>
-                    )}
-                  </Field>
-                  <Field name="notesInput">
-                    {({ field }:{[key:string]:any}) => (
-                      <FormControl>
-                        <FormLabel>Notes</FormLabel>
-                        <Textarea
-                          {...field}
-                          placeholder={"Enter notes for your goal"}
+                  <Form>
+                    <Field name="nameInput">
+                      {({ field }: { [key: string]: any }) => (
+                        <FormControl>
+                          <FormLabel>Name</FormLabel>
+                          <Input {...field} placeholder={"Enter new goal"} />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="dateInput">
+                      {({ field }: { [key: string]: any }) => (
+                        <FormControl>
+                          <FormLabel>Due</FormLabel>
+                          <Input {...field} placeholder={"Enter due date"} />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="notesInput">
+                      {({ field }: { [key: string]: any }) => (
+                        <FormControl>
+                          <FormLabel>Notes</FormLabel>
+                          <Textarea
+                            {...field}
+                            placeholder={"Enter notes for your goal"}
+                          />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Box style={{ width: "100%", textAlign: "right" }}>
+                      <Button
+                        colorScheme="gray"
+                        ref={cancelRef}
+                        onClick={onClose}
+                        style={{ marginRight: "2rem" }}
+                      >
+                        Cancel
+                        <FontAwesomeIcon
+                          style={{ marginLeft: "1rem" }}
+                          icon={faXmark}
                         />
-                      </FormControl>
-                    )}
-                  </Field>
-                  <Box style={{ width: "100%", textAlign: "right" }}>
-                    <Button
-                      colorScheme="gray"
-                      ref={cancelRef}
-                      onClick={onClose}
-                      style={{ marginRight: "2rem" }}
-                    >
-                      Cancel
-                      <FontAwesomeIcon
-                        style={{ marginLeft: "1rem" }}
-                        icon={faXmark}
-                      />
-                    </Button>
-                    <Button type="submit" colorScheme="blue" onClick={onClose}>
-                      Save
-                      <FontAwesomeIcon
-                        style={{ marginLeft: "1rem" }}
-                        icon={faFloppyDisk}
-                      />
-                    </Button>
-                  </Box>
+                      </Button>
+                      <Button
+                        type="submit"
+                        colorScheme="blue"
+                        isLoading={props.isSubmitting}
+                      >
+                        Save
+                        <FontAwesomeIcon
+                          style={{ marginLeft: "1rem" }}
+                          icon={faFloppyDisk}
+                        />
+                      </Button>
+                    </Box>
+                  </Form>
                 </Stack>
               )}
             </Formik>
