@@ -35,6 +35,7 @@ const GoalsPage = () => {
         progress: 100,
       },
     ]);
+    console.log(userGoals);
   }, []);
 
   return (
@@ -63,6 +64,11 @@ export const GoalsContainer = ({
   const openDialog = (param: number | undefined) => {
     setEditingIndex(param);
     setIsDialogOpen(true);
+  };
+  const onDelete = (param: number) => {
+    const newUserGoals = [...userGoals];
+    newUserGoals.splice(param, 1);
+    setUserGoals(newUserGoals);
   };
   return (
     <Box style={{ width: "90%", height: "100%", margin: "auto" }}>
@@ -104,7 +110,6 @@ export const GoalsContainer = ({
         </GridItem>
         {userGoals.map((item, index) => {
           return (
-            <>
               <GoalsItem
                 key={`goal-${index}`}
                 name={item.name}
@@ -112,8 +117,8 @@ export const GoalsContainer = ({
                 progress={item.progress}
                 index={index}
                 openDialog={openDialog}
+                onDelete={onDelete}
               />
-            </>
           );
         })}
       </Grid>
@@ -134,6 +139,7 @@ export interface GoalsItemProps {
   progress: number;
   index: number;
   openDialog: Function;
+  onDelete: Function;
 }
 
 export const GoalsItem = ({
@@ -142,6 +148,7 @@ export const GoalsItem = ({
   progress,
   index,
   openDialog,
+  onDelete,
 }: GoalsItemProps) => {
   return (
     <>
@@ -180,7 +187,10 @@ export const GoalsItem = ({
         >
           <EditIcon style={{ color: "white" }} />
         </Button>
-        <Button style={{ backgroundColor: "#E53E3E" }}>
+        <Button
+          style={{ backgroundColor: "#E53E3E" }}
+          onClick={() => onDelete(index)}
+        >
           <DeleteIcon style={{ color: "white" }} />
         </Button>
       </GridItem>
