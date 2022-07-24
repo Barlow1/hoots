@@ -19,7 +19,7 @@ const handler: Handler = async (event, context) => {
   await prisma.$connect();
 
   try {
-    const mentors = await prisma.mentors.findMany();
+    const mentors = await prisma.mentor.findMany();
     return {
       statusCode: 200,
       body: JSON.stringify(mentors),
