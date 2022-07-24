@@ -1,14 +1,21 @@
-import { Avatar, Box, Grid, GridItem, 
+import { Avatar, Box, Button, CircularProgress, CircularProgressLabel, Grid, GridItem, 
+    Link, 
     Text,
 } from "@chakra-ui/react";
+import { routes } from "../routes";
 
 const Dashboard = () => {
     const userObject = {
         name: 'Jordan Peele',
         email: 'ThisIsARealEmail@JokesOnYou.com',
         industry: 'Engineering',
-        mentorName: 'Ian Mckellen'
+        mentorName: 'Ian Mckellen',
+        date: 'August 1st, 2022',
+        nextMilestone: 'Learn React and Redux',
+        nextMilestoneDate: 'August 10th, 2022',
     }
+    // userObject.date.
+    // const formattedDate =
     return (
         <Grid  gap={6}>
             <GridItem boxShadow='2xl' colSpan={12} w='100%' borderRadius='5'>
@@ -50,9 +57,112 @@ const Dashboard = () => {
                     </Grid>
                 </Box>    
             </GridItem>
-            <GridItem w='100%' h='10' bg='gray' colSpan={4}/>
-            <GridItem w='100%' h='10' bg='gray' colSpan={4} />
-            <GridItem w='100%' h='10' bg='gray' colSpan={4} />
+            <GridItem boxShadow='2xl' w='100%' colSpan={4} borderRadius='5'>
+                <Grid padding='5' gap={4}>
+                    <GridItem colSpan={12}>
+                        <Text fontSize='xl' fontWeight='bold'>
+                            Upcoming Meeting
+                        </Text>
+                        <Text fontSize='sm'>
+                            {userObject.date}
+                        </Text>
+                    </GridItem>
+                    <GridItem display='flex' justifyContent='center' colSpan={12}>
+                        <Text fontSize='6xl' fontWeight='bold'>
+                            10
+                        </Text>
+                        <Text 
+                            fontSize='xl' 
+                            justifyContent='center' 
+                            alignItems='center' 
+                            display='flex' 
+                            pl='2' 
+                            fontWeight='bold'
+                        >
+                            Days away
+                        </Text>
+                    </GridItem>
+                    <GridItem colSpan={12}>
+                        <Link
+                            justifyContent='center'
+                            href={routes.home}
+                            style={{ textDecoration: "none", display: "flex" }}
+                            _focus={{ boxShadow: "none" }}
+                        >
+                            <Button
+                                background='brand.900' 
+                                textColor='white' 
+                            >
+                                Add Agenda Items
+                            </Button> 
+                        </Link>
+                    </GridItem>
+                </Grid>
+            </GridItem>
+            <GridItem boxShadow='2xl' w='100%' colSpan={4} borderRadius='5'>
+                <Grid padding='5' gap={4}>
+                    <GridItem colSpan={12}>
+                        <Text fontSize='xl' fontWeight='bold'>
+                            Goal Progress
+                        </Text>
+                        <Text fontSize='sm'>
+                            {userObject.nextMilestone}
+                        </Text>
+                    </GridItem>
+                    <GridItem display='flex' justifyContent='center' colSpan={12}>
+                    <CircularProgress value={75} color='green.400' size='90px'>
+  <CircularProgressLabel fontSize='xs'>75% Complete</CircularProgressLabel>
+</CircularProgress>
+                    </GridItem>
+                    <GridItem colSpan={12}>
+                        <Link
+                            justifyContent='center'
+                            href={routes.goals}
+                            style={{ textDecoration: "none", display: "flex" }}
+                            _focus={{ boxShadow: "none" }}
+                        >
+                            <Button
+                                background='brand.900' 
+                                textColor='white' 
+                            >
+                                Manage Goals
+                            </Button> 
+                        </Link>
+                    </GridItem>
+                </Grid>
+            </GridItem>
+            <GridItem justifyContent='space-evenly' boxShadow='2xl' w='100%' colSpan={4} borderRadius='5'>
+                <Grid padding='5' gap={4}>
+                    <GridItem colSpan={12}>
+                        <Text fontSize='xl' fontWeight='bold'>
+                            Next Milestone
+                        </Text>
+                        <Text fontSize='sm'>
+                            {userObject.nextMilestoneDate}
+                        </Text>
+                    </GridItem>
+                    <GridItem display='flex' justifyContent='center' colSpan={12}>
+                        <Text fontSize='lg'>
+                            {userObject.nextMilestone}
+                        </Text>
+                    </GridItem>
+                    <GridItem colSpan={12}>
+                        <Link
+                            justifyContent='center'
+                            href={routes.home}
+                            style={{ textDecoration: "none", display: "flex" }}
+                            _focus={{ boxShadow: "none" }}
+                        >
+                            <Button
+                                background='brand.900' 
+                                textColor='white' 
+                            >
+                                Mark as Complete
+                            </Button> 
+                        </Link>
+                    </GridItem>
+                </Grid>
+            </GridItem>
 
 
         </Grid>
