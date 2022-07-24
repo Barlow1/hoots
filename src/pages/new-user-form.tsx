@@ -61,7 +61,7 @@ const NewUserForm = () => {
         <Form style={{padding: 5}}>
           <Stack spacing={3}>
             <Field name='firstName'>
-                {({ field }) => (
+                {({ field }:{[key:string]:any}) => (
                     <FormControl>
                       <FormLabel>First name</FormLabel>
                       <Input {...field} placeholder='First Name' />
@@ -69,7 +69,7 @@ const NewUserForm = () => {
                 )}
             </Field>
             <Field name='lastName'>
-                {({ field }) => (
+                {({ field }:{[key:string]:any}) => (
                     <FormControl>
                       <FormLabel>Last name</FormLabel>
                       <Input {...field} placeholder='Last Name' />
@@ -77,7 +77,7 @@ const NewUserForm = () => {
                 )}
             </Field>
             <Field name='industry'>
-                {({ field }) => (
+                {({ field }:{[key:string]:any}) => (
                     <FormControl>
                       <FormLabel>
                         Industry
@@ -93,7 +93,7 @@ const NewUserForm = () => {
                 )}
             </Field>
             <Field name='experience'>
-                {({ field, form }) => (
+                {({ field, form }:{[key:string]:any}) => (
                     <FormControl>
                       <FormLabel>Experience</FormLabel>
                       <NumberInput 
@@ -112,7 +112,7 @@ const NewUserForm = () => {
                 )}
             </Field>
             <Field name='bio'>
-                {({ field }) => (
+                {({ field }:{[key:string]:any}) => (
                     <FormControl>
                       <FormLabel>Tell us about yourself!</FormLabel>
                       <Textarea size='sm' {...field} placeholder="I work at...💼&#10;I am currently learning...📚&#10;I'm looking for a mentor with skills in...🧑🏽‍🏫" />
@@ -121,7 +121,7 @@ const NewUserForm = () => {
             </Field>
             {/* <Text style={{fontWeight: 'bold'}}>Desired Mentor</Text> */}
             <Field name='mentorExperience'>
-                {({ field, form }) => (
+                {({ field, form }:{[key:string]:any}) => (
                     <FormControl>
                       <FormLabel>Desired Mentor Experience</FormLabel>
                       <NumberInput 
@@ -140,7 +140,7 @@ const NewUserForm = () => {
                 )}
             </Field>
             <Field name='mentorPrice'>
-                {({ field, form }) => (
+                {({ field, form }:{[key:string]:any}) => (
                     <FormControl>
                       <FormLabel>Desired Mentor Monthly Cost</FormLabel>   
                       <Slider 
