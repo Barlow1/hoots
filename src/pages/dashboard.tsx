@@ -26,7 +26,7 @@ const Dashboard = () => {
   // const formattedDate =
   return (
     <Grid gap={6}>
-      <GridItem boxShadow="2xl" colSpan={12} w="100%" borderRadius="5">
+      <GridItem boxShadow="xl" colSpan={12} w="100%" borderRadius="5">
         <Box padding="5">
           <Grid gap={6}>
             <GridItem colSpan={12}>
@@ -68,7 +68,7 @@ const Dashboard = () => {
           </Grid>
         </Box>
       </GridItem>
-      <GridItem boxShadow="2xl" w="100%" colSpan={4} borderRadius="5">
+      <GridItem boxShadow="xl" w="100%" colSpan={4} borderRadius="5">
         <Grid padding="5" gap={4}>
           <GridItem colSpan={12}>
             <Text fontSize="xl" fontWeight="bold">
@@ -105,7 +105,7 @@ const Dashboard = () => {
           </GridItem>
         </Grid>
       </GridItem>
-      <GridItem boxShadow="2xl" w="100%" colSpan={4} borderRadius="5">
+      <GridItem boxShadow="xl" w="100%" colSpan={4} borderRadius="5">
         <Grid padding="5" gap={4}>
           <GridItem colSpan={12}>
             <Text fontSize="xl" fontWeight="bold">
@@ -134,7 +134,7 @@ const Dashboard = () => {
           </GridItem>
         </Grid>
       </GridItem>
-      <GridItem boxShadow="2xl" w="100%" colSpan={4} borderRadius="5">
+      <GridItem boxShadow="xl" w="100%" colSpan={4} borderRadius="5">
         <Grid padding="5" gap={4}>
           <GridItem colSpan={12}>
             <Text fontSize="xl" fontWeight="bold">
