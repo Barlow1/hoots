@@ -8,7 +8,9 @@ const CORS_HEADERS = {
 };
 
 const handler: Handler = async (event, context) => {
-  const { id, email } = event.queryStringParameters || {};
+  const id = event.queryStringParameters?.id;
+  const email = event.queryStringParameters?.email;
+
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -20,6 +22,7 @@ const handler: Handler = async (event, context) => {
   await prisma.$connect();
 
   try {
+    console.log('prisma.profile.findUnique', prisma.profile.findUnique)
     const user = await prisma.profile.findUnique({
       where: {
         id,

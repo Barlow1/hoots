@@ -50,7 +50,7 @@ model Mentor {
 model Profile {
   id                String                   @id @default(auto()) @map("_id") @db.ObjectId
   bio               String
-  email             String                    @unique
+  email             String                   @unique
   experience        Int
   firstName         String
   img               String
