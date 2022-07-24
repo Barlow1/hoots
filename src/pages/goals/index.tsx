@@ -14,6 +14,7 @@ import {
   useMatch,
 } from "@tanstack/react-location";
 import { routes } from "../../routes";
+import { useUser } from "../../components/UserContext";
 
 export interface UserGoal {
   name?: string;
@@ -35,7 +36,10 @@ type Route = MakeGenerics<{
 
 export const loader: LoaderFn<Route> = async () => {
   const baseUrl = import.meta.env.VITE_API_URL;
-  const goals = await fetch(`${baseUrl}/.netlify/functions/get-goals?userId=${'62dd1c79a37e9f2bf551fe38'}`)
+  const { user } = useUser();
+  const goals = await fetch(
+    `${baseUrl}/.netlify/functions/get-goals?userId=${user.id}`
+  )
     .then((goals) => goals.json())
     .catch(() => {
       alert("Failed to get goals, please try again in a few minutes.");
@@ -225,7 +229,7 @@ export const GoalsItem = ({
         <Link to={`${routes.goals}/${index}`}>{name}</Link>
       </GridItem>
       <GridItem colSpan={4} style={gridItemStyle}>
-      <Link to={`${routes.goals}/${index}`}>{dueDate}</Link>
+        <Link to={`${routes.goals}/${index}`}>{dueDate}</Link>
       </GridItem>
       <GridItem
         colSpan={4}

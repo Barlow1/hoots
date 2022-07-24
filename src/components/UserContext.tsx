@@ -1,31 +1,36 @@
 import { User } from "@prisma/client";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 
 interface UserContextValue {
   user: User | undefined;
 }
 
 interface UserContextProviderProps {
-    user: User | undefined;
-    children: React.ReactNode;
+  user: User | undefined;
+  children: React.ReactNode;
 }
 
-const UserContext = createContext<UserContextValue | undefined>(undefined);
-export const UserContextProvider = ({user, children}: UserContextProviderProps) => {
+const UserLocalStorageId = "HootsUser";
 
-    return (
-        <UserContext.Provider value={{user}}>
-            {children}
-        </UserContext.Provider>
-    )
+const UserContext = createContext<UserContextValue | undefined>(undefined);
+export const UserContextProvider = ({
+  user,
+  children,
+}: UserContextProviderProps) => {
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem(UserLocalStorageId, JSON.stringify(user));
+    }
+  }, [user]);
+
+  return (
+    <UserContext.Provider value={{ user }}>{children}</UserContext.Provider>
+  );
 };
 
 export const useUser = () => {
-    const context = useContext(UserContext)
-    if (context === undefined) {
-        throw new Error('useTheme must be used within a ThemeProvider')
-      }
-      return context
-}
+  const user = JSON.parse(localStorage.getItem(UserLocalStorageId) ?? "{}");
+  return { user };
+};
 
 export default UserContext;
