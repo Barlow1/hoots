@@ -20,7 +20,6 @@
     "@netlify/functions": "^1.0.0",
     "@prisma/client": "^4.1.0",
     "@tanstack/react-location": "^3.7.4",
-    "chakra-datetime-picker": "^1.1.5",
     "formik": "^2.2.9",
     "framer-motion": "^6.5.1",
     "generouted": "^1.4.0",

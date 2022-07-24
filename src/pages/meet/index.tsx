@@ -21,13 +21,8 @@ import {
   Stack,
   Heading,
   Textarea,
+  Input,
 } from '@chakra-ui/react'
-import { DatePickerInput } from 'chakra-datetime-picker';
-
-const headingStyle: CSSProperties = {
-  color: "#A0AEC0",
-  fontWeight: "700",
-}
 
 const mockData: IMeetingData[] = [
   {
@@ -111,7 +106,7 @@ export const MeetHome = (props: IMeetHomeProps) => {
               <Heading as='h5' size='sm'>
                 When
               </Heading>
-              <DatePickerInput wrapPortal={true} />
+              <Input />
               <Heading as='h5' size='sm'>
                 Notes
               </Heading>
