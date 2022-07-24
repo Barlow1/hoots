@@ -131,7 +131,7 @@ const Dashboard = () => {
                     </GridItem>
                 </Grid>
             </GridItem>
-            <GridItem justifyContent='space-evenly' boxShadow='2xl' w='100%' colSpan={4} borderRadius='5'>
+            <GridItem boxShadow='2xl' w='100%' colSpan={4} borderRadius='5'>
                 <Grid padding='5' gap={4}>
                     <GridItem colSpan={12}>
                         <Text fontSize='xl' fontWeight='bold'>
