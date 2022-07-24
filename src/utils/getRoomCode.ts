@@ -1,4 +1,3 @@
-import post from 'node-fetch';
 import { request } from './request';
 
 async function createRoom(name?: string) {
