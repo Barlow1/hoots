@@ -2,6 +2,7 @@ import { LoaderFn, MakeGenerics, useMatch } from "@tanstack/react-location";
 import { Box, Button, Link, Grid, Text, Stack, Heading, Avatar, Flex, Spacer, Wrap, WrapItem, ButtonGroup, GridItem } from '@chakra-ui/react';
 import { CSSProperties } from "react";
 import { CloseIcon, PhoneIcon } from '@chakra-ui/icons'
+import getRoomCode from "../../utils/getRoomCode";
 
 const headingStyle: CSSProperties = {
   color: "#A0AEC0",
@@ -12,6 +13,7 @@ const headingStyle: CSSProperties = {
 export interface IMeetDeetsProps {
   mentorId: string;
   mentorName: string;
+  upcomingMeetingDate: string;
   upcomingMeetingTime: string;
 }
 
@@ -21,8 +23,14 @@ export const MeetDeets = (props: IMeetDeetsProps) => {
   const {
     mentorId,
     mentorName,
+    upcomingMeetingDate,
     upcomingMeetingTime
   } = props;
+
+  const handleJoinButtonClick = () => {
+    getRoomCode();
+  }
+
   return (
     <Box borderWidth='1px' borderRadius='lg' overflow='hidden' m='8'>
       <Grid
@@ -46,7 +54,7 @@ export const MeetDeets = (props: IMeetDeetsProps) => {
             <Spacer />
             <Box p={pad}>
               <ButtonGroup gap='2'>
-                <Button backgroundColor={'brand.200'} color='white' size='lg' variant='solid'>
+                <Button backgroundColor={'brand.200'} color='white' size='lg' variant='solid' onClick={handleJoinButtonClick}>
                   <Text style={{ paddingRight: '10px' }}>Join</Text>
                   <PhoneIcon />
                 </Button>
@@ -77,13 +85,13 @@ export const MeetDeets = (props: IMeetDeetsProps) => {
           <Heading as='h6' size='s' style={headingStyle}>
             Date
           </Heading>
-          <Text>{upcomingMeetingTime}</Text>
+          <Text>{upcomingMeetingDate}</Text>
         </GridItem>
         <GridItem rowSpan={2} colSpan={1} p={pad}>
           <Heading as='h6' size='s' style={headingStyle}>
             Time
           </Heading>
-          <Text>5:30 PM</Text>
+          <Text>{upcomingMeetingTime}</Text>
         </GridItem>
       </Grid>
     </Box>
