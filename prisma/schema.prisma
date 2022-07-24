@@ -12,7 +12,7 @@ type GoalMilestones {
   name String
 }
 
-type UserMentorPreferences {
+type ProfileMentorPreferences {
   cost       Int
   experience Int
 }
@@ -47,15 +47,15 @@ model Mentor {
   tags       String[]
 }
 
-model User {
-  id                String                @id @default(auto()) @map("_id") @db.ObjectId
+model Profile {
+  id                String                   @id @default(auto()) @map("_id") @db.ObjectId
   bio               String
-  email             String                @unique
+  email             String                    @unique
   experience        Int
   firstName         String
   img               String
   industry          String
   lastName          String
-  mentorPreferences UserMentorPreferences
+  mentorPreferences ProfileMentorPreferences
   password          String
 }

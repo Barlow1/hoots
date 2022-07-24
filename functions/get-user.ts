@@ -20,7 +20,7 @@ const handler: Handler = async (event, context) => {
   await prisma.$connect();
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.profile.findUnique({
       where: {
         id,
         email,
