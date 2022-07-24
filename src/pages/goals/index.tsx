@@ -1,7 +1,12 @@
 import { Box, Button, Grid, GridItem, Progress } from "@chakra-ui/react";
-import { AddIcon, EditIcon, DeleteIcon } from "@chakra-ui/icons";
+import {
+  AddIcon,
+  EditIcon,
+  DeleteIcon,
+  ChevronRightIcon,
+} from "@chakra-ui/icons";
 import * as React from "react";
-import { GoalsDialog } from "../components/goalsDialog";
+import { GoalsDialog } from "../../components/goalsDialog";
 export interface UserGoal {
   name: string;
   dueDate: string;
@@ -45,10 +50,6 @@ const GoalsPage = () => {
   );
 };
 
-export const gridItemStyle: React.CSSProperties = {
-  padding: "1rem",
-  borderTop: "2px solid #E2E8F0",
-};
 export interface IGoalsContainerProps {
   userGoals: UserGoal[];
   setUserGoals: Function;
@@ -83,42 +84,43 @@ export const GoalsContainer = ({
         </Button>
       </Box>
       <Grid
-        templateColumns="repeat(7, 1fr)"
+        templateColumns="repeat(16, 1fr)"
         style={{
           border: "2px solid #E2E8F0",
           borderRadius: "10px",
           padding: "0rem 1rem 1rem 1rem",
         }}
       >
-        <GridItem colSpan={2} style={{ padding: "1rem", fontWeight: "bold" }}>
+        <GridItem colSpan={1} style={{ padding: "1rem" }}></GridItem>
+        <GridItem colSpan={4} style={{ padding: "1rem", fontWeight: "bold" }}>
           Goal
         </GridItem>
-        <GridItem colSpan={2} style={{ padding: "1rem", fontWeight: "bold" }}>
+        <GridItem colSpan={4} style={{ padding: "1rem", fontWeight: "bold" }}>
           Due
         </GridItem>
         <GridItem
-          colSpan={2}
+          colSpan={4}
           style={{ padding: "1rem", textAlign: "right", fontWeight: "bold" }}
         >
           Progress
         </GridItem>
         <GridItem
-          colSpan={1}
+          colSpan={3}
           style={{ padding: "1rem", fontWeight: "bold", textAlign: "center" }}
         >
           Actions
         </GridItem>
         {userGoals.map((item, index) => {
           return (
-              <GoalsItem
-                key={`goal-${index}`}
-                name={item.name}
-                dueDate={item.dueDate}
-                progress={item.progress}
-                index={index}
-                openDialog={openDialog}
-                onDelete={onDelete}
-              />
+            <GoalsItem
+              key={`goal-${index}`}
+              name={item.name}
+              dueDate={item.dueDate}
+              progress={item.progress}
+              index={index}
+              openDialog={openDialog}
+              onDelete={onDelete}
+            />
           );
         })}
       </Grid>
@@ -131,6 +133,13 @@ export const GoalsContainer = ({
       />
     </Box>
   );
+};
+
+export const gridItemStyle: React.CSSProperties = {
+  padding: "1rem",
+  borderTop: "2px solid #E2E8F0",
+  display: "flex",
+  alignItems: "center",
 };
 
 export interface GoalsItemProps {
@@ -152,13 +161,26 @@ export const GoalsItem = ({
 }: GoalsItemProps) => {
   return (
     <>
-      <GridItem colSpan={2} style={gridItemStyle}>
+      <GridItem colSpan={1} style={gridItemStyle}>
+        <ChevronRightIcon />
+      </GridItem>
+      <GridItem colSpan={4} style={gridItemStyle}>
         {name}
       </GridItem>
-      <GridItem colSpan={2} style={gridItemStyle}>
+      <GridItem colSpan={4} style={gridItemStyle}>
         {dueDate}
       </GridItem>
-      <GridItem colSpan={2} style={{ ...gridItemStyle, textAlign: "right" }}>
+      <GridItem
+        colSpan={4}
+        style={
+          progress < 100
+            ? {
+                padding: "1rem",
+                borderTop: "2px solid #E2E8F0",
+              }
+            : { ...gridItemStyle, justifyContent: "right" }
+        }
+      >
         {progress < 100 && (
           <>
             <Progress
@@ -173,12 +195,13 @@ export const GoalsItem = ({
         {progress === 100 && "Complete"}
       </GridItem>
       <GridItem
-        colSpan={1}
+        colSpan={3}
         style={{
           display: "flex",
           padding: "1rem",
           borderTop: "2px solid #E2E8F0",
           justifyContent: "space-evenly",
+          alignContent: "center",
         }}
       >
         <Button
