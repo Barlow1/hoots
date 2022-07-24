@@ -1,5 +1,5 @@
 import { Box, Button, Grid, GridItem, Progress } from "@chakra-ui/react";
-import { AddIcon } from "@chakra-ui/icons";
+import { AddIcon, EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import * as React from "react";
 import { GoalsDialog } from "../components/goalsDialog";
 export interface UserGoal {
@@ -57,7 +57,11 @@ export const GoalsContainer = ({
   setUserGoals,
 }: IGoalsContainerProps) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
-  const openDialog = () => {
+  const [editingIndex, setEditingIndex] = React.useState<number | undefined>(
+    undefined
+  );
+  const openDialog = (param: number | undefined) => {
+    setEditingIndex(param);
     setIsDialogOpen(true);
   };
   return (
@@ -69,27 +73,36 @@ export const GoalsContainer = ({
           backgroundColor={"brand.500"}
           _hover={{ bg: "brand.200" }}
           style={{ color: "white", margin: "1rem" }}
-          onClick={openDialog}
+          onClick={() => openDialog(undefined)}
         >
           Add Goal <AddIcon style={{ marginLeft: "0.5em" }} />
         </Button>
       </Box>
       <Grid
-        templateColumns="repeat(3, 1fr)"
+        templateColumns="repeat(7, 1fr)"
         style={{
           border: "2px solid #E2E8F0",
           borderRadius: "10px",
           padding: "0rem 1rem 1rem 1rem",
         }}
       >
-        <GridItem style={{ padding: "1rem", fontWeight: "bold" }}>
+        <GridItem colSpan={2} style={{ padding: "1rem", fontWeight: "bold" }}>
           Goal
         </GridItem>
-        <GridItem style={{ padding: "1rem", fontWeight: "bold" }}>Due</GridItem>
+        <GridItem colSpan={2} style={{ padding: "1rem", fontWeight: "bold" }}>
+          Due
+        </GridItem>
         <GridItem
+          colSpan={2}
           style={{ padding: "1rem", textAlign: "right", fontWeight: "bold" }}
         >
           Progress
+        </GridItem>
+        <GridItem
+          colSpan={1}
+          style={{ padding: "1rem", fontWeight: "bold", textAlign: "center" }}
+        >
+          Actions
         </GridItem>
         {userGoals.map((item, index) => {
           return (
@@ -109,6 +122,7 @@ export const GoalsContainer = ({
         setUserGoals={setUserGoals}
         isDialogOpen={isDialogOpen}
         setIsDialogOpen={setIsDialogOpen}
+        index={editingIndex}
       />
     </Box>
   );
@@ -117,9 +131,13 @@ export const GoalsContainer = ({
 export const GoalsItem = ({ name, dueDate, progress }: UserGoal) => {
   return (
     <>
-      <GridItem style={gridItemStyle}>{name}</GridItem>
-      <GridItem style={gridItemStyle}>{dueDate}</GridItem>
-      <GridItem style={{ ...gridItemStyle, textAlign: "right" }}>
+      <GridItem colSpan={2} style={gridItemStyle}>
+        {name}
+      </GridItem>
+      <GridItem colSpan={2} style={gridItemStyle}>
+        {dueDate}
+      </GridItem>
+      <GridItem colSpan={2} style={{ ...gridItemStyle, textAlign: "right" }}>
         {progress < 100 && (
           <>
             <Progress
@@ -132,6 +150,22 @@ export const GoalsItem = ({ name, dueDate, progress }: UserGoal) => {
           </>
         )}
         {progress === 100 && "Complete"}
+      </GridItem>
+      <GridItem
+        colSpan={1}
+        style={{
+          display: "flex",
+          padding: "1rem",
+          borderTop: "2px solid #E2E8F0",
+          justifyContent: "space-evenly",
+        }}
+      >
+        <Button style={{ backgroundColor: "#3182CE" }}>
+          <EditIcon style={{color: "white"}}/>
+        </Button>
+        <Button style={{ backgroundColor: "#E53E3E" }}>
+          <DeleteIcon style={{color: "white"}}/>
+        </Button>
       </GridItem>
     </>
   );
