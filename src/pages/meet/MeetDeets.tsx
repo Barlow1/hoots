@@ -39,7 +39,7 @@ export const MeetDeets = (props: IMeetDeetsProps) => {
   }
 
   return (
-    <Box borderWidth='1px' borderRadius='lg' overflow='hidden' m='8'>
+    <Box borderWidth='1px' borderRadius='lg' overflow='hidden' m='8' boxShadow='2xl'>
       <Grid
         h='200px'
         templateRows='repeat(2, 1fr)'

@@ -101,7 +101,7 @@ export const MeetHome = (props: IMeetHomeProps) => {
   }
 
   return (
-    <Box boxShadow='2xl'>
+    <Box>
       <MeetDeets
         mentorId={allMeetingData[0].id}
         mentorName={allMeetingData[0].name}
@@ -130,8 +130,8 @@ export const MeetHome = (props: IMeetHomeProps) => {
               </Heading>
               <Select placeholder='Select...' size='md'>
                 <option value='option1'>Linus Torvalds</option>
-                <option value='option2'>Option 2</option>
-                <option value='option3'>Option 3</option>
+                <option value='option2'>Christian Barlow</option>
+                <option value='option3'>Jessie Murphey</option>
               </Select>
               <Heading as='h5' size='sm'>
                 When
