@@ -1,6 +1,7 @@
 import { Box, Button, Grid, GridItem, Progress } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import * as React from "react";
+import { GoalsDialog } from "../components/goalsDialog";
 export interface UserGoal {
   name: string;
   dueDate: string;
@@ -10,6 +11,7 @@ export interface UserGoal {
 
 const GoalsPage = () => {
   const [userGoals, setUserGoals] = React.useState<UserGoal[]>([]);
+
   React.useEffect(() => {
     setUserGoals([
       {
@@ -37,7 +39,7 @@ const GoalsPage = () => {
 
   return (
     <>
-      <GoalsContainer userGoals={userGoals} />
+      <GoalsContainer userGoals={userGoals} setUserGoals={setUserGoals} />
     </>
   );
 };
@@ -48,15 +50,26 @@ export const gridItemStyle: React.CSSProperties = {
 };
 export interface IGoalsContainerProps {
   userGoals: UserGoal[];
+  setUserGoals: Function;
 }
-export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
+export const GoalsContainer = ({
+  userGoals,
+  setUserGoals,
+}: IGoalsContainerProps) => {
+  const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
+  const openDialog = () => {
+    setIsDialogOpen(true);
+  };
   return (
-    <Box style={{ width: "100%", height: "100%", padding: "2rem" }}>
+    <Box
+      style={{ width: "90%", height: "100%", padding: "2rem", margin: "auto" }}
+    >
       <Box style={{ width: "100%", textAlign: "right" }}>
         <Button
           backgroundColor={"brand.500"}
           _hover={{ bg: "brand.200" }}
           style={{ color: "white", margin: "1rem" }}
+          onClick={openDialog}
         >
           Add Goal <AddIcon style={{ marginLeft: "0.5em" }} />
         </Button>
@@ -91,6 +104,12 @@ export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
           );
         })}
       </Grid>
+      <GoalsDialog
+        userGoals={userGoals}
+        setUserGoals={setUserGoals}
+        isDialogOpen={isDialogOpen}
+        setIsDialogOpen={setIsDialogOpen}
+      />
     </Box>
   );
 };
