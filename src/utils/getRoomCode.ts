@@ -12,20 +12,26 @@ async function createRoom(name?: string) {
           Authorization: 'Bearer KEY0181B6DECC71CD9E97B9D3190B23495D_uynCmXv11YVl5BBr6gENX5'
         }
       },
-      body: {
-        unique_name: name || 'test name',
-        max_participants: 2,
-        webhook_event_url: "webhook_event_url",
-        enable_recording: false,
-      }
+      data: {enable_recording:false,max_participants:2}
   };
   
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: 'Bearer KEY0181B6DECC71CD9E97B9D3190B23495D_uynCmXv11YVl5BBr6gENX5'
+    },
+    body: JSON.stringify({ "enable_recording":false,"max_participants":2,"unique_name": name || undefined })
+  };
+
   try {
-    const response = await request('post', options.url, undefined, options.body, options.options);
+    const response = await fetch('https://api.telnyx.com/v2/rooms', requestOptions).then(response => response.json());
+    //const response = await request('post', options.url, undefined, options.data, options.options);
 
-    const result = (response);
+    const result = response.body;
 
-    console.log('result is: ', JSON.stringify(result, null, 4));
+    console.log(result.data.id);
 
     return result;
   } catch (error) {
