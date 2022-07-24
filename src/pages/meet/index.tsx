@@ -24,27 +24,31 @@ const headingStyle: CSSProperties = {
   fontWeight: "700",
 }
 
-const mockData: IMeetTableRowProps[] = [
+const mockData: IMeetingData[] = [
   {
     id: '12345',
     name: 'Matt Dodds',
-    time: 'August 1st, 2022'
+    date: 'August 1st, 2022',
+    time: '5:30 PM',
   },
   {
     id: '12345',
     name: 'Matt Dodds',
-    time: 'September 1st, 2022'
+    date: 'September 1st, 2022',
+    time: '5:20 PM',
   },
   {
     id: '23456',
     name: 'Jim Patel',
-    time: 'January 1st, 2023'
+    date: 'January 1st, 2023',
+    time: '5:15 PM',
   },
 ]
 
 export interface IMeetingData {
   id: string;
   name: string;
+  date: string;
   time: string;
 }
 
@@ -71,6 +75,7 @@ export const MeetHome = (props: IMeetHomeProps) => {
       <MeetDeets
         mentorId={allMeetingData[0].id}
         mentorName={allMeetingData[0].name}
+        upcomingMeetingDate={allMeetingData[0].date}
         upcomingMeetingTime={allMeetingData[0].time}
       />
       <Flex justify={'end'}>
