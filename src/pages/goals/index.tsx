@@ -20,14 +20,12 @@ export interface UserGoal {
   dueDate?: string;
   progress?: number;
   notes?: string;
-  milestones?: 
-    {
-      name?: string;
-      date?: string;
-      completed?: boolean;
-      notes?: string;
-    }[]
-  ;
+  milestones?: {
+    name?: string;
+    date?: string;
+    completed?: boolean;
+    notes?: string;
+  }[];
 }
 
 type Route = MakeGenerics<{
@@ -227,7 +225,7 @@ export const GoalsItem = ({
         <Link to={`${routes.goals}/${index}`}>{name}</Link>
       </GridItem>
       <GridItem colSpan={4} style={gridItemStyle}>
-      <Link to={`${routes.goals}/${index}`}>{dueDate}</Link>
+        <Link to={`${routes.goals}/${index}`}>{dueDate}</Link>
       </GridItem>
       <GridItem
         colSpan={4}
