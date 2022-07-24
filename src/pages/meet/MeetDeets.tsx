@@ -2,7 +2,7 @@ import { LoaderFn, MakeGenerics, useMatch } from "@tanstack/react-location";
 import { Box, Button, Link, Grid, Text, Stack, Heading, Avatar, Flex, Spacer, Wrap, WrapItem, ButtonGroup, GridItem } from '@chakra-ui/react';
 import { CSSProperties } from "react";
 import { CloseIcon, PhoneIcon } from '@chakra-ui/icons'
-import getRoomCode from "../../utils/getRoomCode";
+import getRoomCode, { generateToken } from "../../utils/telnyx";
 
 const headingStyle: CSSProperties = {
   color: "#A0AEC0",
@@ -27,8 +27,15 @@ export const MeetDeets = (props: IMeetDeetsProps) => {
     upcomingMeetingTime
   } = props;
 
-  const handleJoinButtonClick = () => {
-    getRoomCode();
+  const handleJoinButtonClick = async () => {
+    const roomCode = await getRoomCode();
+    const token = await generateToken(roomCode);
+    console.log(roomCode);
+    console.log(token);
+    if (roomCode && token) {
+      console.log('attempting to go');
+      window.location.replace(`https://telnyx-meet-demo.vercel.app/rooms/${roomCode}?client_token=${token.token}&refresh_token=${token.refresh_token}`,);
+    }
   }
 
   return (
