@@ -4,7 +4,7 @@ export async function createRoom(name?: string) {
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: 'Bearer KEY0181B6DECC71CD9E97B9D3190B23495D_uynCmXv11YVl5BBr6gENX5'
+      Authorization: `Bearer ${import.meta.env.VITE_TELNYX_BEARER_TOKEN}`
     },
     body: JSON.stringify({ "enable_recording":false,"max_participants":2,"unique_name": name || undefined })
   };
