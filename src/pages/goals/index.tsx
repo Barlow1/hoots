@@ -18,14 +18,16 @@ import { routes } from "../../routes";
 export interface UserGoal {
   name?: string;
   dueDate?: string;
-  progress: number;
+  progress?: number;
   notes?: string;
-  milestones?: [
+  milestones?: 
     {
       name?: string;
       date?: string;
-    }
-  ];
+      completed?: boolean;
+      notes?: string;
+    }[]
+  ;
 }
 
 type Route = MakeGenerics<{
@@ -171,7 +173,7 @@ export const GoalsContainer = ({
               key={`goal-${index}`}
               name={item.name ?? ""}
               dueDate={item.dueDate ?? ""}
-              progress={item.progress}
+              progress={item.progress ?? 0}
               index={index}
               openDialog={openDialog}
               onDelete={onDelete}

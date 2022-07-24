@@ -1,5 +1,26 @@
 import * as React from "react";
-import { Box, Button, Checkbox, Grid, GridItem } from "@chakra-ui/react";
+import {
+  AddIcon,
+  EditIcon,
+  DeleteIcon,
+  ChevronRightIcon,
+} from "@chakra-ui/icons";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Grid,
+  GridItem,
+  Heading,
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  Input,
+} from "@chakra-ui/react";
 import {
   Link,
   LoaderFn,
@@ -22,10 +43,10 @@ export const loader: LoaderFn<Route> = async () => {
   //     alert("Failed to get goals, please try again in a few minutes.");
   //   });
 
-  const goal = {
-    name: "Learn React and Redux",
-    dueDate: "December 1st, 2023",
-    progress: 75,
+  const goal: UserGoal = {
+    name: "Get an internship",
+    dueDate: "June 10th, 2023",
+    progress: 0,
   };
 
   return { goal: goal as UserGoal };
@@ -33,49 +54,104 @@ export const loader: LoaderFn<Route> = async () => {
 
 const MilestonePage = () => {
   const { data } = useMatch<Route>();
-  const [goal, setGoal] = React.useState<UserGoal>(data.goal);
+  const [goal, setGoal] = React.useState<UserGoal>(data.goal ?? {});
+  const [isDrawerOpen, setIsDrawerOpen] = React.useState<boolean>(false);
+  const [editingIndex, setEditingIndex] = React.useState<number | undefined>(
+    undefined
+  );
+
+  const openDrawer = (param: number | undefined) => {
+    setEditingIndex(param);
+    setIsDrawerOpen(true);
+  };
+  const onDrawerClose = () => {
+    setIsDrawerOpen(false);
+  };
+  const onDelete = (param: number) => {
+    const newUserGoal: UserGoal = { ...goal };
+    if (newUserGoal.milestones) {
+      newUserGoal.milestones.splice(param, 1);
+    }
+    setGoal(newUserGoal);
+  };
+  if (!goal || goal === undefined) {
+    return <Heading color={"red"}>Error Grabbing Goal Data</Heading>;
+  }
+
   return (
     <Box>
-      <Grid
-        templateColumns="repeat(16, 1fr)"
-        style={{
-          border: "2px solid #E2E8F0",
-          borderRadius: "10px",
-          padding: "0rem 1rem 1rem 1rem",
-        }}
-      >
-        <GridItem colSpan={1} style={{ padding: "1rem" }}></GridItem>
-        <GridItem colSpan={4} style={{ padding: "1rem", fontWeight: "bold" }}>
-          Goal
-        </GridItem>
-        <GridItem colSpan={4} style={{ padding: "1rem", fontWeight: "bold" }}>
-          Due
-        </GridItem>
-        <GridItem
-          colSpan={4}
-          style={{ padding: "1rem", textAlign: "right", fontWeight: "bold" }}
+      <Box style={{ width: "90%", height: "100%", margin: "auto" }}>
+        <Box style={{ width: "100%", textAlign: "left" }}>
+          <Button
+            backgroundColor={"brand.500"}
+            _hover={{ bg: "brand.200" }}
+            style={{ color: "white", margin: "1rem" }}
+            onClick={() => openDrawer(undefined)}
+          >
+            Add Milestone <AddIcon style={{ marginLeft: "0.5em" }} />
+          </Button>
+        </Box>
+        <Grid
+          templateColumns="repeat(9, 1fr)"
+          style={{
+            border: "2px solid #E2E8F0",
+            borderRadius: "10px",
+            padding: "0rem 1rem 1rem 1rem",
+            width: "50%",
+          }}
         >
-          Progress
-        </GridItem>
-        <GridItem
-          colSpan={3}
-          style={{ padding: "1rem", fontWeight: "bold", textAlign: "center" }}
-        >
-          Actions
-        </GridItem>
-        {userGoals.map((item, index) => {
-          return (
-            <MilestoneItem
-              key={`goal-${index}`}
-              name={item.name ?? ""}
-              dueDate={item.dueDate ?? ""}
-              index={index}
-              openDialog={openDialog}
-              onDelete={onDelete}
-            />
-          );
-        })}
-      </Grid>
+          <GridItem colSpan={1} style={{ padding: "1rem" }}></GridItem>
+          <GridItem colSpan={4} style={{ padding: "1rem", fontWeight: "bold" }}>
+            Milestone
+          </GridItem>
+          <GridItem colSpan={4} style={{ padding: "1rem", fontWeight: "bold" }}>
+            Due
+          </GridItem>
+          {goal.milestones &&
+            goal.milestones.map((item, index) => {
+              return (
+                <MilestoneItem
+                  key={`milestone-${index}`}
+                  name={item.name ?? ""}
+                  dueDate={item.date ?? ""}
+                  completed={item.completed ?? false}
+                  index={index}
+                  openDrawer={openDrawer}
+                  onDelete={onDelete}
+                />
+              );
+            })}
+          {!goal.milestones && (
+            <>
+              <GridItem colSpan={1} style={gridItemStyle}></GridItem>
+              <GridItem colSpan={4} style={gridItemStyle}>
+                -
+              </GridItem>
+              <GridItem colSpan={4} style={gridItemStyle}>
+                -
+              </GridItem>
+            </>
+          )}
+        </Grid>
+      </Box>
+      <Drawer isOpen={isDrawerOpen} placement="right" onClose={onDrawerClose}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>Create your account</DrawerHeader>
+
+          <DrawerBody>
+            <Input placeholder="Type here..." />
+          </DrawerBody>
+
+          <DrawerFooter>
+            <Button variant="outline" mr={3} onClick={onDrawerClose}>
+              Cancel
+            </Button>
+            <Button colorScheme="blue">Save</Button>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </Box>
   );
 };
@@ -92,7 +168,7 @@ export interface MilestoneItemProps {
   dueDate: string;
   completed: boolean;
   index: number;
-  openDialog: Function;
+  openDrawer: Function;
   onDelete: Function;
 }
 
@@ -101,43 +177,19 @@ export const MilestoneItem = ({
   dueDate,
   completed,
   index,
-  openDialog,
+  openDrawer,
   onDelete,
 }: MilestoneItemProps) => {
   return (
     <>
       <GridItem colSpan={1} style={gridItemStyle}>
-        <Checkbox />
+        <Checkbox isChecked={completed} />
       </GridItem>
       <GridItem colSpan={4} style={gridItemStyle}>
         {name}
       </GridItem>
       <GridItem colSpan={4} style={gridItemStyle}>
         {dueDate}
-      </GridItem>
-      <GridItem
-        colSpan={4}
-        style={
-          progress < 100
-            ? {
-                padding: "1rem",
-                borderTop: "2px solid #E2E8F0",
-              }
-            : { ...gridItemStyle, justifyContent: "right" }
-        }
-      >
-        {progress < 100 && (
-          <>
-            <Progress
-              colorScheme="green"
-              size="sm"
-              style={{ borderRadius: "500px" }}
-              value={progress}
-            />
-            {progress}%
-          </>
-        )}
-        {progress === 100 && "Complete"}
       </GridItem>
     </>
   );
