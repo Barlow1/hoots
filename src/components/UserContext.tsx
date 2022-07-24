@@ -1,12 +1,12 @@
-import { User } from "@prisma/client";
+import { Profile } from "@prisma/client";
 import { createContext, useContext, useEffect } from "react";
 
 interface UserContextValue {
-  user: User | undefined;
+  user: Profile | undefined;
 }
 
 interface UserContextProviderProps {
-  user: User | undefined;
+  user: Profile | undefined;
   children: React.ReactNode;
 }
 

@@ -43,19 +43,13 @@ type Route = MakeGenerics<{
   Params: { id: string };
 }>;
 
-export const loader: LoaderFn<Route> = async () => {
-  // const baseUrl = import.meta.env.VITE_API_URL;
-  // const goals = await fetch(`${baseUrl}/.netlify/functions/get-goals?id=${params.id}`)
-  //   .then((goals) => goals.json())
-  //   .catch(() => {
-  //     alert("Failed to get goals, please try again in a few minutes.");
-  //   });
-
-  const goal: UserGoal = {
-    name: "Get an internship",
-    dueDate: "June 10th, 2023",
-    progress: 0,
-  };
+export const loader: LoaderFn<Route> = async ({params}) => {
+  const baseUrl = import.meta.env.VITE_API_URL;
+  const goal = await fetch(`${baseUrl}/.netlify/functions/get-goals?id=${params.id}`)
+    .then((goals) => goals.json())
+    .catch(() => {
+      alert("Failed to get goal, please try again in a few minutes.");
+    });
 
   return { goal: goal as UserGoal };
 };

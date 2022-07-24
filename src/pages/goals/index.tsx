@@ -17,6 +17,7 @@ import { routes } from "../../routes";
 import { useUser } from "../../components/UserContext";
 
 export interface UserGoal {
+  id: string;
   name?: string;
   dueDate?: string;
   progress?: number;
@@ -44,29 +45,6 @@ export const loader: LoaderFn<Route> = async () => {
     .catch(() => {
       alert("Failed to get goals, please try again in a few minutes.");
     });
-
-  // const goals = [
-  //   {
-  //     name: "Learn React and Redux",
-  //     dueDate: "December 1st, 2023",
-  //     progress: 75,
-  //   },
-  //   {
-  //     name: "Get an internship",
-  //     dueDate: "June 10th, 2023",
-  //     progress: 100,
-  //   },
-  //   {
-  //     name: "Create a portfolio page",
-  //     dueDate: "January 1st, 2023",
-  //     progress: 100,
-  //   },
-  //   {
-  //     name: "Learn Javascript",
-  //     dueDate: "August 21st, 2022",
-  //     progress: 100,
-  //   },
-  // ];
   return { goals: goals as UserGoal[] };
 };
 
@@ -75,32 +53,6 @@ const GoalsPage = () => {
   const [userGoals, setUserGoals] = React.useState<UserGoal[]>(
     data.goals ?? []
   );
-
-  // React.useEffect(() => {
-  //   setUserGoals([
-  //     {
-  //       name: "Learn React and Redux",
-  //       dueDate: "December 1st, 2023",
-  //       progress: 75,
-  //     },
-  //     {
-  //       name: "Get an internship",
-  //       dueDate: "June 10th, 2023",
-  //       progress: 100,
-  //     },
-  //     {
-  //       name: "Create a portfolio page",
-  //       dueDate: "January 1st, 2023",
-  //       progress: 100,
-  //     },
-  //     {
-  //       name: "Learn Javascript",
-  //       dueDate: "August 21st, 2022",
-  //       progress: 100,
-  //     },
-  //   ]);
-  //   console.log(userGoals);
-  // }, []);
 
   return (
     <>
@@ -176,7 +128,7 @@ export const GoalsContainer = ({
               name={item.name ?? ""}
               dueDate={item.dueDate ?? ""}
               progress={item.progress ?? 0}
-              index={index}
+              id={item.id}
               openDialog={openDialog}
               onDelete={onDelete}
             />
@@ -205,7 +157,7 @@ export interface GoalsItemProps {
   name: string;
   dueDate: string;
   progress: number;
-  index: number;
+  id: string;
   openDialog: Function;
   onDelete: Function;
 }
@@ -214,22 +166,22 @@ export const GoalsItem = ({
   name,
   dueDate,
   progress,
-  index,
+  id,
   openDialog,
   onDelete,
 }: GoalsItemProps) => {
   return (
     <>
       <GridItem colSpan={1} style={gridItemStyle}>
-        <Link to={`${routes.goals}/${index}`}>
+        <Link to={`${routes.goals}/${id}`}>
           <ChevronRightIcon />
         </Link>
       </GridItem>
       <GridItem colSpan={4} style={gridItemStyle}>
-        <Link to={`${routes.goals}/${index}`}>{name}</Link>
+        <Link to={`${routes.goals}/${id}`}>{name}</Link>
       </GridItem>
       <GridItem colSpan={4} style={gridItemStyle}>
-        <Link to={`${routes.goals}/${index}`}>{dueDate}</Link>
+        <Link to={`${routes.goals}/${id}`}>{dueDate}</Link>
       </GridItem>
       <GridItem
         colSpan={4}
@@ -267,13 +219,13 @@ export const GoalsItem = ({
       >
         <Button
           style={{ backgroundColor: "#3182CE" }}
-          onClick={() => openDialog(index)}
+          onClick={() => openDialog(id)}
         >
           <EditIcon style={{ color: "white" }} />
         </Button>
         <Button
           style={{ backgroundColor: "#E53E3E" }}
-          onClick={() => onDelete(index)}
+          onClick={() => onDelete(id)}
         >
           <DeleteIcon style={{ color: "white" }} />
         </Button>
