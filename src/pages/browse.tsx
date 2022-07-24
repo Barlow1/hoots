@@ -1,9 +1,9 @@
 import { Box, Heading, Text } from "@chakra-ui/react";
-import { mentors } from "@prisma/client";
+import { Mentor } from "@prisma/client";
 import { LoaderFn, MakeGenerics, useMatch } from "@tanstack/react-location";
 
 type Route = MakeGenerics<{
-  LoaderData: { mentors: mentors[] };
+  LoaderData: { mentors: Mentor[] };
   Params: { id: string };
 }>;
 
@@ -15,7 +15,7 @@ export const loader: LoaderFn<Route> = async () => {
       alert("Failed to get mentors, please try again in a few minutes.");
     });
 
-  return { mentors: mentors as mentors[] };
+  return { mentors: mentors as Mentor[] };
 };
 
 const Browse = () => {

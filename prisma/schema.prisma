@@ -7,16 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model goals {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-}
-
-model mentors {
+model Mentor {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   bio        String
   company    String
   cost       Int
   experience Int
+  img        String
   name       String
   occupation String
   tags       String[]
