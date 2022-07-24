@@ -49,7 +49,7 @@ const NewUserForm = () => {
     width='50%' boxShadow='2xl' padding='3' maxW='sm' borderWidth='1px' borderRadius='lg' overflow='hidden'>  
       <Text style={{fontWeight: 'bold'}}>About Me</Text>
     <Formik
-      initialValues={{ firstName: '', lastName: '', industry: '', experience: '', bio: '', mentorPrice: ''}}
+      initialValues={{ firstName: '', lastName: '', industry: '', experience: '', bio: '', mentorPrice: '', mentorExperience: ''}}
       onSubmit={(values, actions) => {
         setTimeout(() => {
           alert(JSON.stringify(values, null, 2))
@@ -120,6 +120,25 @@ const NewUserForm = () => {
               )}
           </Field>
           {/* <Text style={{fontWeight: 'bold'}}>Desired Mentor</Text> */}
+          <Field name='mentorExperience'>
+              {({ field, form }) => (
+                  <FormControl>
+                    <FormLabel>Desired Mentor Experience</FormLabel>
+                    <NumberInput 
+                      min={0}     
+                      {...field}    
+                      onChange={(val) =>
+                        form.setFieldValue(field.name, val)
+                    }>
+                      <NumberInputField {...field} placeholder='Mentors Experience'/>
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                    </NumberInput>
+                  </FormControl>
+              )}
+          </Field>
           <Field name='mentorPrice'>
               {({ field, form }) => (
                   <FormControl>
