@@ -46,7 +46,7 @@ export const MeetDeets = (props: IMeetDeetsProps) => {
         templateColumns='repeat(4, 1fr)'
         gap={4}
       >
-        <GridItem rowSpan={2} colSpan={1}>
+        <GridItem rowSpan={2} colSpan={1} boxShadow='2xl'>
           <Flex flexDirection={'column'} justifyContent={'space-between'}>
             <Box p={pad}>
               <Wrap>
@@ -73,7 +73,7 @@ export const MeetDeets = (props: IMeetDeetsProps) => {
             </Box>
           </Flex>
         </GridItem>
-        <GridItem rowSpan={2} colSpan={1} p={pad}>
+        <GridItem rowSpan={2} colSpan={1} p={pad} boxShadow='2xl'>
           <Heading as='h6' size='s' style={headingStyle}>
             Mentor
           </Heading>
@@ -88,13 +88,13 @@ export const MeetDeets = (props: IMeetDeetsProps) => {
             </Wrap>
           </Flex>
         </GridItem>
-        <GridItem rowSpan={2} colSpan={1} p={pad}>
+        <GridItem rowSpan={2} colSpan={1} p={pad} boxShadow='2xl'>
           <Heading as='h6' size='s' style={headingStyle}>
             Date
           </Heading>
           <Text>{upcomingMeetingDate}</Text>
         </GridItem>
-        <GridItem rowSpan={2} colSpan={1} p={pad}>
+        <GridItem rowSpan={2} colSpan={1} p={pad} boxShadow='2xl'>
           <Heading as='h6' size='s' style={headingStyle}>
             Time
           </Heading>
