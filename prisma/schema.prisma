@@ -17,11 +17,13 @@ model Mentor {
   name       String
   occupation String
   tags       String[]
+  meeting    Meeting[]
 }
 
-model Meetings {
+model Meeting {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  mentorId   String
+  mentor     Mentor?  @relation(fields: [mentorId], references: [id])
+  mentorId   String   @db.ObjectId
   date       String
   time       String
 }
