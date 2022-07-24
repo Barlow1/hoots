@@ -11,7 +11,6 @@ import {
   TableContainer,
   Link
 } from '@chakra-ui/react'
-import { CSSProperties } from "react";
 
 export interface IMeetTableProps {
   rows: IMeetTableRowProps[];
@@ -36,6 +35,8 @@ export const MeetTableRow = (props: IMeetTableRowProps):JSX.Element => {
     </Tr>
   )
 }
+
+
 
 export const MeetTable = (props: IMeetTableProps) => {
   return (

@@ -23,6 +23,8 @@ import {
   Textarea,
   Input,
 } from '@chakra-ui/react'
+import { LoaderFn, MakeGenerics, useMatch } from "@tanstack/react-location";
+import { Meeting } from "@prisma/client";
 
 const mockData: IMeetingData[] = [
   {
@@ -44,6 +46,22 @@ const mockData: IMeetingData[] = [
     time: '5:15 PM',
   },
 ]
+
+type Route = MakeGenerics<{
+  LoaderData: { meetings: Meeting[] };
+  Params: { id: string };
+}>;
+
+export const loader: LoaderFn<Route> = async () => {
+  const baseUrl = import.meta.env.VITE_API_URL;
+  const meetings = await fetch(`${baseUrl}/.netlify/functions/get-meetings`)
+    .then((meeting) => meeting.json())
+    .catch(() => {
+      alert("Failed to get meetings, please try again in a few minutes.");
+    });
+
+  return { meetings: meetings as Meeting[] };
+};
 
 export interface IMeetingData {
   id: string;
