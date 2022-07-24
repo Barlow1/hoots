@@ -7,6 +7,12 @@ import {
   Box,
   Text,
   Button,
+  Select,
+  NumberInput,
+  NumberInputStepper,
+  NumberInputField,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from "@chakra-ui/react";
 import { Field, Form, Formik } from "formik";
 // import { colors } from '../main'
@@ -24,12 +30,13 @@ Desired Mentor:
 
 const NewUserForm = () => {
   // console.log(brand.200)
+  const IndustryList = ['Marketing', 'Engineering', 'Product Design', 'Small Buisness']
   return (
     <Box   margin='30%'
     width='50%' boxShadow='2xl' padding='3' maxW='sm' borderWidth='1px' borderRadius='lg' overflow='hidden'>  
       <Text style={{fontWeight: 'bold'}}>About Me</Text>
     <Formik
-      initialValues={{ firstName: '', lastName: '' }}
+      initialValues={{ firstName: '', lastName: '', industry: '', experience: ''}}
       onSubmit={(values, actions) => {
         setTimeout(() => {
           alert(JSON.stringify(values, null, 2))
@@ -39,23 +46,60 @@ const NewUserForm = () => {
     >
       {(props) => (
         <Form style={{padding: 5}}>
-         <Field name='firstName'>
-            {({ field }) => (
-                <FormControl>
-                  <FormLabel>First name</FormLabel>
-                  <Input {...field} placeholder='First Name' />
-                </FormControl>
-            )}
-         </Field>
-         <Field name='lastName'>
-            {({ field }) => (
-                <FormControl>
-                  <FormLabel>Last name</FormLabel>
-                  <Input {...field} placeholder='Last Name' />
-                </FormControl>
-            )}
-         </Field>
-        <Button marginTop='5px' background='brand.200' isLoading={props.isSubmitting} type='submit'>Button</Button>
+          <Field name='firstName'>
+              {({ field }) => (
+                  <FormControl>
+                    <FormLabel>First name</FormLabel>
+                    <Input {...field} placeholder='First Name' />
+                  </FormControl>
+              )}
+          </Field>
+          <Field name='lastName'>
+              {({ field }) => (
+                  <FormControl>
+                    <FormLabel>Last name</FormLabel>
+                    <Input {...field} placeholder='Last Name' />
+                  </FormControl>
+              )}
+          </Field>
+          <Field name='industry'>
+              {({ field }) => (
+                  <FormControl>
+                    <FormLabel>
+                      Industry
+                    </FormLabel>
+                    <Select {...field} placeholder='Select Industry'>
+                      {IndustryList.map(
+                        (industry) => { 
+                          return <option>{industry}</option>
+                          })
+                      }
+                    </Select>
+                  </FormControl>
+              )}
+          </Field>
+          <Field name='experience'>
+              {({ field, form }) => (
+                  <FormControl>
+                    <FormLabel>Experience</FormLabel>
+                    <NumberInput 
+                      min={0}     
+                      {...field}    
+                      onChange={(val) =>
+                        form.setFieldValue(field.name, val)
+                    }>
+                      <NumberInputField {...field} placeholder='Years of Experience'/>
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                    </NumberInput>
+                  </FormControl>
+              )}
+          </Field>
+          <Button marginTop='5px' background='brand.200' textColor='white' isLoading={props.isSubmitting} type='submit'>
+            Submit
+          </Button>
         </Form>
         )}
      </Formik>
