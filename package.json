@@ -1,7 +1,7 @@
 {
   "name": "hoots",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -20,14 +20,11 @@
     "@netlify/functions": "^1.0.0",
     "@prisma/client": "^4.1.0",
     "@tanstack/react-location": "^3.7.4",
-    "axios": "^0.27.2",
-    "eslint": "^8.20.0",
     "formik": "^2.2.9",
     "framer-motion": "^6.5.1",
     "generouted": "^1.4.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-location": "^3.3.4"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/node": "^18.0.6",

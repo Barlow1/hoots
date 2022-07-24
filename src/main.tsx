@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 
 import { Routes } from "generouted";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import MainContainer from "./container";
+
 const colors = {
   brand: {
     900: "#6D29EF",
@@ -21,9 +21,7 @@ const theme = extendTheme({ colors });
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <MainContainer>
-        <Routes />
-      </MainContainer>
+      <Routes />
     </ChakraProvider>
   </React.StrictMode>
 );
