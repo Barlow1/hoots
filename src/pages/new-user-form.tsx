@@ -13,6 +13,8 @@ import {
   NumberInputField,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  Stack,
+  Textarea,
 } from "@chakra-ui/react";
 import { Field, Form, Formik } from "formik";
 // import { colors } from '../main'
@@ -46,6 +48,7 @@ const NewUserForm = () => {
     >
       {(props) => (
         <Form style={{padding: 5}}>
+          <Stack spacing={3}>
           <Field name='firstName'>
               {({ field }) => (
                   <FormControl>
@@ -97,9 +100,18 @@ const NewUserForm = () => {
                   </FormControl>
               )}
           </Field>
+          <Field name='bio'>
+              {({ field }) => (
+                  <FormControl>
+                    <FormLabel>Tell us about yourself!</FormLabel>
+                    <Textarea size='sm' {...field} placeholder="I work at...&#10;I am currently learning...&#10;I'm looking for a mentor with skills in..." />
+                  </FormControl>
+              )}
+          </Field>
           <Button marginTop='5px' background='brand.200' textColor='white' isLoading={props.isSubmitting} type='submit'>
             Submit
           </Button>
+          </Stack>
         </Form>
         )}
      </Formik>
