@@ -87,7 +87,7 @@ export const GoalsDialog = ({
               {(props) => (
                 <Stack spacing={3}>
                   <Field name="nameInput">
-                    {({ field }) => (
+                    {({ field }:{[key:string]:any}) => (
                       <FormControl isRequired isInvalid={isNameError}>
                         <FormLabel>Name</FormLabel>
                         <Input {...field} placeholder={"Enter new goal"} />
@@ -98,7 +98,7 @@ export const GoalsDialog = ({
                     )}
                   </Field>
                   <Field name="dateInput">
-                    {({ field }) => (
+                    {({ field }:{[key:string]:any}) => (
                       <FormControl isRequired isInvalid={isDateError}>
                         <FormLabel>Due</FormLabel>
                         <Input {...field} placeholder={"Enter due date"} />
@@ -111,7 +111,7 @@ export const GoalsDialog = ({
                     )}
                   </Field>
                   <Field name="notesInput">
-                    {({ field }) => (
+                    {({ field }:{[key:string]:any}) => (
                       <FormControl>
                         <FormLabel>Notes</FormLabel>
                         <Textarea
