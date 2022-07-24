@@ -9,7 +9,6 @@ import {
   VStack,
   Icon,
   useColorModeValue,
-  Link,
   Drawer,
   DrawerContent,
   Text,
@@ -37,6 +36,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { routes } from "../routes";
 import Logo from "../assets/Logo.svg";
+import { Link } from "@tanstack/react-location";
 
 interface LinkItemProps {
   name: string;
@@ -107,9 +107,8 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         justifyContent={{ base: "space-between", md: "center" }}
       >
         <Link
-          href={routes.home}
+          to={routes.home}
           style={{ textDecoration: "none", display: "flex" }}
-          _focus={{ boxShadow: "none" }}
         >
           <img src={Logo} alt="Hoots Logo" />
         </Link>
@@ -138,20 +137,19 @@ const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
         placement="right"
         display={{ base: "none", md: "block" }}
       >
-        <Link
-          href={link}
-          style={{ textDecoration: "none", display: "flex" }}
-          _focus={{ boxShadow: "none" }}
-        >
-          <IconButton
-            aria-label={children.toString()}
-            icon={icon && <FontAwesomeIcon icon={icon} />}
-            mr={{ base: ".3em", md: "0" }}
-          />
-          <Text my="auto" display={{ base: "flex", md: "none" }}>
-            {children}
-          </Text>
-        </Link>
+        <Box>
+          <Link to={link} style={{ textDecoration: "none", display: "flex" }}>
+            <IconButton
+              aria-label={children.toString()}
+              icon={icon && <FontAwesomeIcon icon={icon} />}
+              mr={{ base: ".3em", md: "0" }}
+            />
+
+            <Text my="auto" display={{ base: "flex", md: "none" }}>
+              {children}
+            </Text>
+          </Link>
+        </Box>
       </Tooltip>
     </Flex>
   );
@@ -180,15 +178,11 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         aria-label="open menu"
         icon={<HamburgerIcon />}
       />
-
-      <Link
-        display={{ base: "flex", md: "none" }}
-        href={routes.home}
-        style={{ textDecoration: "none" }}
-        _focus={{ boxShadow: "none" }}
-      >
-        <img src={Logo} alt="Hoots Logo" />
-      </Link>
+      <Box display={{ base: "flex", md: "none" }}>
+        <Link to={routes.home} style={{ textDecoration: "none" }}>
+          <img src={Logo} alt="Hoots Logo" />
+        </Link>
+      </Box>
       <HStack spacing={{ base: "0", md: "6" }}>
         <IconButton
           size="lg"
