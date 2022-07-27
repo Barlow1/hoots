@@ -11,11 +11,10 @@ import {
 } from "@chakra-ui/react";
 import { useUser } from "../components/UserContext";
 import { routes } from "../routes";
-
-
+import { Link as NavLink } from "@tanstack/react-location";
 
 const Dashboard = () => {
-  const [ user ] = useUser();
+  const [user] = useUser();
   const userObject = {
     industry: "Engineering",
     mentorName: "Ian Mckellen",
@@ -32,7 +31,7 @@ const Dashboard = () => {
           <Grid gap={6}>
             <GridItem colSpan={12}>
               <Text fontSize="xl" fontWeight="bold">
-              {userObject && `${userObject.firstName} ${userObject.lastName}`}
+                {userObject && `${userObject.firstName} ${userObject.lastName}`}
               </Text>
               <Text fontSize="sm">{userObject.email}</Text>
             </GridItem>
@@ -94,10 +93,12 @@ const Dashboard = () => {
           </GridItem>
           <GridItem colSpan={12}>
             <Link
+              as={NavLink}
               justifyContent="center"
               href={routes.home}
               style={{ textDecoration: "none", display: "flex" }}
               _focus={{ boxShadow: "none" }}
+              to={`${routes.meet}/12345`}
             >
               <Button background="brand.900" textColor="white">
                 Add Agenda Items
