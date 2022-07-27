@@ -13,7 +13,7 @@ import { useUser } from "../components/UserContext";
 import { routes } from "../routes";
 
 const Dashboard = () => {
-  const { user } = useUser();
+  const [ user ] = useUser();
   const userObject = {
     industry: "Engineering",
     mentorName: "Ian Mckellen",
