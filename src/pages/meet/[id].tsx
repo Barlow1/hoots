@@ -53,7 +53,25 @@ export const RoomPage = () => {
     setIsDialogOpen(true);
   };
   const mockData = { "_id": { "$oid": "62dce871f321e7c3d582838a" }, "date": "August 1st, 2022", "time": "5:30PM", "name": "Emily Jones", "occupation": "QA Engineer", "cost": { "$numberInt": "0" }, "tags": ["QA", "Design", "Fun"], "experience": { "$numberInt": "10" }, "bio": "QA Engineer at Netlix. I love learning new things and breaking software. Looking to mentor a college student.", "company": "Netflix", "img": "https://i.ibb.co/C8rVLjB/Adobe-Stock-447929817.jpg" }
-  const mockUserData = { agendItemTitle: 'Redux Reducers', notes: 'I wanna be the very best! Like no one ever was, To catch them is my real test!', agendaItems: [{ name: 'Redux Reducers', notes: 'this is a very long note' }, { name: 'State Management', notes: 'this is a very short note' }, { name: 'File Structure', notes: 'this is a very short note' }] }
+  const mockUserData = { agendItemTitle: 'Redux Reducers', notes: `I wanna be the very best
+  Like no one ever was
+  To catch them is my real test
+  To train them is my cause
+  I will travel across the land
+  Searching far and wide
+  Teach Pokémon to understand
+  The power that's inside
+  (Pokémon
+  Gotta catch 'em all) It's you and me
+  I know it's my destiny (Pokémon)
+  Oh, you're my best friend
+  In a world we must defend (Pokémon
+  Gotta catch 'em all) A heart so true
+  Our courage will pull us through
+  You teach me and I'll teach you (Ooh, ooh)
+  Pokémon! (Gotta catch 'em all)
+  Gotta catch 'em all
+  Yeah`, agendaItems: [{ name: 'Redux Reducers', notes: 'this is a very long note' }, { name: 'State Management', notes: 'this is a very short note' }, { name: 'File Structure', notes: 'this is a very short note' }] }
   const [agendaItemList, setAgendaItem] = useState<NewAgendaItem[]>(mockUserData.agendaItems);
   const previousInputValue = useRef<NewAgendaItem[]>(mockUserData.agendaItems);
   const [tableEntries, setTableEntries] = useState<NewAgendaItem[]>(mockUserData.agendaItems);
@@ -112,6 +130,9 @@ export const RoomPage = () => {
                   )}
                 </Field>
                 {/* <GridItem pt='2'> */}
+                <Box p='5' 
+                  m='35'
+                  >
                 <Button
                   colorScheme="blue"
                   size='lg'
@@ -122,6 +143,7 @@ export const RoomPage = () => {
                   bottom='0'
                   right='0'
                   m='35'
+
                 >
                   Submit
                   <FontAwesomeIcon
@@ -129,6 +151,7 @@ export const RoomPage = () => {
                     icon={faFloppyDisk}
                   />
                 </Button>
+                </Box>
                 {/* </GridItem> */}
               </Box>
             </GridItem>
