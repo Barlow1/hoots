@@ -22,8 +22,6 @@ const Dashboard = () => {
     nextMilestoneDate: "August 10th, 2022",
     ...user,
   };
-  // userObject.date.
-  // const formattedDate =
   return (
     <Grid gap={6}>
       <GridItem boxShadow="xl" colSpan={12} w="100%" borderRadius="5">

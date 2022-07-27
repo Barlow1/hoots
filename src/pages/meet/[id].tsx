@@ -143,7 +143,6 @@ export const RoomPage = () => {
                   bottom='0'
                   right='0'
                   m='35'
-
                 >
                   Submit
                   <FontAwesomeIcon
