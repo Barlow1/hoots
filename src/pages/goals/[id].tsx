@@ -34,7 +34,7 @@ import {
   useMatch,
 } from "@tanstack/react-location";
 import { UserGoal } from ".";
-import { Field, Form, Formik } from "formik";
+import { Field, FieldAttributes, Form, Formik } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { routes } from "../../routes";
 
@@ -43,9 +43,11 @@ type Route = MakeGenerics<{
   Params: { id: string };
 }>;
 
-export const loader: LoaderFn<Route> = async ({params}) => {
+export const loader: LoaderFn<Route> = async ({ params }) => {
   const baseUrl = import.meta.env.VITE_API_URL;
-  const goal = await fetch(`${baseUrl}/.netlify/functions/get-goals?id=${params.id}`)
+  const goal = await fetch(
+    `${baseUrl}/.netlify/functions/get-goals?id=${params.id}`
+  )
     .then((goals) => goals.json())
     .catch(() => {
       alert("Failed to get goal, please try again in a few minutes.");
@@ -56,7 +58,7 @@ export const loader: LoaderFn<Route> = async ({params}) => {
 
 const MilestonePage = () => {
   const { data } = useMatch<Route>();
-  const [goal, setGoal] = React.useState<UserGoal>(data.goal ?? {});
+  const [goal, setGoal] = React.useState<UserGoal | null>(data.goal ?? null);
   const [isDrawerOpen, setIsDrawerOpen] = React.useState<boolean>(false);
   const [editingIndex, setEditingIndex] = React.useState<number | undefined>(
     undefined
@@ -70,7 +72,7 @@ const MilestonePage = () => {
     setIsDrawerOpen(false);
   };
   const onDelete = (param: number) => {
-    const newUserGoal: UserGoal = { ...goal };
+    const newUserGoal: UserGoal = { ...goal } as UserGoal;
     if (newUserGoal.milestones && newUserGoal.milestones[param]) {
       newUserGoal.milestones.splice(param, 1);
     }
@@ -81,8 +83,8 @@ const MilestonePage = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     param: number | undefined
   ) => {
-    if (goal.milestones && (param || param === 0)) {
-      let newMilestones = [...goal.milestones];
+    if (goal?.milestones && (param || param === 0)) {
+      let newMilestones = [...goal?.milestones];
       newMilestones[param].completed = e.target.checked;
       let newGoal: UserGoal = { ...goal, milestones: newMilestones };
       setGoal(newGoal);
@@ -118,11 +120,11 @@ const MilestonePage = () => {
             </Heading>
             <Divider />
           </Box>
-          <Box>{goal.name}</Box>
-          <Box>Due: {goal.dueDate ?? "-"}</Box>
+          <Box>{goal?.name}</Box>
+          <Box>Due: {goal?.dueDate ?? "-"}</Box>
           <Box>
             Notes:
-            <Box>{goal.notes ?? "-"}</Box>
+            <Box>{goal?.notes ?? "-"}</Box>
           </Box>
         </Stack>
       </Box>
@@ -153,8 +155,8 @@ const MilestonePage = () => {
           <GridItem colSpan={4} style={{ padding: "1rem", fontWeight: "bold" }}>
             Due
           </GridItem>
-          {goal.milestones &&
-            goal.milestones.map((item, index) => {
+          {goal?.milestones &&
+            goal?.milestones.map((item, index) => {
               return (
                 <MilestoneItem
                   key={`milestone-${index}`}
@@ -167,7 +169,7 @@ const MilestonePage = () => {
                 />
               );
             })}
-          {(!goal.milestones || goal.milestones.length === 0) && (
+          {(!goal?.milestones || goal?.milestones.length === 0) && (
             <>
               <GridItem colSpan={1} style={gridItemStyle}></GridItem>
               <GridItem colSpan={4} style={gridItemStyle}>
@@ -256,19 +258,19 @@ export const MilestoneDrawer = ({
   onDrawerClose,
   onDelete,
 }: MilestoneDrawerProps) => {
-  console.log(index, goal.milestones);
-  console.log("result ", (index || index === 0) && goal.milestones);
+  console.log(index, goal?.milestones);
+  console.log("result ", (index || index === 0) && goal?.milestones);
   let nameInput =
-    (index || index === 0) && goal.milestones && goal.milestones[index]
-      ? goal.milestones[index].name
+    (index || index === 0) && goal?.milestones && goal?.milestones[index]
+      ? goal?.milestones[index].name
       : "";
   let dateInput =
-    (index || index === 0) && goal.milestones && goal.milestones[index]
-      ? goal.milestones[index].date
+    (index || index === 0) && goal?.milestones && goal?.milestones[index]
+      ? goal?.milestones[index].date
       : "";
   let notesInput =
-    (index || index === 0) && goal.milestones && goal.milestones[index]
-      ? goal.milestones[index].notes
+    (index || index === 0) && goal?.milestones && goal?.milestones[index]
+      ? goal?.milestones[index].notes
       : "";
   return (
     <Drawer
@@ -281,8 +283,8 @@ export const MilestoneDrawer = ({
       <DrawerContent>
         <DrawerCloseButton />
         <DrawerHeader>
-          {(index || index === 0) && goal.milestones && goal.milestones[index]
-            ? goal.milestones[index].name
+          {(index || index === 0) && goal?.milestones && goal?.milestones[index]
+            ? goal?.milestones[index].name
             : "Create New Milestone"}
         </DrawerHeader>
         <DrawerBody>
@@ -326,7 +328,7 @@ export const MilestoneDrawer = ({
               <Form>
                 <Stack spacing={3}>
                   <Field name="nameInput">
-                    {({ field }) => (
+                    {({ field }: FieldAttributes<any>) => (
                       <FormControl>
                         <FormLabel>Name</FormLabel>
                         <Input {...field} placeholder={"Enter new milestone"} />
@@ -334,7 +336,7 @@ export const MilestoneDrawer = ({
                     )}
                   </Field>
                   <Field name="dateInput">
-                    {({ field }) => (
+                    {({ field }: FieldAttributes<any>) => (
                       <FormControl>
                         <FormLabel>Due</FormLabel>
                         <Input {...field} placeholder={"Enter due date"} />
@@ -342,7 +344,7 @@ export const MilestoneDrawer = ({
                     )}
                   </Field>
                   <Field name="notesInput">
-                    {({ field }) => (
+                    {({ field }: FieldAttributes<any>) => (
                       <FormControl>
                         <FormLabel>Notes</FormLabel>
                         <Textarea
@@ -381,7 +383,7 @@ export const MilestoneDrawer = ({
                         />
                       </Button>
                     </Box>
-                    {(index || index === 0) && goal.milestones && (
+                    {(index || index === 0) && goal?.milestones && (
                       <Button
                         style={{ backgroundColor: "#E53E3E", color: "white" }}
                         onClick={() => onDelete(index)}

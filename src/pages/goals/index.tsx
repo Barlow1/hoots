@@ -14,7 +14,7 @@ import {
   useMatch,
 } from "@tanstack/react-location";
 import { routes } from "../../routes";
-import { useUser } from "../../components/UserContext";
+import { getStoredUser, useUser } from "../../components/UserContext";
 
 export interface UserGoal {
   id: string;
@@ -37,9 +37,9 @@ type Route = MakeGenerics<{
 
 export const loader: LoaderFn<Route> = async () => {
   const baseUrl = import.meta.env.VITE_API_URL;
-  const { user } = useUser();
+  const user = getStoredUser();
   const goals = await fetch(
-    `${baseUrl}/.netlify/functions/get-goals?userId=${user.id}`
+    `${baseUrl}/.netlify/functions/get-goals?userId=${user?.id}`
   )
     .then((goals) => goals.json())
     .catch(() => {
@@ -70,10 +70,8 @@ export const GoalsContainer = ({
   setUserGoals,
 }: IGoalsContainerProps) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
-  const [editingIndex, setEditingIndex] = React.useState<number | undefined>(
-    undefined
-  );
-  const openDialog = (param: number | undefined) => {
+  const [editingIndex, setEditingIndex] = React.useState<string>("");
+  const openDialog = (param: string) => {
     setEditingIndex(param);
     setIsDialogOpen(true);
   };
@@ -89,7 +87,7 @@ export const GoalsContainer = ({
           backgroundColor={"brand.500"}
           _hover={{ bg: "brand.200" }}
           style={{ color: "white", margin: "1rem" }}
-          onClick={() => openDialog(undefined)}
+          onClick={() => openDialog("")}
         >
           Add Goal <AddIcon style={{ marginLeft: "0.5em" }} />
         </Button>
@@ -140,7 +138,7 @@ export const GoalsContainer = ({
         setUserGoals={setUserGoals}
         isDialogOpen={isDialogOpen}
         setIsDialogOpen={setIsDialogOpen}
-        index={editingIndex}
+        id={editingIndex}
       />
     </Box>
   );

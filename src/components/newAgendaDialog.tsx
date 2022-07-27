@@ -13,7 +13,7 @@ import {
   Textarea,
   Box,
 } from "@chakra-ui/react";
-import { Field, Form, Formik } from "formik";
+import { Field, FieldAttributes, Form, Formik } from "formik";
 // import { UserGoal } from "../pages/goals";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk, faXmark } from "@fortawesome/free-solid-svg-icons";
@@ -90,7 +90,7 @@ export const NewAgendaDialog = ({
 
                 <Stack spacing={3}>
                   <Field name="nameInput">
-                    {({ field }:{[key:string]:any}) => (
+                    {({ field }: FieldAttributes<any>) => (
                       <FormControl>
                         <FormLabel>Name</FormLabel>
                         <Input {...field} placeholder={"Enter name of new agenda item"} />
@@ -98,7 +98,7 @@ export const NewAgendaDialog = ({
                     )}
                   </Field>
                   <Field name="notesInput">
-                    {({ field }:{[key:string]:any}) => (
+                    {({ field }:FieldAttributes<any>) => (
                       <FormControl>
                         <FormLabel>Notes</FormLabel>
                         <Textarea

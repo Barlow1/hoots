@@ -1,8 +1,15 @@
 import { Profile } from "@prisma/client";
-import { LoaderFn, MakeGenerics, useLocation, useMatch } from "@tanstack/react-location";
+import {
+  LoaderFn,
+  MakeGenerics,
+  useLocation,
+  useMatch,
+} from "@tanstack/react-location";
 import { useEffect, useState } from "react";
+import AuthenticatedRoute from "../components/AuthenticatedRoute";
 import { UserContextProvider } from "../components/UserContext";
 import MainContainer from "../container";
+import { routes } from "../routes";
 
 interface AppProps {
   children: React.ReactNode;
@@ -22,13 +29,13 @@ const loader = async () => {
 };
 
 const App = ({ children }: AppProps) => {
-  const [user, setUser] = useState<Profile | undefined>();
+  const [user, setUser] = useState<Profile | null>(null);
   const fetchUser = async () => {
     const { user } = await loader();
     setUser(user);
   };
   const location = useLocation();
- 
+
   useEffect(() => {
     if (!user) {
       fetchUser();
@@ -36,12 +43,24 @@ const App = ({ children }: AppProps) => {
   }, []);
 
   console.log(location.current.pathname);
-  
-  if (location.current.pathname === '/') {
-    return <UserContextProvider user={user}>{children}</UserContextProvider>
+
+  if (
+    [routes.preferences, routes.login, routes.signup].includes(
+      location.current.pathname
+    )
+  ) {
+    return (
+      <UserContextProvider fetchedUser={user}>{children}</UserContextProvider>
+    );
   }
 
-  return <UserContextProvider user={user}><MainContainer>{children}</MainContainer></UserContextProvider>;
+  return (
+    <UserContextProvider fetchedUser={user}>
+      <AuthenticatedRoute>
+        <MainContainer>{children}</MainContainer>
+      </AuthenticatedRoute>
+    </UserContextProvider>
+  );
 };
 
 export default App;

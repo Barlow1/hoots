@@ -45,17 +45,18 @@ model Mentor {
   name       String
   occupation String
   tags       String[]
+  industry   String
 }
 
 model Profile {
   id                String                   @id @default(auto()) @map("_id") @db.ObjectId
-  bio               String
+  bio               String?
   email             String                   @unique
-  experience        Int
+  experience        Int?
   firstName         String
-  img               String
-  industry          String
+  img               String?
+  industry          String?
   lastName          String
-  mentorPreferences ProfileMentorPreferences
+  mentorPreferences ProfileMentorPreferences?
   password          String
 }

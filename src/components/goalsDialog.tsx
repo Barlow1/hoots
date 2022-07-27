@@ -13,17 +13,18 @@ import {
   Textarea,
   Box,
 } from "@chakra-ui/react";
-import { Field, Form, Formik } from "formik";
+import { Field, FieldAttributes, Form, Formik } from "formik";
 import { UserGoal } from "../pages/goals";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useUser } from "./UserContext";
 
 export interface GoalsDialogProps {
   userGoals: UserGoal[];
   setUserGoals: Function;
   isDialogOpen: boolean;
   setIsDialogOpen: Function;
-  index?: number;
+  id: string;
 }
 
 export const GoalsDialog = ({
@@ -31,18 +32,52 @@ export const GoalsDialog = ({
   setUserGoals,
   isDialogOpen,
   setIsDialogOpen,
-  index,
+  id,
 }: GoalsDialogProps) => {
   const onClose = () => {
     setIsDialogOpen(false);
   };
   const cancelRef = React.useRef(null);
-  let nameInput = index || index === 0 ? userGoals[index].name : "";
-  let dateInput = index || index === 0 ? userGoals[index].dueDate : "";
-  let notesInput =
-    (index || index === 0) && userGoals[index].notes
-      ? userGoals[index].notes
-      : "";
+  const goal = userGoals.find((userGoal) => userGoal.id === id);
+  let nameInput = goal?.name;
+  let dateInput = goal?.dueDate;
+  let notesInput = goal?.notes;
+  const [user] = useUser();
+
+  const onSubmit = React.useCallback(async (values: any, actions: any) => {
+    const baseUrl = import.meta.env.VITE_API_URL;
+    const response = await fetch(
+      `${baseUrl}/.netlify/functions/put-goal?userId=${user?.id}${
+        goal?.id ? `&id=${goal.id}` : ""
+      }`,
+      {
+        method: "PUT",
+        body: JSON.stringify({
+          name: values.nameInput,
+          dueDate: values.dateInput,
+          notes: values.notesInput,
+          progress: 0,
+        }),
+      }
+    )
+      .then((user) => user.json())
+      .catch(() => {
+        alert("Failed to add goal, please try again in a few minutes.");
+      });
+    if (response.error) {
+      alert(response.error);
+    } else if (response.goal) {
+      const goalsCopy = [...userGoals];
+      let indx = goalsCopy.findIndex((userGoal) => userGoal.id === id);
+      if (indx !== -1) {
+        goalsCopy[indx] = response.goal;
+      } else {
+        goalsCopy.push(response.goal);
+      }
+      setUserGoals(goalsCopy);
+    }
+    onClose();
+  }, []);
 
   return (
     <AlertDialog
@@ -53,43 +88,19 @@ export const GoalsDialog = ({
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            {index ? "Edit Goal" : "New Goal"}
+            {id ? "Edit Goal" : "New Goal"}
           </AlertDialogHeader>
 
           <AlertDialogBody>
             <Formik
               initialValues={{ nameInput, dateInput, notesInput }}
-              onSubmit={(values, actions) => {
-                setTimeout(() => {
-                  console.log(index);
-                  console.log(values);
-                  let newUserGoals: UserGoal[] = [...userGoals];
-                  if (index || index === 0) {
-                    newUserGoals[index] = {
-                      ...newUserGoals[index],
-                      name: values.nameInput,
-                      dueDate: values.dateInput,
-                      notes: values.notesInput,
-                    };
-                  } else {
-                    newUserGoals.push({
-                      name: values.nameInput,
-                      dueDate: values.dateInput,
-                      notes: values.notesInput,
-                      progress: 0,
-                    });
-                  }
-                  setUserGoals(newUserGoals);
-                  actions.setSubmitting(false);
-                  onClose();
-                }, 1000);
-              }}
+              onSubmit={onSubmit}
             >
               {(props) => (
                 <Form>
                   <Stack spacing={3}>
                     <Field name="nameInput">
-                      {({ field }) => (
+                      {({ field }: FieldAttributes<any>) => (
                         <FormControl>
                           <FormLabel>Name</FormLabel>
                           <Input {...field} placeholder={"Enter new goal"} />
@@ -97,7 +108,7 @@ export const GoalsDialog = ({
                       )}
                     </Field>
                     <Field name="dateInput">
-                      {({ field }) => (
+                      {({ field }: FieldAttributes<any>) => (
                         <FormControl>
                           <FormLabel>Due</FormLabel>
                           <Input {...field} placeholder={"Enter due date"} />
@@ -105,7 +116,7 @@ export const GoalsDialog = ({
                       )}
                     </Field>
                     <Field name="notesInput">
-                      {({ field }) => (
+                      {({ field }: FieldAttributes<any>) => (
                         <FormControl>
                           <FormLabel>Notes</FormLabel>
                           <Textarea

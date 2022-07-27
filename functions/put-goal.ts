@@ -23,7 +23,7 @@ const handler: Handler = async (event, context) => {
 
   try {
     let response;
-    if (id) {
+    if (id && userId) {
       response = await prisma.goal.upsert({
         where: {
           id: id,
@@ -37,18 +37,18 @@ const handler: Handler = async (event, context) => {
         },
         create: {
           name: body.name,
-          userId: body.userId,
+          userId: userId,
           dueDate: body.dueDate,
           notes: body.notes,
           progress: 0,
           milestones: [],
         },
       });
-    } else {
+    } else if (userId) {
       response = await prisma.goal.create({
         data: {
           name: body.name,
-          userId: body.userId,
+          userId: userId,
           dueDate: body.dueDate,
           notes: body.notes,
           progress: 0,
@@ -59,7 +59,7 @@ const handler: Handler = async (event, context) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify(response),
+      body: JSON.stringify({ goal: response }),
       headers: {
         ...CORS_HEADERS,
         "Content-Type": "application/json",
