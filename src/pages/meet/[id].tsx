@@ -1,9 +1,13 @@
-import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons";
-import { Text, Box, Button, ButtonGroup, Editable, EditableInput, EditablePreview, Flex, FormControl, FormLabel, Grid, GridItem, IconButton, Input, Textarea, useEditableControls, Avatar, TableContainer, Table, Thead, Th, Tr, Tbody, Checkbox } from "@chakra-ui/react";
+import { CheckIcon, CloseIcon, EditIcon, PhoneIcon } from "@chakra-ui/icons";
+import { Text, Box, Button, ButtonGroup, Editable, EditableInput, EditablePreview, Flex, FormControl, FormLabel, Grid, GridItem, IconButton, Input, Textarea, useEditableControls, Avatar, TableContainer, Table, Thead, Th, Tr, Tbody, Checkbox, Td, CheckboxGroup } from "@chakra-ui/react";
+import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { LoaderFn, MakeGenerics, useMatch } from "@tanstack/react-location";
 import { Field, Form, Formik } from "formik";
 import { useEffect, useRef, useState } from "react";
 import { NewAgendaDialog, NewAgendaItem } from "../../components/newAgendaDialog";
+import getRoomCode, { generateToken } from "../../utils/telnyx";
+
 
 type Route = MakeGenerics<{
   LoaderData: { id: string };
@@ -13,7 +17,17 @@ type Route = MakeGenerics<{
 export const loader: LoaderFn<Route> = async ({ params }) => {
   return { id: params.id };
 };
-
+const pad = '5';
+const handleJoinButtonClick = async () => {
+  const roomCode = await getRoomCode();
+  const token = await generateToken(roomCode);
+  console.log(roomCode);
+  console.log(token);
+  if (roomCode && token) {
+    console.log('attempting to go');
+    window.location.replace(`https://telnyx-meet-demo.vercel.app/rooms/${roomCode}?client_token=${token.token}&refresh_token=${token.refresh_token}`,);
+  }
+}
 export const RoomPage = () => {
   function EditableControls() {
     const {
@@ -39,7 +53,7 @@ export const RoomPage = () => {
     setIsDialogOpen(true);
   };
   const mockData = { "_id": { "$oid": "62dce871f321e7c3d582838a" }, "date": "August 1st, 2022", "time": "5:30PM", "name": "Emily Jones", "occupation": "QA Engineer", "cost": { "$numberInt": "0" }, "tags": ["QA", "Design", "Fun"], "experience": { "$numberInt": "10" }, "bio": "QA Engineer at Netlix. I love learning new things and breaking software. Looking to mentor a college student.", "company": "Netflix", "img": "https://i.ibb.co/C8rVLjB/Adobe-Stock-447929817.jpg" }
-  const mockUserData = { agendItemTitle: 'Redux Reducers', notes: 'I wanna be the very best! Like no one ever was, To catch them is my real test!', agendaItems: [{ name: 'redux title', notes: 'this is a very long note' }, { name: 'another name', notes: 'this is a very short note' }] }
+  const mockUserData = { agendItemTitle: 'Redux Reducers', notes: 'I wanna be the very best! Like no one ever was, To catch them is my real test!', agendaItems: [{ name: 'Redux Reducers', notes: 'this is a very long note' }, { name: 'State Management', notes: 'this is a very short note' }, { name: 'File Structure', notes: 'this is a very short note' }] }
   const [agendaItemList, setAgendaItem] = useState<NewAgendaItem[]>(mockUserData.agendaItems);
   const previousInputValue = useRef<NewAgendaItem[]>(mockUserData.agendaItems);
   const [tableEntries, setTableEntries] = useState<NewAgendaItem[]>(mockUserData.agendaItems);
@@ -72,8 +86,8 @@ export const RoomPage = () => {
         <Form>
 
           <Grid templateColumns='repeat(2, 1fr)' gap={6}>
-            <GridItem rowSpan={12}>
-              <Box height='100%' border='1px' borderColor='gray.200' borderRadius='5' padding='5'>
+            <GridItem rowSpan={4}>
+              <Box height='100%' border='1px' borderColor='gray.200' borderRadius='5' padding='5' position='relative'>
                 {/* <Text>hello</Text> */}
                 <Field name='agendaItem'>
                   {({ field }: { [key: string]: any }) => (
@@ -99,12 +113,21 @@ export const RoomPage = () => {
                 </Field>
                 {/* <GridItem pt='2'> */}
                 <Button
-                  background='brand.200'
+                  colorScheme="blue"
+                  size='lg'
                   textColor='white'
                   isLoading={props.isSubmitting}
                   type='submit'
+                  position='absolute'
+                  bottom='0'
+                  right='0'
+                  m='35'
                 >
                   Submit
+                  <FontAwesomeIcon
+                    style={{ marginLeft: "1rem" }}
+                    icon={faFloppyDisk}
+                  />
                 </Button>
                 {/* </GridItem> */}
               </Box>
@@ -128,7 +151,7 @@ export const RoomPage = () => {
                       </Text>
                     </Box>
                   </GridItem>
-                  <GridItem>
+                  <GridItem display='grid' align-items='center'>
                     <Text textColor='#9faec0' fontWeight='bold'>
                       Date
                     </Text>
@@ -147,16 +170,18 @@ export const RoomPage = () => {
                 </Grid>
               </Box>
             </GridItem>
-            <GridItem>
-              <Button onClick={() => openDialog()}
+            <GridItem justifyContent='end' display='inline-flex'>
+              <Button background='brand.500'
+                  textColor='white' size='lg' fontSize='x-large' onClick={() => openDialog()}
               >
-                add agenda Item
+                Add agenda Item +
               </Button>
             </GridItem>
             <GridItem>
               {/* <Box */}
               <TableContainer border='1px' padding='2' borderRadius='10' borderColor='#E2E8F0'>
-                <Table variant='simple'>
+                <Table variant='simple' padding='5'
+                >
                   <Thead>
                     <Tr>
                       <Th>Agenda</Th>
@@ -165,9 +190,14 @@ export const RoomPage = () => {
                   <Tbody>
                     {tableEntries.map(row => {
                       return (
-                        <Tr>
-                          <Checkbox /> {row.name}
-                        </Tr>)
+                        <CheckboxGroup defaultValue={['Redux Reducers']}>
+                      <Tr mt='5'>
+                        <Td alignItems='center' display='flex' pl='2'>
+                          <Checkbox value={`${row.name}`} padding='2'/> {row.name}
+                        </Td>
+                      </Tr>
+                      </CheckboxGroup>
+                        )
                     })}
                     {/* {tableEntries} */}
                     {/* <Tr>
@@ -176,6 +206,20 @@ export const RoomPage = () => {
                   </Tbody>
                 </Table>
               </TableContainer>
+            </GridItem>
+            <GridItem justifyContent='end' display='inline-flex'>
+            <Box p={pad}>
+              <ButtonGroup gap='2'>
+                <Button backgroundColor={'brand.200'} color='white' size='lg' variant='solid' onClick={handleJoinButtonClick}>
+                  <Text style={{ paddingRight: '10px' }}>Join</Text>
+                  <PhoneIcon />
+                </Button>
+                <Button backgroundColor={'buttons.fail'} color='white' size='lg' variant='solid'>
+                  <Text style={{ paddingRight: '10px' }}>Reject</Text>
+                  <CloseIcon />
+                </Button>
+              </ButtonGroup>
+            </Box>
             </GridItem>
           </Grid>
           <NewAgendaDialog

@@ -115,7 +115,7 @@ const Dashboard = () => {
           </GridItem>
           <GridItem display="flex" justifyContent="center" colSpan={12}>
             <CircularProgress value={75} color="green.400" size="90px">
-              <CircularProgressLabel fontSize="xs">
+              <CircularProgressLabel textAlign='center' fontSize="xs" width='70%' fontWeight='bold'>
                 75% Complete
               </CircularProgressLabel>
             </CircularProgress>
@@ -134,18 +134,18 @@ const Dashboard = () => {
           </GridItem>
         </Grid>
       </GridItem>
-      <GridItem boxShadow="xl" w="100%" colSpan={4} borderRadius="5">
-        <Grid padding="5" gap={4}>
+      <GridItem boxShadow="xl" w="100%" colSpan={4} borderRadius="5" >
+        <Grid padding="5" gap={4} height='100%'>
           <GridItem colSpan={12}>
             <Text fontSize="xl" fontWeight="bold">
               Next Milestone
             </Text>
             <Text fontSize="sm">{userObject.nextMilestoneDate}</Text>
           </GridItem>
-          <GridItem display="flex" justifyContent="center" colSpan={12}>
+          <GridItem justifyContent='center' alignItems='center' display='flex' colSpan={12}>
             <Text fontSize="lg">{userObject.nextMilestone}</Text>
           </GridItem>
-          <GridItem colSpan={12}>
+          <GridItem colSpan={12} justifyContent='center' display="flex" alignItems='end'>
             <Link
               justifyContent="center"
               href={routes.home}
