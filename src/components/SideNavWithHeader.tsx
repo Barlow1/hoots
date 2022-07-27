@@ -160,9 +160,9 @@ interface MobileProps extends FlexProps {
   onOpen: () => void;
 }
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
-  const { user } = useUser();
+  const [user, setUser] = useUser();
   console.log(user);
-  console.log(user?.img)
+  console.log(user?.img);
   return (
     <Flex
       ml={{ base: 0, md: "6.5em" }}
@@ -202,7 +202,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
               _focus={{ boxShadow: "none" }}
             >
               <HStack>
-                {user && <Avatar size={"sm"} src={user.img} />}
+                {user && <Avatar size={"sm"} src={user.img ?? undefined} />}
                 <VStack
                   display={{ base: "none", md: "flex" }}
                   alignItems="flex-start"
@@ -225,9 +225,11 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
               bg={useColorModeValue("white", "gray.900")}
               borderColor={useColorModeValue("gray.200", "gray.700")}
             >
-              <MenuItem>Profile</MenuItem>
+              <Link to={routes.preferences}>
+                <MenuItem>Edit Preferences</MenuItem>
+              </Link>
               <MenuDivider />
-              <MenuItem>Sign out</MenuItem>
+              <MenuItem onClick={() => setUser(null)}>Sign out</MenuItem>
             </MenuList>
           </Menu>
         </Flex>

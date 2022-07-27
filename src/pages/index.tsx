@@ -1,234 +1,164 @@
 import {
-  FormControl,
-  FormLabel,
-  Input,
+  Avatar,
   Box,
-  Text,
   Button,
-  Select,
-  NumberInput,
-  NumberInputStepper,
-  NumberInputField,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Stack,
-  Textarea,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
-  Tooltip,
+  CircularProgress,
+  CircularProgressLabel,
+  Grid,
+  GridItem,
   Link,
+  Text,
 } from "@chakra-ui/react";
-import { Field, Form, Formik } from "formik";
-import { useState } from "react";
-import Logo from "../assets/Logo.svg";
+import { useUser } from "../components/UserContext";
 import { routes } from "../routes";
 
-const NewUserForm = () => {
-  const IndustryList = [
-    "Marketing",
-    "Engineering",
-    "Product Design",
-    "Small Buisness",
-  ];
-  const [sliderValue, setSliderValue] = useState<any>(0);
-  const [showTooltip, setShowTooltip] = useState(false);
+const Dashboard = () => {
+  const { user } = useUser();
+  const userObject = {
+    industry: "Engineering",
+    mentorName: "Ian Mckellen",
+    date: "August 1st, 2022",
+    nextMilestone: "Learn React and Redux",
+    nextMilestoneDate: "August 10th, 2022",
+    ...user,
+  };
   return (
-    <Box
-      margin="auto"
-      width="50%"
-      boxShadow="2xl"
-      padding="3"
-      maxW="sm"
-      borderWidth="1px"
-      borderRadius="lg"
-      overflow="hidden"
-    >
-      <Text style={{ fontWeight: "bold" }}>About Me</Text>
-      <Formik
-        initialValues={{
-          firstName: "",
-          lastName: "",
-          industry: "",
-          experience: "",
-          bio: "",
-          mentorPrice: "",
-          mentorExperience: "",
-        }}
-        onSubmit={(values, actions) => {
-          setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
-            actions.setSubmitting(false);
-          }, 1000);
-        }}
-      >
-        {(props) => (
-          <Form style={{ padding: 5 }}>
-            <Stack spacing={3}>
-              <Field name="firstName">
-                {({ field }: { [key: string]: any }) => (
-                  <FormControl>
-                    <FormLabel>First name</FormLabel>
-                    <Input {...field} placeholder="First Name" />
-                  </FormControl>
-                )}
-              </Field>
-              <Field name="lastName">
-                {({ field }: { [key: string]: any }) => (
-                  <FormControl>
-                    <FormLabel>Last name</FormLabel>
-                    <Input {...field} placeholder="Last Name" />
-                  </FormControl>
-                )}
-              </Field>
-              <Field name="industry">
-                {({ field }: { [key: string]: any }) => (
-                  <FormControl>
-                    <FormLabel>Industry</FormLabel>
-                    <Select {...field} placeholder="Select Industry">
-                      {IndustryList.map((industry) => {
-                        return <option>{industry}</option>;
-                      })}
-                    </Select>
-                  </FormControl>
-                )}
-              </Field>
-              <Field name="experience">
-                {({ field, form }: { [key: string]: any }) => (
-                  <FormControl>
-                    <FormLabel>Experience</FormLabel>
-                    <NumberInput
-                      min={0}
-                      {...field}
-                      onChange={(val) => form.setFieldValue(field.name, val)}
-                    >
-                      <NumberInputField
-                        {...field}
-                        placeholder="Years of Experience"
-                      />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                  </FormControl>
-                )}
-              </Field>
-              <Field name="bio">
-                {({ field }: { [key: string]: any }) => (
-                  <FormControl>
-                    <FormLabel>Tell us about yourself!</FormLabel>
-                    <Textarea
-                      size="sm"
-                      {...field}
-                      placeholder="I work at...💼&#10;I am currently learning...📚&#10;I'm looking for a mentor with skills in...🧑🏽‍🏫"
-                    />
-                  </FormControl>
-                )}
-              </Field>
-              {/* <Text style={{fontWeight: 'bold'}}>Desired Mentor</Text> */}
-              <Field name="mentorExperience">
-                {({ field, form }: { [key: string]: any }) => (
-                  <FormControl>
-                    <FormLabel>Desired Mentor Experience</FormLabel>
-                    <NumberInput
-                      min={0}
-                      {...field}
-                      onChange={(val) => form.setFieldValue(field.name, val)}
-                    >
-                      <NumberInputField
-                        {...field}
-                        placeholder="Mentors Experience (years)"
-                      />
-                      <NumberInputStepper>
-                        <NumberIncrementStepper />
-                        <NumberDecrementStepper />
-                      </NumberInputStepper>
-                    </NumberInput>
-                  </FormControl>
-                )}
-              </Field>
-              <Field name="mentorPrice">
-                {({ field, form }: { [key: string]: any }) => (
-                  <FormControl>
-                    <FormLabel>Desired Mentor Monthly Cost</FormLabel>
-                    <Slider
-                      {...field}
-                      aria-label="slider-ex-2"
-                      onChange={(val) => {
-                        if (val <= 10) {
-                          setSliderValue("Free");
-                        } else if (val > 10 && val <= 30) {
-                          setSliderValue("💰");
-                        } else if (val > 30 && val <= 50) {
-                          setSliderValue("💰💰");
-                        } else if (val > 50 && val <= 70) {
-                          setSliderValue("💰💰💰");
-                        } else if (val > 70 && val <= 90) {
-                          setSliderValue("💰💰💰💰");
-                        } else {
-                          setSliderValue("💰💰💰💰💰");
-                        }
-                        form.setFieldValue(field.name, val);
-                      }}
-                      onMouseEnter={() => setShowTooltip(true)}
-                      onMouseLeave={() => setShowTooltip(false)}
-                    >
-                      <SliderTrack bg="brand.200">
-                        <SliderFilledTrack bg="brand.900" />
-                      </SliderTrack>
-                      <Tooltip
-                        hasArrow
-                        bg="brand.200"
-                        color="white"
-                        placement="top"
-                        isOpen={showTooltip}
-                        label={sliderValue}
-                      >
-                        <SliderThumb boxSize={6}>
-                          <img src={Logo} alt="Hoots Logo" />
-                        </SliderThumb>
-                      </Tooltip>
-                    </Slider>
-                  </FormControl>
-                )}
-              </Field>
-              <Stack
-                spacing={4}
-                direction="row"
-                align="center"
-                justifyContent="center"
-              >
-                <Link
-                  href={routes.home}
-                  style={{ textDecoration: "none", display: "flex" }}
-                  _focus={{ boxShadow: "none" }}
+    <Grid gap={6}>
+      <GridItem boxShadow="xl" colSpan={12} w="100%" borderRadius="5">
+        <Box padding="5">
+          <Grid gap={6}>
+            <GridItem colSpan={12}>
+              <Text fontSize="xl" fontWeight="bold">
+              {userObject && `${userObject.firstName} ${userObject.lastName}`}
+              </Text>
+              <Text fontSize="sm">{userObject.email}</Text>
+            </GridItem>
+            <GridItem colSpan={3}>
+              <Text textColor="#9faec0" fontWeight="bold">
+                Mentor
+              </Text>
+              <Box pt="2" display="flex">
+                <Avatar
+                  size={"sm"}
+                  src={
+                    "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
+                  }
+                />
+                <Text
+                  justifyContent="center"
+                  alignItems="center"
+                  display="flex"
+                  pl="2"
+                  fontSize="sm"
                 >
-                  <Button
-                    background="brand.200"
-                    textColor="white"
-                    isLoading={props.isSubmitting}
-                  >
-                    Submit
-                  </Button>
-                </Link>
-                <Link
-                  href={routes.home}
-                  style={{ textDecoration: "none", display: "flex" }}
-                  _focus={{ boxShadow: "none" }}
-                >
-                  <Button background="brand.200" textColor="white">
-                    Skip
-                  </Button>
-                </Link>
-              </Stack>
-            </Stack>
-          </Form>
-        )}
-      </Formik>
-    </Box>
+                  {userObject.mentorName}
+                </Text>
+              </Box>
+            </GridItem>
+            <GridItem colSpan={3}>
+              <Text textColor="#9faec0" fontWeight="bold">
+                Industry
+              </Text>
+              <Text pt="3" m="auto" fontSize="sm">
+                {userObject.industry}
+              </Text>
+            </GridItem>
+          </Grid>
+        </Box>
+      </GridItem>
+      <GridItem boxShadow="xl" w="100%" colSpan={4} borderRadius="5">
+        <Grid padding="5" gap={4}>
+          <GridItem colSpan={12}>
+            <Text fontSize="xl" fontWeight="bold">
+              Upcoming Meeting
+            </Text>
+            <Text fontSize="sm">{userObject.date}</Text>
+          </GridItem>
+          <GridItem display="flex" justifyContent="center" colSpan={12}>
+            <Text fontSize="6xl" fontWeight="bold">
+              10
+            </Text>
+            <Text
+              fontSize="xl"
+              justifyContent="center"
+              alignItems="center"
+              display="flex"
+              pl="2"
+              fontWeight="bold"
+            >
+              Days away
+            </Text>
+          </GridItem>
+          <GridItem colSpan={12}>
+            <Link
+              justifyContent="center"
+              href={routes.home}
+              style={{ textDecoration: "none", display: "flex" }}
+              _focus={{ boxShadow: "none" }}
+            >
+              <Button background="brand.900" textColor="white">
+                Add Agenda Items
+              </Button>
+            </Link>
+          </GridItem>
+        </Grid>
+      </GridItem>
+      <GridItem boxShadow="xl" w="100%" colSpan={4} borderRadius="5">
+        <Grid padding="5" gap={4}>
+          <GridItem colSpan={12}>
+            <Text fontSize="xl" fontWeight="bold">
+              Goal Progress
+            </Text>
+            <Text fontSize="sm">{userObject.nextMilestone}</Text>
+          </GridItem>
+          <GridItem display="flex" justifyContent="center" colSpan={12}>
+            <CircularProgress value={75} color="green.400" size="90px">
+              <CircularProgressLabel textAlign='center' fontSize="xs" width='70%' fontWeight='bold'>
+                75% Complete
+              </CircularProgressLabel>
+            </CircularProgress>
+          </GridItem>
+          <GridItem colSpan={12}>
+            <Link
+              justifyContent="center"
+              href={routes.goals}
+              style={{ textDecoration: "none", display: "flex" }}
+              _focus={{ boxShadow: "none" }}
+            >
+              <Button background="brand.900" textColor="white">
+                Manage Goals
+              </Button>
+            </Link>
+          </GridItem>
+        </Grid>
+      </GridItem>
+      <GridItem boxShadow="xl" w="100%" colSpan={4} borderRadius="5" >
+        <Grid padding="5" gap={4} height='100%'>
+          <GridItem colSpan={12}>
+            <Text fontSize="xl" fontWeight="bold">
+              Next Milestone
+            </Text>
+            <Text fontSize="sm">{userObject.nextMilestoneDate}</Text>
+          </GridItem>
+          <GridItem justifyContent='center' alignItems='center' display='flex' colSpan={12}>
+            <Text fontSize="lg">{userObject.nextMilestone}</Text>
+          </GridItem>
+          <GridItem colSpan={12} justifyContent='center' display="flex" alignItems='end'>
+            <Link
+              justifyContent="center"
+              href={routes.home}
+              style={{ textDecoration: "none", display: "flex" }}
+              _focus={{ boxShadow: "none" }}
+            >
+              <Button background="brand.900" textColor="white">
+                Mark as Complete
+              </Button>
+            </Link>
+          </GridItem>
+        </Grid>
+      </GridItem>
+    </Grid>
   );
 };
 
-export default NewUserForm;
+export default Dashboard;

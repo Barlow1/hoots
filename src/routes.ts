@@ -1,7 +1,10 @@
 export const routes = {
-  home: "/dashboard",
+  home: "/",
   browse: "/browse",
   meet: "/meet",
   goals: "/goals",
-  newUser: "/new-user-form"
+  preferences: "/preferences",
+  login: "/login",
+  signup: "/signup",
+  recommendations: "/recommendations"
 };
