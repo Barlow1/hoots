@@ -29,7 +29,7 @@ export const loader: LoaderFunction = async () => {
   const mentors = await fetch(`${baseUrl}/.netlify/functions/get-mentors`)
     .then((mentors) => mentors.json())
     .catch(() => {
-      alert("Failed to get mentors, please try again in a few minutes.");
+      console.error("Failed to get mentors, please try again in a few minutes.");
     });
 
   return json({ data: { mentors: mentors as Mentor[] } });

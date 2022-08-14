@@ -31,7 +31,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   )
     .then((mentors) => mentors.json())
     .catch(() => {
-      alert("Failed to get mentor, please try again in a few minutes.");
+      console.error("Failed to get mentor, please try again in a few minutes.");
     });
 
   return json({ data: { mentor: mentor as Mentor } });

@@ -52,7 +52,7 @@ export const action: ActionFunction = async ({
   })
     .then((user) => user.json())
     .catch(() => {
-      alert("Failed to put user, please try again in a few minutes.");
+      console.error("Failed to put user, please try again in a few minutes.");
     });
   if (response.error) {
     error = response.error;

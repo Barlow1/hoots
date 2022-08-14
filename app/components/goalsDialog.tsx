@@ -62,10 +62,10 @@ export const GoalsDialog = ({
     )
       .then((user) => user.json())
       .catch(() => {
-        alert("Failed to add goal, please try again in a few minutes.");
+        console.error("Failed to add goal, please try again in a few minutes.");
       });
     if (response.error) {
-      alert(response.error);
+      console.error(response.error);
     } else if (response.goal) {
       const goalsCopy = [...userGoals];
       let indx = goalsCopy.findIndex((userGoal) => userGoal.id === id);

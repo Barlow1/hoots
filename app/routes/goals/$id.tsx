@@ -46,7 +46,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   )
     .then((goals) => goals.json())
     .catch(() => {
-      alert("Failed to get goal, please try again in a few minutes.");
+      console.error("Failed to get goal, please try again in a few minutes.");
     });
 
   return json({ data: { goal: goal as UserGoal } });

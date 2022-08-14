@@ -71,7 +71,7 @@ export const loader: LoaderFunction = async () => {
   )
     .then((meeting) => meeting.json())
     .catch(() => {
-      alert("Failed to get meetings, please try again in a few minutes.");
+      console.error("Failed to get meetings, please try again in a few minutes.");
     });
 
   return json({ data: { meetings: meetings as Meeting[] } });
