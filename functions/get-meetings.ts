@@ -25,11 +25,12 @@ const handler: Handler = async (event, context) => {
       body: JSON.stringify(meetings),
       headers: {
         ...CORS_HEADERS,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     };
   } catch (error) {
-    console.error("Failed to get meetings", error.message);
+    if (error instanceof Error)
+      console.error("Failed to get meetings", error.message);
     throw error;
   } finally {
     await prisma.$disconnect();

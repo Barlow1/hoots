@@ -45,6 +45,7 @@ const handler: Handler = async (event, context) => {
       },
     };
   } catch (error) {
+    if (error instanceof Error)
     console.error("Failed to search", error.message);
     throw error;
   } finally {

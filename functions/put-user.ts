@@ -78,6 +78,7 @@ const handler: Handler = async (event, context) => {
       },
     };
   } catch (error) {
+    if (error instanceof Error)
     console.error("Failed to get user", error.message);
     throw error;
   } finally {

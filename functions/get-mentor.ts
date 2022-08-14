@@ -34,6 +34,7 @@ const handler: Handler = async (event, context) => {
       },
     };
   } catch (error) {
+    if (error instanceof Error)
     console.error("Failed to get mentor", error.message);
     throw error;
   } finally {
