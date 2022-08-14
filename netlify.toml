@@ -1,21 +1,19 @@
-# example netlify.toml
 [build]
-  command = "vite build"
+  command = "remix build"
+  publish = "public"
   functions = "functions"
-  publish = "dist"
 
-  ## Uncomment to use this redirect for Single Page Applications like create-react-app.
-  ## Not needed for static site generators.
-  [[redirects]]
-    from = "/*"
-    to = "/index.html"
-    status = 200
+[dev]
+  command = "remix watch"
+  port = 3000
+  functions = "functions"
 
-  ## (optional) Settings for Netlify Dev
-  ## https://github.com/netlify/cli/blob/main/docs/netlify-dev.md#project-detection
-  [dev]
-    targetPort = 5173
-    port = 8888 # Port that the dev server will be listening on
-    publish = "dist" # Folder with the static content for _redirect file
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/server"
+  status = 200
 
-  ## more info on configuring this file: https://www.netlify.com/docs/netlify-toml-reference/
+[[headers]]
+  for = "/build/*"
+  [headers.values]
+    "Cache-Control" = "public, max-age=31536000, s-maxage=31536000"

@@ -66,7 +66,8 @@ const handler: Handler = async (event, context) => {
       },
     };
   } catch (error) {
-    console.error("Failed to put goal", error.message);
+    if (error instanceof Error)
+     console.error("Failed to put goal", error.message);
     throw error;
   } finally {
     await prisma.$disconnect();
