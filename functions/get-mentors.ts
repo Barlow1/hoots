@@ -8,6 +8,9 @@ const CORS_HEADERS = {
 };
 
 const handler: Handler = async (event, context) => {
+  const query = event.queryStringParameters?.query;
+  const costMin = Number(event.queryStringParameters?.min_cost);
+  const costMax = Number(event.queryStringParameters?.max_cost);
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -18,19 +21,100 @@ const handler: Handler = async (event, context) => {
   const prisma = new PrismaClient();
   await prisma.$connect();
 
+  console.log("costMin", costMin);
+  console.log("costMax", costMax);
+
+  console.log("query", query);
   try {
-    const mentors = await prisma.mentor.findMany();
+    let mentors: any = [];
+    const filtersSelected =
+      costMin || costMin === 0 || costMax || costMax === 0;
+    console.log("filterSelected", filtersSelected);
+
+    // just query no filters
+    if (query && !filtersSelected) {
+      console.log(" query no filter");
+      mentors = await prisma.mentor.aggregateRaw({
+        pipeline: [
+          {
+            $search: {
+              index: "default",
+              text: {
+                query,
+                path: {
+                  wildcard: "*",
+                },
+              },
+            },
+          },
+        ],
+      });
+      // no query just filters
+    } else if (!query && filtersSelected) {
+      console.log("inside filter no query");
+      mentors = await prisma.mentor.aggregateRaw({
+        pipeline: [
+          {
+            $search: {
+              index: "default",
+              range: {
+                path: "cost",
+                gte: costMin,
+                lte: costMax,
+              },
+            },
+          },
+        ],
+      });
+      // both query & filters
+    } else if (query && filtersSelected) {
+      console.log("inside both query & filters");
+      mentors = await prisma.mentor.aggregateRaw({
+        pipeline: [
+          {
+            $search: {
+              index: "default",
+              compound: {
+                should: [
+                  {
+                    text: {
+                      query,
+                      path: {
+                        wildcard: "*",
+                      },
+                    },
+                  },
+                ],
+                must: [
+                  {
+                    range: {
+                      path: "cost",
+                      gte: costMin,
+                      lte: costMax,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
+      });
+    } else {
+      console.log("inside find many");
+      mentors = await prisma.mentor.findMany();
+    }
+
     return {
       statusCode: 200,
       body: JSON.stringify(mentors),
       headers: {
         ...CORS_HEADERS,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     };
   } catch (error) {
     if (error instanceof Error)
-    console.error("Failed to get mentors", error.message);
+      console.error("Failed to get mentors", error.message);
     throw error;
   } finally {
     await prisma.$disconnect();

@@ -3,8 +3,11 @@ export const routes = {
   browse: "/browse",
   meet: "/meet",
   goals: "/goals",
-  preferences: "/preferences",
   login: "/login",
   signup: "/signup",
-  recommendations: "/recommendations"
+  recommendations: "/recommendations",
+  start: "/start",
+  startAbout: "/start/about",
+  newMentorProfile: "/new-mentor-profile",
+  createMentor: "/mentor-profile/create",
 };

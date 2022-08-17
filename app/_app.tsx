@@ -11,9 +11,13 @@ interface AppProps {
 const App = ({ children, user }: AppProps) => {
   const location = useLocation();
   if (
-    [routes.preferences, routes.login, routes.signup].includes(
-      location.pathname
-    )
+    [
+      routes.startAbout,
+      routes.login,
+      routes.signup,
+      routes.start,
+      routes.newMentorProfile,
+    ].includes(location.pathname)
   ) {
     return <>{children}</>;
   }

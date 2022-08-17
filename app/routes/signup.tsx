@@ -62,7 +62,7 @@ export const action: ActionFunction = async ({
     const userSession = await getUserSession(request);
     userSession.setUser(user);
     data = { status: "success" };
-    return redirect(routes.home, {
+    return redirect(routes.start, {
       headers: { "Set-Cookie": await userSession.commit() },
     });
   }
