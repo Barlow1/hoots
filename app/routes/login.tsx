@@ -45,7 +45,9 @@ export const action: ActionFunction = async ({
   })
     .then((user) => user.json())
     .catch(() => {
-      console.error("Failed to authenticate user, please try again in a few minutes.");
+      console.error(
+        "Failed to authenticate user, please try again in a few minutes."
+      );
     });
   if (response.error) {
     error = response.error;
