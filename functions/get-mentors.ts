@@ -21,12 +21,19 @@ const handler: Handler = async (event, context) => {
   const prisma = new PrismaClient();
   await prisma.$connect();
 
+  console.log("costMin", costMin);
+  console.log("costMax", costMax);
+
+  console.log("query", query);
   try {
     let mentors: any = [];
     const filtersSelected =
       costMin || costMin === 0 || costMax || costMax === 0;
+    console.log("filterSelected", filtersSelected);
+
     // just query no filters
     if (query && !filtersSelected) {
+      console.log(" query no filter");
       mentors = await prisma.mentor.aggregateRaw({
         pipeline: [
           {
@@ -44,6 +51,7 @@ const handler: Handler = async (event, context) => {
       });
       // no query just filters
     } else if (!query && filtersSelected) {
+      console.log("inside filter no query");
       mentors = await prisma.mentor.aggregateRaw({
         pipeline: [
           {
@@ -60,6 +68,7 @@ const handler: Handler = async (event, context) => {
       });
       // both query & filters
     } else if (query && filtersSelected) {
+      console.log("inside both query & filters");
       mentors = await prisma.mentor.aggregateRaw({
         pipeline: [
           {
@@ -91,6 +100,7 @@ const handler: Handler = async (event, context) => {
         ],
       });
     } else {
+      console.log("inside find many");
       mentors = await prisma.mentor.findMany();
     }
 
