@@ -36,22 +36,31 @@ model Meeting {
 }
 
 model Mentor {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  bio        String
-  company    String
-  cost       Int
-  experience Int
-  img        String
-  name       String
-  occupation String
-  tags       String[]
-  industry   String
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  bio           String
+  company       String
+  cost          Int?
+  experience    Int
+  img           String
+  name          String
+  occupation    String
+  tags          String[]
+  industry      String
+  mentorBio     String?
+  achievements  String?
+  mentoringGoal String?
+  twitter       String?
+  website       String?
+  linkedIn      String?
+  github        String?
+  profile       Profile?  @relation(fields: [profileId], references: [id])
+  profileId     String?   @unique
 }
 
 model Profile {
-  id                String                   @id @default(auto()) @map("_id") @db.ObjectId
+  id                String                    @id @default(auto()) @map("_id") @db.ObjectId
   bio               String?
-  email             String                   @unique
+  email             String                    @unique
   experience        Int?
   firstName         String
   img               String?
@@ -59,4 +68,5 @@ model Profile {
   lastName          String
   mentorPreferences ProfileMentorPreferences?
   password          String
+  mentorProfile     Mentor?
 }

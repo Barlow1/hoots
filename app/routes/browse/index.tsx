@@ -91,6 +91,8 @@ const Browse = () => {
     navigate(`${location.pathname}?${searchParams}`);
   };
 
+  const searchParams = new URLSearchParams(location.search);
+
   const onSearchKeyUp: React.KeyboardEventHandler<HTMLInputElement> = async (
     e
   ) => {
@@ -119,7 +121,11 @@ const Browse = () => {
               <Heading as="h1" size="xl">
                 Browse
               </Heading>
-              <FilterDialog onSave={onFilterSave} />
+              <FilterDialog
+                onSave={onFilterSave}
+                minCost={searchParams.get("min_cost") ?? undefined}
+                maxCost={searchParams.get("max_cost") ?? undefined}
+              />
             </Flex>
             <Box pt="5">
               <Flex>
@@ -130,6 +136,7 @@ const Browse = () => {
                   maxW="200"
                   onKeyUp={onSearchKeyUp}
                   mr="2"
+                  defaultValue={searchParams.get("query") ?? undefined}
                 ></Input>
                 <IconButton
                   aria-label="Search"

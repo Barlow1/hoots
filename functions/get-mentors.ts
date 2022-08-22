@@ -9,8 +9,8 @@ const CORS_HEADERS = {
 
 const handler: Handler = async (event, context) => {
   const query = event.queryStringParameters?.query;
-  const costMin = Number(event.queryStringParameters?.min_cost);
-  const costMax = Number(event.queryStringParameters?.max_cost);
+  const costMin = event.queryStringParameters?.min_cost;
+  const costMax = event.queryStringParameters?.max_cost;
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -27,8 +27,7 @@ const handler: Handler = async (event, context) => {
   console.log("query", query);
   try {
     let mentors: any = [];
-    const filtersSelected =
-      costMin || costMin === 0 || costMax || costMax === 0;
+    const filtersSelected = costMin || costMax;
     console.log("filterSelected", filtersSelected);
 
     // just query no filters
@@ -59,8 +58,8 @@ const handler: Handler = async (event, context) => {
               index: "default",
               range: {
                 path: "cost",
-                gte: costMin,
-                lte: costMax,
+                gte: Number(costMin),
+                lte: Number(costMax),
               },
             },
           },
@@ -89,8 +88,8 @@ const handler: Handler = async (event, context) => {
                   {
                     range: {
                       path: "cost",
-                      gte: costMin,
-                      lte: costMax,
+                      gte: Number(costMin),
+                      lte: Number(costMax),
                     },
                   },
                 ],

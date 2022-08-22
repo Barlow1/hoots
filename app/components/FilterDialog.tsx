@@ -31,6 +31,8 @@ const MAX_MENTOR_COST = 500;
 
 interface FilterDialogProps {
   onSave: (v: FilterValues) => void;
+  minCost?: string;
+  maxCost?: string;
 }
 
 export interface FilterValues {
@@ -38,13 +40,17 @@ export interface FilterValues {
   max_cost: number;
 }
 
-const FilterDialog = ({ onSave }: FilterDialogProps) => {
+const FilterDialog = ({ onSave, minCost, maxCost }: FilterDialogProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const onClose = () => setIsOpen(false);
   const [minSliderTooltip, setMinSliderTooltip] = useState<any>("FREE");
   const [maxSliderTooltip, setMaxSliderTooltip] = useState<any>("💰💰💰💰💰");
-  const [minCostValue, setMinCostValue] = useState<any>(0);
-  const [maxCostValue, setMaxCostValue] = useState<any>(MAX_MENTOR_COST);
+  const [minCostValue, setMinCostValue] = useState<any>(
+    minCost ? Number(minCost) : 0
+  );
+  const [maxCostValue, setMaxCostValue] = useState<any>(
+    maxCost ? Number(maxCost) : MAX_MENTOR_COST
+  );
 
   const handleSave = () => {
     onSave({ max_cost: maxCostValue, min_cost: minCostValue });

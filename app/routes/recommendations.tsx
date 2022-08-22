@@ -29,7 +29,9 @@ export const loader: LoaderFunction = async () => {
   const mentors = await fetch(`${baseUrl}/.netlify/functions/get-mentors`)
     .then((mentors) => mentors.json())
     .catch(() => {
-      console.error("Failed to get mentors, please try again in a few minutes.");
+      console.error(
+        "Failed to get mentors, please try again in a few minutes."
+      );
     });
 
   return json({ data: { mentors: mentors as Mentor[] } });
@@ -49,10 +51,11 @@ const Recommendations = () => {
       let costMatch = false;
       let industryMatch = false;
       let experienceMatch = false;
+      const optionCost = option.cost ?? 0;
 
       if (
-        (option.cost <= desiredCostHigh && option.cost >= desiredCostLow) ||
-        (desiredCost >= 100 && option.cost >= 100)
+        (optionCost <= desiredCostHigh && optionCost >= desiredCostLow) ||
+        (desiredCost >= 100 && optionCost >= 100)
       ) {
         costMatch = true;
       }

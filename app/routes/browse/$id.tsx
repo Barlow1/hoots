@@ -10,6 +10,8 @@ import {
   Tag,
   Text,
 } from "@chakra-ui/react";
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Mentor } from "@prisma/client";
 import { json, LoaderFunction } from "@remix-run/node";
 import {
@@ -57,13 +59,13 @@ export const MentorPage = () => {
           style={{ color: "white" }}
           float="right"
         >
-          Book <TimeIcon style={{ marginLeft: "0.5em" }} />
+          Apply <FontAwesomeIcon icon={faPaperPlane} style={{ marginLeft: "0.5em" }} />
         </Button>
       </Flex>
       <Flex justifyContent={"center"}>
         <Flex direction={"column"}>
           <Flex justifyContent={"center"}>
-            <Avatar size="3xl" src={mentor?.img} />
+            <Avatar size="2xl" src={mentor?.img} />
           </Flex>
           <Heading as="h2" size="lg" noOfLines={1}>
             {mentor?.name}
@@ -71,7 +73,7 @@ export const MentorPage = () => {
           <Text>💼 {mentor?.occupation}</Text>
           <Text>🏢 {mentor?.company}</Text>
           <Text>🕒 {mentor?.experience} years</Text>
-          <Text>💲 {mentor?.cost}</Text>
+          <Text>💲 {mentor?.cost || 'FREE'}</Text>
           <HStack spacing={2}>
             {mentor?.tags.map((tag: any) => {
               return (

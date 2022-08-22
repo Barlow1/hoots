@@ -21,6 +21,8 @@ const handler: Handler = async (event, context) => {
   const prisma = new PrismaClient();
   await prisma.$connect();
 
+  console.log('update user img', body.img);
+
   try {
     let user;
     if (id) {
@@ -33,10 +35,7 @@ const handler: Handler = async (event, context) => {
           industry: body.industry,
           bio: body.bio,
           experience: body.experience,
-          mentorPreferences: {
-            experience: body.mentorExperience,
-            cost: body.mentorCost,
-          },
+          img: body.img,
         },
       });
     } else {
@@ -79,7 +78,7 @@ const handler: Handler = async (event, context) => {
     };
   } catch (error) {
     if (error instanceof Error)
-    console.error("Failed to get user", error.message);
+      console.error("Failed to get user", error.message);
     throw error;
   } finally {
     await prisma.$disconnect();
