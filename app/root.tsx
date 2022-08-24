@@ -37,7 +37,7 @@ const colors = {
 export type LoaderData = {
   env: {
     DATABASE_URL: string;
-    API_URL: string;
+    URL: string;
   };
   user: Profile | null;
 };
@@ -52,7 +52,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json({
     env: {
       DATABASE_URL: process.env.DATABASE_URL,
-      API_URL: process.env.API_URL,
+      URL: process.env.URL,
     },
     user,
   });

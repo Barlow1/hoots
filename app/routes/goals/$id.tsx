@@ -40,7 +40,7 @@ type Route = {
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
-  const baseUrl = process.env.API_URL;
+  const baseUrl = process.env.URL;
   const goal = await fetch(
     `${baseUrl}/.netlify/functions/get-goals?id=${params.id}`
   )
