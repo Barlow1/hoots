@@ -63,7 +63,7 @@ export const action: ActionFunction = async ({ request }) => {
   };
   let error: string | undefined = undefined;
   let data: { status: string } | undefined = undefined;
-  const baseUrl = process.env.DEPLOY_URL;
+  const baseUrl = process.env.URL;
 
   const response = await fetch(`${baseUrl}/.netlify/functions/put-mentor`, {
     method: "PUT",

@@ -52,7 +52,7 @@ const buildMentorFetchUrl = (
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const baseUrl = process.env.DEPLOY_URL;
+  const baseUrl = process.env.URL;
   const url = new URL(request.url);
   const query = url.searchParams.get("query");
   const minCost = url.searchParams.get("min_cost");
