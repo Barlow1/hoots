@@ -52,7 +52,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json({
     env: {
       DATABASE_URL: process.env.DATABASE_URL,
-      URL: process.env.URL,
+      URL: process.env.DEPLOY_URL,
     },
     user,
   });

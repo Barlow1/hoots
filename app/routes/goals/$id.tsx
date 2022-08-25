@@ -57,7 +57,7 @@ type Route = {
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
-  const baseUrl = process.env.URL;
+  const baseUrl = process.env.DEPLOY_URL;
   const goal = await fetch(
     `${baseUrl}/.netlify/functions/get-goals?id=${params.id}`
   )
@@ -81,7 +81,7 @@ export const action: ActionFunction = async ({ request }) => {
     milestoneId: form.get("milestoneId") ?? "",
     completed: form.get("completed") ?? "",
   };
-  const baseUrl = process.env.URL;
+  const baseUrl = process.env.DEPLOY_URL;
   let error;
   let data;
   let options;
