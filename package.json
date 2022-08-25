@@ -2,8 +2,9 @@
   "name": "hoots",
   "private": true,
   "sideEffects": false,
+  "version": "0.0.1",
   "scripts": {
-    "build": "npx prisma generate && remix build",
+    "build": "remix build",
     "dev": "remix dev",
     "start": "cross-env NODE_ENV=production netlify dev"
   },
