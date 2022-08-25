@@ -37,7 +37,7 @@ const colors = {
 export type LoaderData = {
   env: {
     DATABASE_URL: string;
-    DEPLOY_URL: string;
+    URL: string;
   };
   user: Profile | null;
 };
