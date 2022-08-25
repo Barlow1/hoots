@@ -26,16 +26,33 @@ import {
   Stack,
   Textarea,
   Divider,
+  Table,
+  TableCaption,
+  TableContainer,
+  Tbody,
+  Td,
+  Tfoot,
+  Th,
+  Thead,
+  Tr,
+  useMediaQuery,
+  Show,
 } from "@chakra-ui/react";
 import { UserGoal } from ".";
-import { Field, FieldAttributes, Form, Formik } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { routes } from "../../routes";
-import { json, LoaderFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
+import {
+  Form,
+  useFetcher,
+  useLoaderData,
+  useSubmit,
+  useTransition,
+} from "@remix-run/react";
+import { Goal, GoalMilestone } from "@prisma/client";
 
 type Route = {
-  data: { goal: UserGoal };
+  data: { goal: Goal };
   params: { id: string };
 };
 
@@ -52,44 +69,125 @@ export const loader: LoaderFunction = async ({ params }) => {
   return json({ data: { goal: goal as UserGoal } });
 };
 
+export const action: ActionFunction = async ({ request }) => {
+  const requestText = await request.text();
+  const form = new URLSearchParams(requestText);
+  const values = {
+    name: form.get("name") ?? "",
+    date: form.get("date") ?? "",
+    notes: form.get("notes") ?? "",
+    goalId: form.get("goalId") ?? "",
+    formType: form.get("formType") ?? "",
+    milestoneId: form.get("milestoneId") ?? "",
+    completed: form.get("completed") ?? "",
+  };
+  const baseUrl = process.env.URL;
+  let error;
+  let data;
+  let options;
+
+  console.log(values);
+
+  if (values.formType === FormType.NEW) {
+    options = {
+      method: "PUT",
+      body: JSON.stringify({
+        name: values.name,
+        notes: values.notes,
+        date: values.date,
+      }),
+    };
+  } else if (values.formType === FormType.EDIT) {
+    options = {
+      method: "PUT",
+      body: JSON.stringify({
+        name: values.name,
+        notes: values.notes,
+        date: values.date,
+        id: values.milestoneId,
+      }),
+    };
+  } else if (values.formType === FormType.COMPLETED) {
+    options = {
+      method: "PUT",
+      body: JSON.stringify({
+        id: values.milestoneId,
+        completed: values.completed,
+      }),
+    };
+  }
+
+  try {
+    const response = await fetch(
+      `${baseUrl}/.netlify/functions/put-milestone?goalId=${values.goalId}&formType=${values.formType}`,
+      options
+    )
+      .then((user) => user.json())
+      .catch(() => {
+        console.error(
+          "Failed to edit milestone, please try again in a few minutes."
+        );
+      });
+    if (response.error) {
+      error = response.error;
+    } else if (response.goal) {
+      data = response.goal;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  return json({
+    error,
+    data,
+  });
+};
+
 const MilestonePage = () => {
   const { data } = useLoaderData<Route>();
-  const [goal, setGoal] = React.useState<UserGoal | null>(data.goal ?? null);
   const [isDrawerOpen, setIsDrawerOpen] = React.useState<boolean>(false);
-  const [editingIndex, setEditingIndex] = React.useState<number | undefined>(
-    undefined
-  );
+  const [milestoneBeingEditedId, setMilestoneBeingEditedId] = React.useState<
+    string | undefined
+  >(undefined);
 
-  const openDrawer = (param: number | undefined) => {
-    setEditingIndex(param);
+  const openDrawer = (id: string | undefined) => {
+    setMilestoneBeingEditedId(id);
     setIsDrawerOpen(true);
   };
   const onDrawerClose = () => {
     setIsDrawerOpen(false);
   };
-  const onDelete = (param: number) => {
-    const newUserGoal: UserGoal = { ...goal } as UserGoal;
-    if (newUserGoal.milestones && newUserGoal.milestones[param]) {
-      newUserGoal.milestones.splice(param, 1);
-    }
-    setIsDrawerOpen(false);
-    setGoal(newUserGoal);
-  };
+  const onDelete = (param: number) => {};
+
+  const submit = useSubmit();
+  const transition = useTransition();
+  const pendingSubmissionFormType = transition.submission
+    ? transition.submission.formData.get("formType")
+    : undefined;
+
   const onCheck = (
     e: React.ChangeEvent<HTMLInputElement>,
-    param: number | undefined
+    milestoneId: string
   ) => {
-    if (goal?.milestones && (param || param === 0)) {
-      let newMilestones = [...goal?.milestones];
-      newMilestones[param].completed = e.target.checked;
-      let newGoal: UserGoal = { ...goal, milestones: newMilestones };
-      setGoal(newGoal);
-    }
+    const formData = new FormData(e.target.form ?? undefined);
+    formData.set("goalId", data.goal.id);
+    formData.set("milestoneId", milestoneId);
+    formData.set("formType", FormType.COMPLETED);
+    formData.set("completed", String(e.target.checked));
+
+    submit(formData, { replace: true, method: "post" });
   };
 
-  if (!goal || goal === undefined) {
+  if (!data.goal || data.goal === undefined) {
     return <Heading color={"red"}>Error Grabbing Goal Data</Heading>;
   }
+
+  const sortedMilestones = [...data.goal?.milestones].reverse();
+
+  const milestoneBeingEdited = React.useMemo(() => {
+    return data.goal?.milestones.find(
+      (milestone) => milestone.id === milestoneBeingEditedId
+    );
+  }, [milestoneBeingEditedId, data.goal?.milestones]);
 
   return (
     <Box
@@ -116,11 +214,11 @@ const MilestonePage = () => {
             </Heading>
             <Divider />
           </Box>
-          <Box>{goal?.name}</Box>
-          <Box>Due: {goal?.dueDate ?? "-"}</Box>
+          <Box>{data.goal?.name}</Box>
+          <Box>Due: {data.goal?.dueDate ?? "-"}</Box>
           <Box>
             Notes:
-            <Box>{goal?.notes ?? "-"}</Box>
+            <Box>{data.goal?.notes ?? "-"}</Box>
           </Box>
         </Stack>
       </Box>
@@ -135,56 +233,75 @@ const MilestonePage = () => {
             Add Milestone <AddIcon style={{ marginLeft: "0.5em" }} />
           </Button>
         </Box>
-        <Grid
-          templateColumns="repeat(9, 1fr)"
-          style={{
-            border: "2px solid #E2E8F0",
-            borderRadius: "10px",
-            padding: "0rem 1rem 1rem 1rem",
-            width: "100%",
-          }}
-        >
-          <GridItem colSpan={1} style={{ padding: "1rem" }}></GridItem>
-          <GridItem colSpan={4} style={{ padding: "1rem", fontWeight: "bold" }}>
-            Milestone
-          </GridItem>
-          <GridItem colSpan={4} style={{ padding: "1rem", fontWeight: "bold" }}>
-            Due
-          </GridItem>
-          {goal?.milestones &&
-            goal?.milestones.map((item, index) => {
-              return (
-                <MilestoneItem
-                  key={`milestone-${index}`}
-                  name={item.name ?? ""}
-                  dueDate={item.date ?? ""}
-                  completed={item.completed ?? false}
-                  index={index}
-                  openDrawer={openDrawer}
-                  onCheck={onCheck}
-                />
-              );
-            })}
-          {(!goal?.milestones || goal?.milestones.length === 0) && (
-            <>
-              <GridItem colSpan={1} style={gridItemStyle}></GridItem>
-              <GridItem colSpan={4} style={gridItemStyle}>
-                -
-              </GridItem>
-              <GridItem colSpan={4} style={gridItemStyle}>
-                -
-              </GridItem>
-            </>
-          )}
-        </Grid>
+        <TableContainer>
+          <Table
+            style={{
+              border: "2px solid #E2E8F0",
+              borderRadius: "10px",
+              padding: "1rem",
+              minWidth: "20%",
+            }}
+          >
+            <Thead>
+              <Tr>
+                <Th>
+                  <Show above={"md"}>Completed</Show>
+                </Th>
+                <Th>Milestone</Th>
+                <Th display={{ md: "block", base: "none" }}>Date</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {transition.submission &&
+                pendingSubmissionFormType === FormType.NEW && (
+                  <MilestoneItem
+                    item={
+                      Object.fromEntries(transition.submission.formData) as any
+                    }
+                    openDrawer={openDrawer}
+                    onCheck={onCheck}
+                  />
+                )}
+              {data.goal?.milestones &&
+                sortedMilestones.map((item) => {
+                  let optimisticItem: GoalMilestone | undefined;
+                  if (
+                    transition.submission &&
+                    pendingSubmissionFormType === FormType.EDIT &&
+                    item.id === milestoneBeingEditedId
+                  ) {
+                    optimisticItem = Object.fromEntries(
+                      transition.submission.formData
+                    ) as any;
+                  }
+                  return (
+                    <MilestoneItem
+                      key={`milestone-${item.id}`}
+                      item={optimisticItem ?? item}
+                      openDrawer={openDrawer}
+                      onCheck={onCheck}
+                    />
+                  );
+                })}
+              {!data.goal?.milestones ||
+                (data.goal?.milestones.length === 0 && !transition.submission && (
+                  <Tr>
+                    <Td>-</Td>
+                    <Td>-</Td>
+                    <Td display={{ md: "block", base: "none" }}>-</Td>
+                  </Tr>
+                ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
       </Box>
       <MilestoneDrawer
-        goal={goal}
-        setGoal={setGoal}
-        index={editingIndex}
+        goalId={data.goal.id}
         isDrawerOpen={isDrawerOpen}
         onDrawerClose={onDrawerClose}
         onDelete={onDelete}
+        formType={milestoneBeingEditedId ? FormType.EDIT : FormType.NEW}
+        milestoneBeingEdited={milestoneBeingEdited}
       />
     </Box>
   );
@@ -198,76 +315,69 @@ export const gridItemStyle: React.CSSProperties = {
 };
 
 export interface MilestoneItemProps {
-  name: string;
-  dueDate: string;
-  completed: boolean;
-  index: number | undefined;
   openDrawer: Function;
   onCheck: any;
+  item: GoalMilestone;
 }
 
 export const MilestoneItem = ({
-  name,
-  dueDate,
-  completed,
-  index,
   openDrawer,
   onCheck,
+  item,
 }: MilestoneItemProps) => {
   return (
-    <>
-      <GridItem colSpan={1} style={gridItemStyle}>
-        <Checkbox isChecked={completed} onChange={(e) => onCheck(e, index)} />
-      </GridItem>
-      <GridItem
-        colSpan={4}
-        style={gridItemStyle}
-        onClick={() => openDrawer(index)}
-      >
-        {name}
-      </GridItem>
-      <GridItem
-        colSpan={4}
-        style={gridItemStyle}
-        onClick={() => openDrawer(index)}
-      >
-        {dueDate}
-      </GridItem>
-    </>
+    <Tr
+      _hover={{ bgColor: "blackAlpha.50", cursor: "pointer" }}
+      onClick={(e) => {
+        if ((e.target as HTMLSpanElement).className.includes("checkbox"))
+          return;
+        openDrawer(item.id);
+      }}
+    >
+      <Td>
+        <Checkbox
+          isChecked={item.completed ?? false}
+          onChange={(e) => {
+            // optimistic UI, remix will revalidate if the update fails
+            item.completed = e.target.checked;
+            onCheck(e, item.id);
+          }}
+          inputProps={{
+            onClick: (e) => {
+              e.stopPropagation();
+            },
+          }}
+        />
+      </Td>
+      <Td>{item.name}</Td>
+      <Td display={{ md: "block", base: "none" }}>{item.date}</Td>
+    </Tr>
   );
 };
 
 export interface MilestoneDrawerProps {
-  goal: UserGoal;
-  setGoal: Function;
-  index: number | undefined;
+  goalId: string | undefined;
   isDrawerOpen: boolean;
   onDrawerClose: any;
   onDelete: Function;
+  formType: FormType;
+  milestoneBeingEdited: GoalMilestone | undefined;
+}
+
+export enum FormType {
+  NEW = "New",
+  EDIT = "Edit",
+  COMPLETED = "Completed",
 }
 
 export const MilestoneDrawer = ({
-  goal,
-  setGoal,
-  index,
+  goalId,
   isDrawerOpen,
   onDrawerClose,
   onDelete,
+  formType,
+  milestoneBeingEdited,
 }: MilestoneDrawerProps) => {
-  console.log(index, goal?.milestones);
-  console.log("result ", (index || index === 0) && goal?.milestones);
-  let nameInput =
-    (index || index === 0) && goal?.milestones && goal?.milestones[index]
-      ? goal?.milestones[index].name
-      : "";
-  let dateInput =
-    (index || index === 0) && goal?.milestones && goal?.milestones[index]
-      ? goal?.milestones[index].date
-      : "";
-  let notesInput =
-    (index || index === 0) && goal?.milestones && goal?.milestones[index]
-      ? goal?.milestones[index].notes
-      : "";
   return (
     <Drawer
       isOpen={isDrawerOpen}
@@ -279,122 +389,74 @@ export const MilestoneDrawer = ({
       <DrawerContent>
         <DrawerCloseButton />
         <DrawerHeader>
-          {(index || index === 0) && goal?.milestones && goal?.milestones[index]
-            ? goal?.milestones[index].name
-            : "Create New Milestone"}
+          {formType === FormType.EDIT ? "Details" : "New Milestone"}
         </DrawerHeader>
         <DrawerBody>
-          <Formik
-            initialValues={{ nameInput, dateInput, notesInput }}
-            onSubmit={(values, actions) => {
-              setTimeout(() => {
-                console.log(index);
-                console.log(values);
-                let newUserGoal: UserGoal = { ...goal };
-                if ((index || index === 0) && newUserGoal.milestones) {
-                  newUserGoal.milestones[index] = {
-                    ...newUserGoal.milestones[index],
-                    name: values.nameInput,
-                    date: values.dateInput,
-                    notes: values.notesInput,
-                  };
-                } else {
-                  let newMilestones = newUserGoal.milestones
-                    ? newUserGoal.milestones
-                    : [
-                        {
-                          name: values.nameInput,
-                          date: values.dateInput,
-                          notes: values.notesInput,
-                          completed: false,
-                        },
-                      ];
-                  newUserGoal = {
-                    ...newUserGoal,
-                    milestones: newMilestones,
-                  };
-                }
-                setGoal(newUserGoal);
-                actions.setSubmitting(false);
-                onDrawerClose();
-              }, 1000);
-            }}
-          >
-            {(props) => (
-              <Form>
-                <Stack spacing={3}>
-                  <Field name="nameInput">
-                    {({ field }: FieldAttributes<any>) => (
-                      <FormControl>
-                        <FormLabel>Name</FormLabel>
-                        <Input {...field} placeholder={"Enter new milestone"} />
-                      </FormControl>
-                    )}
-                  </Field>
-                  <Field name="dateInput">
-                    {({ field }: FieldAttributes<any>) => (
-                      <FormControl>
-                        <FormLabel>Due</FormLabel>
-                        <Input {...field} placeholder={"Enter due date"} />
-                      </FormControl>
-                    )}
-                  </Field>
-                  <Field name="notesInput">
-                    {({ field }: FieldAttributes<any>) => (
-                      <FormControl>
-                        <FormLabel>Notes</FormLabel>
-                        <Textarea
-                          style={{ minHeight: "8rem" }}
-                          {...field}
-                          placeholder={"Enter notes for your milestone"}
-                        />
-                      </FormControl>
-                    )}
-                  </Field>
-                  <Box
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      flexDirection: "row-reverse",
-                      marginTop: "2rem",
-                    }}
+          <Form method="post">
+            <input hidden name="goalId" value={goalId} />
+            <input hidden name="formType" value={formType} />
+            <input hidden name="milestoneId" value={milestoneBeingEdited?.id} />
+            <Stack spacing={3}>
+              <FormLabel>Name</FormLabel>
+              <Input
+                name="name"
+                placeholder={"Enter new milestone"}
+                defaultValue={milestoneBeingEdited?.name}
+              />
+              <FormControl>
+                <FormLabel>Due</FormLabel>
+                <Input
+                  name="date"
+                  placeholder={"Enter due date"}
+                  defaultValue={milestoneBeingEdited?.date}
+                />
+                <FormLabel>Notes</FormLabel>
+                <Textarea
+                  name="notes"
+                  style={{ minHeight: "8rem" }}
+                  placeholder={"Enter notes for your milestone"}
+                  defaultValue={milestoneBeingEdited?.notes}
+                />
+              </FormControl>
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  flexDirection: "row-reverse",
+                  marginTop: "2rem",
+                }}
+              >
+                <Box>
+                  <Button colorScheme="gray" mr={3} onClick={onDrawerClose}>
+                    Cancel
+                    <FontAwesomeIcon
+                      style={{ marginLeft: "1rem" }}
+                      icon={faXmark}
+                    />
+                  </Button>
+                  <Button
+                    colorScheme="blue"
+                    type="submit"
+                    onClick={onDrawerClose}
                   >
-                    <Box>
-                      <Button colorScheme="gray" mr={3} onClick={onDrawerClose}>
-                        Cancel
-                        <FontAwesomeIcon
-                          style={{ marginLeft: "1rem" }}
-                          icon={faXmark}
-                        />
-                      </Button>
-                      <Button
-                        colorScheme="blue"
-                        type="submit"
-                        isLoading={props.isSubmitting}
-                      >
-                        Save
-                        <FontAwesomeIcon
-                          style={{ marginLeft: "1rem" }}
-                          icon={faFloppyDisk}
-                        />
-                      </Button>
-                    </Box>
-                    {(index || index === 0) && goal?.milestones && (
-                      <Button
-                        style={{ backgroundColor: "#E53E3E", color: "white" }}
-                        onClick={() => onDelete(index)}
-                      >
-                        Delete
-                        <DeleteIcon
-                          style={{ color: "white", marginLeft: "1rem" }}
-                        />
-                      </Button>
-                    )}
-                  </Box>
-                </Stack>
-              </Form>
-            )}
-          </Formik>
+                    Save
+                    <FontAwesomeIcon
+                      style={{ marginLeft: "1rem" }}
+                      icon={faFloppyDisk}
+                    />
+                  </Button>
+                </Box>
+
+                <Button
+                  style={{ backgroundColor: "#E53E3E", color: "white" }}
+                  onClick={() => onDelete(goalId)}
+                >
+                  Delete
+                  <DeleteIcon style={{ color: "white", marginLeft: "1rem" }} />
+                </Button>
+              </Box>
+            </Stack>
+          </Form>
         </DrawerBody>
       </DrawerContent>
     </Drawer>
