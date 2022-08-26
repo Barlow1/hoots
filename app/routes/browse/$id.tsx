@@ -26,8 +26,8 @@ type Route = {
   Params: { id: string };
 };
 
-export const loader: LoaderFunction = async ({ params }) => {
-  const baseUrl = process.env.API_URL;
+export const loader: LoaderFunction = async ({ params, request }) => {
+  const baseUrl = new URL(request.url).origin;
   const mentor = await fetch(
     `${baseUrl}/.netlify/functions/get-mentor?id=${params.id}`
   )
@@ -59,7 +59,11 @@ export const MentorPage = () => {
           style={{ color: "white" }}
           float="right"
         >
-          Apply <FontAwesomeIcon icon={faPaperPlane} style={{ marginLeft: "0.5em" }} />
+          Apply{" "}
+          <FontAwesomeIcon
+            icon={faPaperPlane}
+            style={{ marginLeft: "0.5em" }}
+          />
         </Button>
       </Flex>
       <Flex justifyContent={"center"}>
@@ -73,7 +77,7 @@ export const MentorPage = () => {
           <Text>💼 {mentor?.occupation}</Text>
           <Text>🏢 {mentor?.company}</Text>
           <Text>🕒 {mentor?.experience} years</Text>
-          <Text>💲 {mentor?.cost || 'FREE'}</Text>
+          <Text>💲 {mentor?.cost || "FREE"}</Text>
           <HStack spacing={2}>
             {mentor?.tags.map((tag: any) => {
               return (

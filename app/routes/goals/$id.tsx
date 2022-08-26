@@ -56,8 +56,8 @@ type Route = {
   params: { id: string };
 };
 
-export const loader: LoaderFunction = async ({ params }) => {
-  const baseUrl = process.env.API_URL;
+export const loader: LoaderFunction = async ({ params, request }) => {
+  const baseUrl = new URL(request.url).origin;
   const goal = await fetch(
     `${baseUrl}/.netlify/functions/get-goals?id=${params.id}`
   )
@@ -81,7 +81,7 @@ export const action: ActionFunction = async ({ request }) => {
     milestoneId: form.get("milestoneId") ?? "",
     completed: form.get("completed") ?? "",
   };
-  const baseUrl = process.env.API_URL;
+  const baseUrl = new URL(request.url).origin;
   let error;
   let data;
   let options;

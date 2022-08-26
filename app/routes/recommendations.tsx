@@ -24,8 +24,8 @@ type Route = {
   params: { id: string };
 };
 
-export const loader: LoaderFunction = async () => {
-  const baseUrl = process.env.API_URL;
+export const loader: LoaderFunction = async ({ request }) => {
+  const baseUrl = new URL(request.url).origin;
   const mentors = await fetch(`${baseUrl}/.netlify/functions/get-mentors`)
     .then((mentors) => mentors.json())
     .catch(() => {
