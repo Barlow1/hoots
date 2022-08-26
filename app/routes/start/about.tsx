@@ -92,7 +92,7 @@ export const action: ActionFunction = async ({
     };
     let error: string | undefined = undefined;
     let data: { status: string } | undefined = undefined;
-    const baseUrl = process.env.DEPLOY_PRIME_URL;
+    const baseUrl = process.env.API_URL;
     console.log("required user", user);
     const response = await fetch(
       `${baseUrl}/.netlify/functions/put-user?id=${user?.id}`,

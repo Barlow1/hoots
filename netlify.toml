@@ -3,6 +3,9 @@
   publish = "public"
   functions = "functions"
 
+[context.deploy-preview]
+  command = "export API_URL=$DEPLOY_URL && remix build"
+  
 [dev]
   command = "remix watch"
   port = 3000

@@ -65,7 +65,7 @@ type Route = {
 };
 
 export const loader: LoaderFunction = async () => {
-  const baseUrl = process.env.DEPLOY_PRIME_URL;
+  const baseUrl = process.env.API_URL;
   const meetings: Meeting[] = await fetch(
     `${baseUrl}/.netlify/functions/get-meetings`
   )

@@ -27,7 +27,7 @@ type Route = {
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
-  const baseUrl = process.env.DEPLOY_PRIME_URL;
+  const baseUrl = process.env.API_URL;
   const mentor = await fetch(
     `${baseUrl}/.netlify/functions/get-mentor?id=${params.id}`
   )
