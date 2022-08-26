@@ -1,5 +1,5 @@
 [build]
-  command = "sed -i \"s|API_PLACEHOLDER|${DEPLOY_PRIME_URL}|g\" netlify.toml && remix build"
+  command = "sed -i \"s|API_PLACEHOLDER|$DEPLOY_PRIME_URL|g\" netlify.toml && remix build"
   publish = "public"
   functions = "functions"
 
