@@ -52,7 +52,6 @@ export const action: ActionFunction = async ({
   if (response.error) {
     error = response.error;
   } else if (response.user) {
-    console.log("found user", response.user);
     const user = response.user;
     const userSession = await getUserSession(request);
     userSession.setUser(user);

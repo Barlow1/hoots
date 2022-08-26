@@ -86,8 +86,6 @@ export const action: ActionFunction = async ({ request }) => {
   let data;
   let options;
 
-  console.log(values);
-
   if (values.formType === FormType.NEW) {
     options = {
       method: "PUT",

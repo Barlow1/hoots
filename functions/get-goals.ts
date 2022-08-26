@@ -16,9 +16,7 @@ const handler: Handler = async (event, context) => {
       headers: CORS_HEADERS,
     };
   }
-
-  console.log("env", process.env);
-
+  
   const prisma = new PrismaClient();
   await prisma.$connect();
 

@@ -162,8 +162,6 @@ interface MobileProps extends FlexProps {
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const signOutFetcher = useFetcher();
   const user = useUser();
-  console.log(user);
-  console.log(user?.img);
   return (
     <Flex
       ml={{ base: 0, md: "6.5em" }}
