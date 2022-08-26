@@ -17,6 +17,8 @@ const handler: Handler = async (event, context) => {
     };
   }
 
+  console.log("env", process.env);
+
   const prisma = new PrismaClient();
   await prisma.$connect();
 
@@ -41,7 +43,7 @@ const handler: Handler = async (event, context) => {
     };
   } catch (error) {
     if (error instanceof Error)
-    console.error("Failed to get goals", error.message);
+      console.error("Failed to get goals", error.message);
     throw error;
   } finally {
     await prisma.$disconnect();
