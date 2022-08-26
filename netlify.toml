@@ -1,10 +1,10 @@
 [build]
-  command = "sed -i \"s|API_PLACEHOLDER|$DEPLOY_PRIME_URL|g\" netlify.toml && remix build"
+  command = "remix build"
   publish = "public"
   functions = "functions"
 
-[context.deploy-preview.environment]
-  API_URL = "API_PLACEHOLDER"
+[context.deploy-preview.build]
+  command = "echo API_URL=$DEPLOY_PRIME_URL > .env && remix build"
 
 [dev]
   command = "remix watch"
