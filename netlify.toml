@@ -4,7 +4,7 @@
   functions = "functions"
 
 [context.deploy-preview.environment]
-  API_URL = API_PLACEHOLDER
+  API_URL = "API_PLACEHOLDER"
 
 [dev]
   command = "remix watch"
