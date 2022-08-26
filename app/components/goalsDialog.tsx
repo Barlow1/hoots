@@ -45,7 +45,7 @@ export const GoalsDialog = ({
   const user = useUser();
 
   const onSubmit = React.useCallback(async (values: any, actions: any) => {
-    const baseUrl = window.env.DEPLOY_URL;
+    const baseUrl = window.env.API_URL;
     const response = await fetch(
       `${baseUrl}/.netlify/functions/put-goal?userId=${user?.id}${
         goal?.id ? `&id=${goal.id}` : ""
