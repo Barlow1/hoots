@@ -1,10 +1,7 @@
 [build]
-  command = "remix build"
+  command = "echo $DEPLOY_URL && remix build"
   publish = "public"
   functions = "functions"
-
-[[plugins]]
-  package = "netlify-plugin-inline-functions-env"
 
 [dev]
   command = "remix watch"
