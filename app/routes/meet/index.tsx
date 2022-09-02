@@ -64,14 +64,16 @@ type Route = {
   Params: { id: string };
 };
 
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
   const baseUrl = new URL(request.url).origin;
   const meetings: Meeting[] = await fetch(
     `${baseUrl}/.netlify/functions/get-meetings`
   )
     .then((meeting) => meeting.json())
     .catch(() => {
-      console.error("Failed to get meetings, please try again in a few minutes.");
+      console.error(
+        "Failed to get meetings, please try again in a few minutes."
+      );
     });
 
   return json({ data: { meetings: meetings as Meeting[] } });
