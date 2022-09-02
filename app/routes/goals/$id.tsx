@@ -38,7 +38,6 @@ import {
   useMediaQuery,
   Show,
 } from "@chakra-ui/react";
-import { UserGoal } from ".";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { routes } from "../../routes";
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
@@ -66,7 +65,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
       console.error("Failed to get goal, please try again in a few minutes.");
     });
 
-  return json({ data: { goal: goal as UserGoal } });
+  return json({ data: { goal: goal as Goal } });
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -103,6 +102,7 @@ export const action: ActionFunction = async ({ request }) => {
         notes: values.notes,
         date: values.date,
         id: values.milestoneId,
+        completed: values.completed,
       }),
     };
   } else if (values.formType === FormType.COMPLETED) {
@@ -138,6 +138,17 @@ export const action: ActionFunction = async ({ request }) => {
     error,
     data,
   });
+};
+
+const convertFormToMilestone = (form: FormData): GoalMilestone => {
+  const milestone = Object.fromEntries(form);
+  return {
+    id: String(milestone.id),
+    date: String(milestone.date),
+    completed: Boolean(milestone.completed === "true"),
+    name: String(milestone.name),
+    notes: String(milestone.notes),
+  };
 };
 
 const MilestonePage = () => {
@@ -254,7 +265,7 @@ const MilestonePage = () => {
                 pendingSubmissionFormType === FormType.NEW && (
                   <MilestoneItem
                     item={
-                      Object.fromEntries(transition.submission.formData) as any
+                      convertFormToMilestone(transition.submission.formData)
                     }
                     openDrawer={openDrawer}
                     onCheck={onCheck}
@@ -268,9 +279,9 @@ const MilestonePage = () => {
                     pendingSubmissionFormType === FormType.EDIT &&
                     item.id === milestoneBeingEditedId
                   ) {
-                    optimisticItem = Object.fromEntries(
+                    optimisticItem = convertFormToMilestone(
                       transition.submission.formData
-                    ) as any;
+                    );
                   }
                   return (
                     <MilestoneItem
@@ -394,6 +405,11 @@ export const MilestoneDrawer = ({
             <input hidden name="goalId" value={goalId} />
             <input hidden name="formType" value={formType} />
             <input hidden name="milestoneId" value={milestoneBeingEdited?.id} />
+            <input
+              hidden
+              name="completed"
+              value={String(milestoneBeingEdited?.completed)}
+            />
             <Stack spacing={3}>
               <FormLabel>Name</FormLabel>
               <Input
