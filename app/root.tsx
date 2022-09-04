@@ -48,11 +48,12 @@ export const handle: { id: string } = {
 
 const theme = extendTheme({ colors });
 export const loader: LoaderFunction = async ({ request }) => {
+  const baseUrl = new URL(request.url).origin;
   const user = await getUser(request);
   return json({
     env: {
       DATABASE_URL: process.env.DATABASE_URL,
-      API_URL: process.env.API_URL,
+      API_URL: baseUrl,
     },
     user,
   });

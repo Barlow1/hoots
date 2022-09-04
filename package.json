@@ -2,6 +2,7 @@
   "name": "hoots",
   "private": true,
   "sideEffects": false,
+  "version": "0.0.1",
   "scripts": {
     "build": "remix build",
     "dev": "remix dev",

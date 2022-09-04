@@ -7,9 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-type GoalMilestones {
-  date String
-  name String
+type GoalMilestone {
+  id       String  @default(uuid())
+  date     String
+  name     String
+  notes    String
+  completed Boolean
 }
 
 type ProfileMentorPreferences {
@@ -18,9 +21,9 @@ type ProfileMentorPreferences {
 }
 
 model Goal {
-  id         String           @id @default(auto()) @map("_id") @db.ObjectId
+  id         String          @id @default(auto()) @map("_id") @db.ObjectId
   dueDate    String
-  milestones GoalMilestones[]
+  milestones GoalMilestone[]
   name       String
   notes      String
   /// Multiple data types found: Int: 25%, BigInt: 75% out of 4 sampled entries
@@ -53,8 +56,8 @@ model Mentor {
   website       String?
   linkedIn      String?
   github        String?
-  profile       Profile?  @relation(fields: [profileId], references: [id])
-  profileId     String?   @unique
+  profile       Profile? @relation(fields: [profileId], references: [id])
+  profileId     String?  @unique
 }
 
 model Profile {

@@ -38,7 +38,7 @@ export const action: ActionFunction = async ({
   };
   let error: string | undefined = undefined;
   let data: { status: string } | undefined = undefined;
-  const baseUrl = process.env.API_URL;
+  const baseUrl = new URL(request.url).origin;
   const response = await fetch(`${baseUrl}/.netlify/functions/authenticate`, {
     method: "PUT",
     body: JSON.stringify(values),
@@ -52,7 +52,6 @@ export const action: ActionFunction = async ({
   if (response.error) {
     error = response.error;
   } else if (response.user) {
-    console.log("found user", response.user);
     const user = response.user;
     const userSession = await getUserSession(request);
     userSession.setUser(user);

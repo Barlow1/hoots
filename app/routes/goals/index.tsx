@@ -8,31 +8,18 @@ import {
 import * as React from "react";
 import { GoalsDialog } from "../../components/goalsDialog";
 import { routes } from "../../routes";
-import { json, LoaderFunction } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
-import { getUser } from "~/utils/user.session";
-
-export interface UserGoal {
-  id: string;
-  name?: string;
-  dueDate?: string;
-  progress?: number;
-  notes?: string;
-  milestones?: {
-    name?: string;
-    date?: string;
-    completed?: boolean;
-    notes?: string;
-  }[];
-}
+import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
+import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
+import { getUser, requireUser } from "~/utils/user.session";
+import { Goal, GoalMilestone } from "@prisma/client";
 
 type Route = {
-  data: { goals: UserGoal[] };
+  data: { goals: Goal[] };
   params: { id: string };
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const baseUrl = process.env.API_URL;
+  const baseUrl = new URL(request.url).origin;
   const user = await getUser(request);
   const goals = await fetch(
     `${baseUrl}/.netlify/functions/get-goals?userId=${user?.id}`
@@ -41,39 +28,92 @@ export const loader: LoaderFunction = async ({ request }) => {
     .catch(() => {
       console.error("Failed to get goals, please try again in a few minutes.");
     });
-  return json({ goals: goals as UserGoal[] });
+  return json({ goals: goals as Goal[] });
+};
+
+export const action: ActionFunction = async ({ request }) => {
+  const values = Object.fromEntries((await request.formData()).entries());
+  const user = await requireUser(request);
+  const baseUrl = new URL(request.url).origin;
+  if (request.method === "DELETE") {
+    const response = await fetch(
+      `${baseUrl}/.netlify/functions/put-goal${
+        values.goalId ? `?id=${values.goalId}` : ""
+      }`,
+      {
+        method: "DELETE",
+        body: null
+      }
+    ).catch(() => {
+      console.error(
+        "Failed to delete goal, please try again in a few minutes."
+      );
+    });
+  } else if (request.method === "POST") {
+    const response = await fetch(
+      `${baseUrl}/.netlify/functions/put-goal?userId=${user?.id}${
+        values.goalId ? `&id=${values.goalId}` : ""
+      }`,
+      {
+        method: "PUT",
+        body: JSON.stringify({
+          name: values.nameInput,
+          dueDate: values.dateInput,
+          notes: values.notesInput,
+          progress: values.goalId ? undefined : 0,
+          id: values.goalId,
+        }),
+      }
+    )
+      .then((goal) => goal.json())
+      .catch(() => {
+        console.error("Failed to add goal, please try again in a few minutes.");
+      });
+    if (response.error) {
+      console.error(response.error);
+    } else if (response.goal) {
+      return response.goal;
+    }
+  }
+  return null;
+};
+
+const calculateGoalProgress = (milestones?: GoalMilestone[]): number => {
+  if (!milestones) {
+    return 0;
+  }
+  const totalCount = milestones.length;
+  if (!totalCount) {
+    return 0;
+  }
+  const completedCount = milestones.filter(
+    (milestone) => milestone.completed
+  ).length;
+  return Math.ceil((completedCount / totalCount) * 100);
 };
 
 const GoalsPage = () => {
   const { goals } = useLoaderData();
-  const [userGoals, setUserGoals] = React.useState<UserGoal[]>(goals ?? []);
 
   return (
     <>
-      <GoalsContainer userGoals={userGoals} setUserGoals={setUserGoals} />
+      <GoalsContainer userGoals={goals} />
     </>
   );
 };
 
 export interface IGoalsContainerProps {
-  userGoals: UserGoal[];
-  setUserGoals: Function;
+  userGoals: Goal[];
 }
-export const GoalsContainer = ({
-  userGoals,
-  setUserGoals,
-}: IGoalsContainerProps) => {
+export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
   const [editingIndex, setEditingIndex] = React.useState<string>("");
   const openDialog = (param: string) => {
     setEditingIndex(param);
     setIsDialogOpen(true);
   };
-  const onDelete = (param: number) => {
-    const newUserGoals = [...userGoals];
-    newUserGoals.splice(param, 1);
-    setUserGoals(newUserGoals);
-  };
+  const onDelete = (param: number) => {};
+
   return (
     <Box style={{ width: "90%", height: "100%", margin: "auto" }}>
       <Box style={{ width: "100%", textAlign: "right" }}>
@@ -119,7 +159,7 @@ export const GoalsContainer = ({
               key={`goal-${index}`}
               name={item.name ?? ""}
               dueDate={item.dueDate ?? ""}
-              progress={item.progress ?? 0}
+              progress={calculateGoalProgress(item.milestones) ?? 0}
               id={item.id}
               openDialog={openDialog}
               onDelete={onDelete}
@@ -129,7 +169,6 @@ export const GoalsContainer = ({
       </Grid>
       <GoalsDialog
         userGoals={userGoals}
-        setUserGoals={setUserGoals}
         isDialogOpen={isDialogOpen}
         setIsDialogOpen={setIsDialogOpen}
         id={editingIndex}
@@ -162,6 +201,13 @@ export const GoalsItem = ({
   openDialog,
   onDelete,
 }: GoalsItemProps) => {
+  const utcDate = new Date(dueDate).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "utc",
+  });
+  const deleteFetcher = useFetcher();
   return (
     <>
       <GridItem colSpan={1} style={gridItemStyle}>
@@ -173,7 +219,7 @@ export const GoalsItem = ({
         <Link to={`${routes.goals}/${id}`}>{name}</Link>
       </GridItem>
       <GridItem colSpan={4} style={gridItemStyle}>
-        <Link to={`${routes.goals}/${id}`}>{dueDate}</Link>
+        <Link to={`${routes.goals}/${id}`}>{utcDate}</Link>
       </GridItem>
       <GridItem
         colSpan={4}
@@ -197,7 +243,7 @@ export const GoalsItem = ({
             {progress}%
           </>
         )}
-        {progress === 100 && "Complete"}
+        {progress === 100 && "Complete 🎉"}
       </GridItem>
       <GridItem
         colSpan={3}
@@ -215,12 +261,12 @@ export const GoalsItem = ({
         >
           <EditIcon style={{ color: "white" }} />
         </Button>
-        <Button
-          style={{ backgroundColor: "#E53E3E" }}
-          onClick={() => onDelete(id)}
-        >
-          <DeleteIcon style={{ color: "white" }} />
-        </Button>
+        <deleteFetcher.Form method="delete">
+          <input hidden name="goalId" value={id} />
+          <Button style={{ backgroundColor: "#E53E3E" }} type="submit">
+            <DeleteIcon style={{ color: "white" }} />
+          </Button>
+        </deleteFetcher.Form>
       </GridItem>
     </>
   );

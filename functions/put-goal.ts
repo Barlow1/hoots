@@ -9,7 +9,8 @@ const CORS_HEADERS = {
 
 const handler: Handler = async (event, context) => {
   const id = event.queryStringParameters?.id;
-  const body = JSON.parse(event.body ?? "{}");
+  const body =
+    event.httpMethod === "DELETE" ? undefined : JSON.parse(event.body ?? "{}");
   const userId = event.queryStringParameters?.userId;
   if (event.httpMethod === "OPTIONS") {
     return {
@@ -23,7 +24,21 @@ const handler: Handler = async (event, context) => {
 
   try {
     let response;
-    if (id && userId) {
+    if (event.httpMethod === "DELETE" && id) {
+      response = await prisma.goal.delete({
+        where: {
+          id,
+        },
+      });
+      console.log("delete response", response);
+      return {
+        statusCode: 200,
+        headers: {
+          ...CORS_HEADERS,
+          "Content-Type": "application/json",
+        },
+      };
+    } else if (id && userId) {
       response = await prisma.goal.upsert({
         where: {
           id: id,
@@ -67,7 +82,7 @@ const handler: Handler = async (event, context) => {
     };
   } catch (error) {
     if (error instanceof Error)
-     console.error("Failed to put goal", error.message);
+      console.error("Failed to put goal", error.message);
     throw error;
   } finally {
     await prisma.$disconnect();
