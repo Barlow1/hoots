@@ -49,6 +49,7 @@ import {
   useTransition,
 } from "@remix-run/react";
 import { Goal, GoalMilestone } from "@prisma/client";
+import { formatDateDisplay } from "~/utils/dates";
 
 type Route = {
   data: { goal: Goal };
@@ -224,7 +225,7 @@ const MilestonePage = () => {
             <Divider />
           </Box>
           <Box>{data.goal?.name}</Box>
-          <Box>Due: {data.goal?.dueDate ?? "-"}</Box>
+          <Box>Due: {formatDateDisplay(data.goal?.dueDate) ?? "-"}</Box>
           <Box>
             Notes:
             <Box>{data.goal?.notes ?? "-"}</Box>
@@ -257,16 +258,16 @@ const MilestonePage = () => {
                   <Show above={"md"}>Completed</Show>
                 </Th>
                 <Th>Milestone</Th>
-                <Th display={{ md: "block", base: "none" }}>Date</Th>
+                <Th display={{ md: "block", base: "none" }}>Due</Th>
               </Tr>
             </Thead>
             <Tbody>
               {transition.submission &&
                 pendingSubmissionFormType === FormType.NEW && (
                   <MilestoneItem
-                    item={
-                      convertFormToMilestone(transition.submission.formData)
-                    }
+                    item={convertFormToMilestone(
+                      transition.submission.formData
+                    )}
                     openDrawer={openDrawer}
                     onCheck={onCheck}
                   />
@@ -359,7 +360,9 @@ export const MilestoneItem = ({
         />
       </Td>
       <Td>{item.name}</Td>
-      <Td display={{ md: "block", base: "none" }}>{item.date}</Td>
+      <Td display={{ md: "block", base: "none" }}>
+        {formatDateDisplay(item.date)}
+      </Td>
     </Tr>
   );
 };
@@ -421,9 +424,12 @@ export const MilestoneDrawer = ({
                 <FormLabel>Due</FormLabel>
                 <Input
                   name="date"
-                  placeholder={"Enter due date"}
+                  type="date"
+                  placeholder={"Enter Due Date"}
                   defaultValue={milestoneBeingEdited?.date}
                 />
+              </FormControl>
+              <FormControl>
                 <FormLabel>Notes</FormLabel>
                 <Textarea
                   name="notes"

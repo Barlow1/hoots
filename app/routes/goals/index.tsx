@@ -12,6 +12,7 @@ import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { getUser, requireUser } from "~/utils/user.session";
 import { Goal, GoalMilestone } from "@prisma/client";
+import { formatDateDisplay } from "~/utils/dates";
 
 type Route = {
   data: { goals: Goal[] };
@@ -201,12 +202,7 @@ export const GoalsItem = ({
   openDialog,
   onDelete,
 }: GoalsItemProps) => {
-  const utcDate = new Date(dueDate).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "utc",
-  });
+  const utcDate = formatDateDisplay(dueDate);
   const deleteFetcher = useFetcher();
   return (
     <>
