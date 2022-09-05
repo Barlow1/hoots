@@ -1,5 +1,6 @@
 import { Handler } from "@netlify/functions";
 import { PrismaClient } from "@prisma/client";
+import { exclude } from "~/utils/exclude";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -22,24 +23,27 @@ const handler: Handler = async (event, context) => {
   await prisma.$connect();
 
   try {
-    console.log('prisma.profile.findUnique', prisma.profile.findUnique)
+    console.log("prisma.profile.findUnique", prisma.profile.findUnique);
     const user = await prisma.profile.findUnique({
       where: {
         id,
         email,
       },
     });
-    return {
-      statusCode: 200,
-      body: JSON.stringify(user),
-      headers: {
-        ...CORS_HEADERS,
-        "Content-Type": "application/json",
-      },
-    };
+    if (user) {
+      return {
+        statusCode: 200,
+        body: JSON.stringify(exclude(user, "password")),
+        headers: {
+          ...CORS_HEADERS,
+          "Content-Type": "application/json",
+        },
+      };
+    }
+    throw Error("No user found with the given email");
   } catch (error) {
     if (error instanceof Error)
-    console.error("Failed to get user", error.message);
+      console.error("Failed to get user", error.message);
     throw error;
   } finally {
     await prisma.$disconnect();

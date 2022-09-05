@@ -1,5 +1,7 @@
 import { Handler } from "@netlify/functions";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from 'bcrypt';
+const SALT_ROUNDS = 10;
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -58,10 +60,11 @@ const handler: Handler = async (event, context) => {
           },
         };
       } else {
+        const encrypted = bcrypt.hashSync(body.password, SALT_ROUNDS);
         user = await prisma.profile.create({
           data: {
             email: body.email,
-            password: body.password,
+            password: encrypted,
             firstName: body.firstName,
             lastName: body.lastName,
           },

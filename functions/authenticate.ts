@@ -1,5 +1,8 @@
 import { Handler } from "@netlify/functions";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from 'bcrypt';
+import { exclude } from "~/utils/exclude";
+
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -39,7 +42,7 @@ const handler: Handler = async (event, context) => {
         },
       };
     }
-    const passwordMatch = body.password === user.password;
+    const passwordMatch = bcrypt.compareSync(body.password, user.password);
     if (!passwordMatch) {
       return {
         statusCode: 401,
@@ -54,7 +57,7 @@ const handler: Handler = async (event, context) => {
     } else {
       return {
         statusCode: 200,
-        body: JSON.stringify({ user }),
+        body: JSON.stringify({ user: exclude(user, "password") }),
         headers: {
           ...CORS_HEADERS,
           "Content-Type": "application/json",
@@ -63,7 +66,7 @@ const handler: Handler = async (event, context) => {
     }
   } catch (error) {
     if (error instanceof Error)
-    console.error("Failed to get user", error.message);
+    console.error("Failed to authenticate user", error.message);
     throw error;
   } finally {
     await prisma.$disconnect();
