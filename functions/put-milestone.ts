@@ -45,7 +45,16 @@ const handler: Handler = async (event, context) => {
         },
       };
     }
-    if (goalId && formType === FormType.EDIT) {
+    if (body.id && event.httpMethod === "DELETE") {
+      response = await prisma.goal.update({
+        data: {
+          milestones: {
+            deleteMany: { where: { id: body.id } },
+          },
+        },
+        where: { id: goalId },
+      });
+    } else if (formType === FormType.EDIT) {
       response = await prisma.goal.update({
         where: {
           id: goalId,
