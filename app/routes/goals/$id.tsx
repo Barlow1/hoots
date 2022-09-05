@@ -87,8 +87,16 @@ export const action: ActionFunction = async ({ request }) => {
   let error;
   let data;
   let options;
+  console.log("method", request.method);
 
-  if (values.formType === FormType.NEW) {
+  if (request.method === "DELETE") {
+    options = {
+      method: "DELETE",
+      body: JSON.stringify({
+        id: values.milestoneId,
+      }),
+    };
+  } else if (values.formType === FormType.NEW) {
     options = {
       method: "PUT",
       body: JSON.stringify({
@@ -119,6 +127,7 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   try {
+    console.log("options", options);
     const response = await fetch(
       `${baseUrl}/.netlify/functions/put-milestone?goalId=${values.goalId}&formType=${values.formType}`,
       options
@@ -168,7 +177,6 @@ const MilestonePage = () => {
   const onDrawerClose = () => {
     setIsDrawerOpen(false);
   };
-  const onDelete = (param: number) => {};
 
   const submit = useSubmit();
   const transition = useTransition();
@@ -311,7 +319,6 @@ const MilestonePage = () => {
         goalId={data.goal.id}
         isDrawerOpen={isDrawerOpen}
         onDrawerClose={onDrawerClose}
-        onDelete={onDelete}
         formType={milestoneBeingEditedId ? FormType.EDIT : FormType.NEW}
         milestoneBeingEdited={milestoneBeingEdited}
       />
@@ -373,7 +380,6 @@ export interface MilestoneDrawerProps {
   goalId: string | undefined;
   isDrawerOpen: boolean;
   onDrawerClose: any;
-  onDelete: Function;
   formType: FormType;
   milestoneBeingEdited: GoalMilestone | undefined;
 }
@@ -388,10 +394,11 @@ export const MilestoneDrawer = ({
   goalId,
   isDrawerOpen,
   onDrawerClose,
-  onDelete,
   formType,
   milestoneBeingEdited,
 }: MilestoneDrawerProps) => {
+  const deleteFetcher = useFetcher();
+
   return (
     <Drawer
       isOpen={isDrawerOpen}
@@ -440,45 +447,42 @@ export const MilestoneDrawer = ({
                   defaultValue={milestoneBeingEdited?.notes}
                 />
               </FormControl>
-              <Box
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  flexDirection: "row-reverse",
-                  marginTop: "2rem",
-                }}
-              >
-                <Box>
-                  <Button colorScheme="gray" mr={3} onClick={onDrawerClose}>
-                    Cancel
-                    <FontAwesomeIcon
-                      style={{ marginLeft: "1rem" }}
-                      icon={faXmark}
-                    />
-                  </Button>
-                  <Button
-                    colorScheme="blue"
-                    type="submit"
-                    onClick={onDrawerClose}
-                  >
-                    Save
-                    <FontAwesomeIcon
-                      style={{ marginLeft: "1rem" }}
-                      icon={faFloppyDisk}
-                    />
-                  </Button>
-                </Box>
-
-                <Button
-                  style={{ backgroundColor: "#E53E3E", color: "white" }}
-                  onClick={() => onDelete(goalId)}
-                >
-                  Delete
-                  <DeleteIcon style={{ color: "white", marginLeft: "1rem" }} />
-                </Button>
-              </Box>
+              <Button colorScheme="blue" type="submit" onClick={onDrawerClose}>
+                Save
+                <FontAwesomeIcon
+                  style={{ marginLeft: "1rem" }}
+                  icon={faFloppyDisk}
+                />
+              </Button>
             </Stack>
           </Form>
+
+          <deleteFetcher.Form method="delete">
+            <Stack marginTop={3} direction={"row"}>
+              <Button colorScheme="gray" mr={3} onClick={onDrawerClose} w="100%">
+                Cancel
+                <FontAwesomeIcon
+                  style={{ marginLeft: "1rem" }}
+                  icon={faXmark}
+                />
+              </Button>
+              <Button
+                style={{ backgroundColor: "#E53E3E", color: "white" }}
+                type="submit"
+                onClick={onDrawerClose}
+                w="100%"
+              >
+                <input hidden name="goalId" value={goalId} />
+                <input
+                  hidden
+                  name="milestoneId"
+                  value={milestoneBeingEdited?.id}
+                />
+                Delete
+                <DeleteIcon style={{ color: "white", marginLeft: "1rem" }} />
+              </Button>
+            </Stack>
+          </deleteFetcher.Form>
         </DrawerBody>
       </DrawerContent>
     </Drawer>
