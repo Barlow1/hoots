@@ -129,7 +129,8 @@ export const action: ActionFunction = async ({
   }
 };
 
-export const loader: LoaderFunction = ({ request }) => {
+export const loader: LoaderFunction = async ({ request }) => {
+  await requireUser(request);
   const url = new URL(request.url);
   const shouldCreateMentorProfile = Boolean(
     url.searchParams.get("create") === "true"

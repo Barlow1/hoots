@@ -25,6 +25,7 @@ import {
 } from "@chakra-ui/react";
 import { Meeting } from "@prisma/client";
 import { json, LoaderFunction } from "@remix-run/node";
+import { requireAdminUser } from "~/utils/user.session";
 
 const mockData: IMeetingData[] = [
   {
@@ -65,6 +66,7 @@ type Route = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
+  await requireAdminUser(request);
   const baseUrl = new URL(request.url).origin;
   const meetings: Meeting[] = await fetch(
     `${baseUrl}/.netlify/functions/get-meetings`

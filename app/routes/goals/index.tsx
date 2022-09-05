@@ -20,6 +20,7 @@ type Route = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
+  await requireUser(request);
   const baseUrl = new URL(request.url).origin;
   const user = await getUser(request);
   const goals = await fetch(
