@@ -8,6 +8,7 @@ export const routes = {
   recommendations: "/recommendations",
   start: "/start",
   startAbout: "/start/about",
+  startCheckEmail: "/start/check-email",
   newMentorProfile: "/new-mentor-profile",
   createMentor: "/mentor-profile/create",
   applicationsInbox: "applications/inbox"
