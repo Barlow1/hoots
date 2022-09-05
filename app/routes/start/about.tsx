@@ -85,6 +85,7 @@ export const action: ActionFunction = async ({
       experience: Number(form.get("experience") ?? ""),
       mentorExperience: Number(form.get("mentorExperience") ?? ""),
       mentorCost: Number(form.get("mentorCost") ?? ""),
+      bio: form.get("bio") ?? "",
       img:
         typeof form.get("profilePhoto") === "string"
           ? form.get("profilePhoto")
