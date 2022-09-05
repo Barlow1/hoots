@@ -18,6 +18,7 @@ import { routes } from "../routes";
 import { useUser } from "~/utils/useRootData";
 import { json, LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
+import { requireUser } from "~/utils/user.session";
 
 type Route = {
   data: { mentors: Mentor[] };
@@ -25,6 +26,7 @@ type Route = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
+  await requireUser(request);
   const baseUrl = new URL(request.url).origin;
   const mentors = await fetch(`${baseUrl}/.netlify/functions/get-mentors`)
     .then((mentors) => mentors.json())

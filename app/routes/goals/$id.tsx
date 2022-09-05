@@ -50,6 +50,7 @@ import {
 } from "@remix-run/react";
 import { Goal, GoalMilestone } from "@prisma/client";
 import { formatDateDisplay } from "~/utils/dates";
+import { requireUser } from "~/utils/user.session";
 
 type Route = {
   data: { goal: Goal };
@@ -57,6 +58,7 @@ type Route = {
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
+  await requireUser(request);
   const baseUrl = new URL(request.url).origin;
   const goal = await fetch(
     `${baseUrl}/.netlify/functions/get-goals?id=${params.id}`

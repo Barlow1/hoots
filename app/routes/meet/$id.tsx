@@ -33,6 +33,7 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { Field, Form, Formik } from "formik";
 import { useEffect, useRef, useState } from "react";
+import { requireAdminUser } from "~/utils/user.session";
 import {
   NewAgendaDialog,
   NewAgendaItem,
@@ -44,7 +45,8 @@ type Route = {
   params: { id: string };
 };
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ params, request }) => {
+  await requireAdminUser(request);
   return json({ data: { id: params.id } });
 };
 

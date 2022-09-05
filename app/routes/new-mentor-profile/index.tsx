@@ -32,7 +32,8 @@ import { routes } from "~/routes";
 import { getUserSession, requireUser } from "~/utils/user.session";
 import Logo from "../../assets/Logo.svg";
 
-export const loader: LoaderFunction = () => {
+export const loader: LoaderFunction = async ({ request }) => {
+  await requireUser(request);
   return null;
 };
 

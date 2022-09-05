@@ -46,9 +46,10 @@ interface LinkItemProps {
 }
 const LinkItems: Array<LinkItemProps> = [
   { name: "Dashboard", icon: faHome, link: routes.home },
-  { name: "Goals", icon: faAward, link: routes.goals },
   { name: "Browse", icon: faTableList, link: routes.browse },
-  { name: "Meet", icon: faHandshake, link: routes.meet },
+  { name: "Goals", icon: faAward, link: routes.goals },
+  /** TODO: Add back meet link when meet page is finished */
+  // { name: "Meet", icon: faHandshake, link: routes.meet },
 ];
 
 export default function SidebarWithHeader({
@@ -187,12 +188,14 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         </Link>
       </Box>
       <HStack spacing={{ base: "0", md: "6" }}>
-        <IconButton
-          size="lg"
-          variant="ghost"
-          aria-label="open menu"
-          icon={<BellIcon />}
-        />
+        {user && (
+          <IconButton
+            size="lg"
+            variant="ghost"
+            aria-label="open menu"
+            icon={<BellIcon />}
+          />
+        )}
         <Flex alignItems={"center"}>
           <Menu>
             <MenuButton
@@ -208,12 +211,16 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                   spacing="1px"
                   ml="2"
                 >
-                  {user && (
-                    <Text fontSize="sm">{`${user.firstName} ${user.lastName}`}</Text>
+                  {user ? (
+                    <>
+                      <Text fontSize="sm">{`${user.firstName} ${user.lastName}`}</Text>
+                      <Text fontSize="xs" color="gray.600">
+                        User
+                      </Text>
+                    </>
+                  ) : (
+                    <Text fontSize="sm">Get Started</Text>
                   )}
-                  <Text fontSize="xs" color="gray.600">
-                    User
-                  </Text>
                 </VStack>
                 <Box display={{ base: "none", md: "flex" }}>
                   <ChevronDownIcon />
@@ -224,23 +231,37 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
               bg={useColorModeValue("white", "gray.900")}
               borderColor={useColorModeValue("gray.200", "gray.700")}
             >
-              <Link to={routes.startAbout}>
-                <MenuItem>Edit Preferences</MenuItem>
-              </Link>
-              <MenuDivider />
-              <MenuItem
-                onClick={() =>
-                  signOutFetcher.submit(
-                    {},
-                    {
-                      action: "actions/logout",
-                      method: "post",
+              {user ? (
+                <>
+                  <Link to={routes.startAbout}>
+                    <MenuItem>About Me</MenuItem>
+                  </Link>
+                  <MenuDivider />
+                  <MenuItem
+                    onClick={() =>
+                      signOutFetcher.submit(
+                        {},
+                        {
+                          action: "actions/logout",
+                          method: "post",
+                        }
+                      )
                     }
-                  )
-                }
-              >
-                Sign out
-              </MenuItem>
+                  >
+                    Sign out
+                  </MenuItem>
+                </>
+              ) : (
+                <>
+                  <Link to={routes.login}>
+                    <MenuItem>Sign In</MenuItem>
+                  </Link>
+                  <MenuDivider />
+                  <Link to={routes.signup}>
+                    <MenuItem>Create Account</MenuItem>
+                  </Link>
+                </>
+              )}
             </MenuList>
           </Menu>
         </Flex>
