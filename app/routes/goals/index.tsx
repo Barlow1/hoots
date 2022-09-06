@@ -13,6 +13,7 @@ import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { getUser, requireUser } from "~/utils/user.session";
 import { Goal, GoalMilestone } from "@prisma/client";
 import { formatDateDisplay } from "~/utils/dates";
+import { calculateGoalProgress } from "~/utils/calculateGoalProgress";
 
 type Route = {
   data: { goals: Goal[] };
@@ -20,9 +21,8 @@ type Route = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  await requireUser(request);
   const baseUrl = new URL(request.url).origin;
-  const user = await getUser(request);
+  const user = await requireUser(request);
   const goals = await fetch(
     `${baseUrl}/.netlify/functions/get-goals?userId=${user?.id}`
   )
@@ -78,20 +78,6 @@ export const action: ActionFunction = async ({ request }) => {
     }
   }
   return null;
-};
-
-const calculateGoalProgress = (milestones?: GoalMilestone[]): number => {
-  if (!milestones) {
-    return 0;
-  }
-  const totalCount = milestones.length;
-  if (!totalCount) {
-    return 0;
-  }
-  const completedCount = milestones.filter(
-    (milestone) => milestone.completed
-  ).length;
-  return Math.ceil((completedCount / totalCount) * 100);
 };
 
 const GoalsPage = () => {
