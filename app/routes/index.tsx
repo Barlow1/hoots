@@ -7,6 +7,7 @@ import {
   Grid,
   GridItem,
   Link,
+  Stack,
   Text,
 } from "@chakra-ui/react";
 import { useUser } from "~/utils/useRootData";
@@ -17,6 +18,8 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { Goal } from "@prisma/client";
 import { calculateGoalProgress } from "~/utils/calculateGoalProgress";
 import { formatDateDisplay } from "~/utils/dates";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAward, faListDots } from "@fortawesome/free-solid-svg-icons";
 
 interface DashBoardLoaderData {
   upcomingGoal: Goal | undefined;
@@ -70,26 +73,79 @@ const Dashboard = () => {
           </Grid>
         </Box>
       </GridItem>
-      <GridItem boxShadow="md" w="100%" colSpan={12} borderRadius="5">
-        <Grid padding="5" gap={4}>
+      <GridItem
+        boxShadow="md"
+        w="100%"
+        colSpan={{ base: 12, lg: 6 }}
+        borderRadius="5"
+        h="100%"
+      >
+        <Grid padding="5" gap={4} h="100%">
           <GridItem colSpan={12}>
             <Text fontSize="xl" fontWeight="bold">
-              Upcoming Goal Progress
+              Find a mentor
             </Text>
-            {data.upcomingGoal && (
-              <Box display="flex" justifyContent="center">
-                <Box>
-                  <Text fontSize="lg">
-                    {data.upcomingGoal.name
-                      ? `"${data.upcomingGoal.name}"`
-                      : "-"}
-                  </Text>
-                  <Text fontSize="sm">
-                    {formatDateDisplay(data.upcomingGoal.dueDate)}
-                  </Text>
+          </GridItem>
+          <GridItem colSpan={12} display="flex" justifyContent={"center"}>
+            <Text fontSize="md" w="50%">
+              Easily find the mentor or coach you've been looking for 🕵️
+            </Text>
+          </GridItem>
+          <GridItem
+            colSpan={12}
+            justifyContent={"end"}
+            display="flex"
+            flexDirection={"column"}
+          >
+            <Box>
+              <Link
+                as={NavLink}
+                justifyContent="center"
+                to={routes.browse}
+                style={{ textDecoration: "none", display: "flex" }}
+                _focus={{ boxShadow: "none" }}
+              >
+                <Button
+                  background="brand.900"
+                  textColor="white"
+                  mb={0}
+                  w="80%"
+                  rightIcon={<FontAwesomeIcon icon={faListDots} />}
+                >
+                  Browse
+                </Button>
+              </Link>
+            </Box>
+          </GridItem>
+        </Grid>
+      </GridItem>
+      <GridItem
+        boxShadow="md"
+        w="100%"
+        colSpan={{ base: 12, lg: 6 }}
+        borderRadius="5"
+      >
+        <Grid padding="5" gap={4}>
+          <GridItem colSpan={12}>
+            <Stack>
+              <Text fontSize="xl" fontWeight="bold">
+                Upcoming Goal Progress
+              </Text>
+              {data.upcomingGoal && (
+                <Box display="flex" justifyContent="center">
+                  <Box>
+                    <Text fontSize="lg">
+                      {data.upcomingGoal.name
+                        ? `"${data.upcomingGoal.name}"`
+                        : "-"}
+                    </Text>
+                    <Text fontSize="sm">
+                      {formatDateDisplay(data.upcomingGoal.dueDate)}
+                    </Text>
+                  </Box>
                 </Box>
-              </Box>
-            )}
+              )}
+            </Stack>
           </GridItem>
           {data.upcomingGoal ? (
             <GridItem display="flex" justifyContent="center" colSpan={12}>
@@ -115,7 +171,12 @@ const Dashboard = () => {
               style={{ textDecoration: "none", display: "flex" }}
               _focus={{ boxShadow: "none" }}
             >
-              <Button background="brand.900" textColor="white">
+              <Button
+                background="brand.900"
+                textColor="white"
+                rightIcon={<FontAwesomeIcon icon={faAward} />}
+                w="80%"
+              >
                 Manage Goals
               </Button>
             </Link>
