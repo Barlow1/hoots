@@ -11,124 +11,103 @@ import {
 } from "@chakra-ui/react";
 import { useUser } from "~/utils/useRootData";
 import { routes } from "../routes";
-import { Link as NavLink } from "@remix-run/react";
+import { Link as NavLink, useLoaderData } from "@remix-run/react";
 import { requireUser } from "~/utils/user.session";
-import type { LoaderFunction } from "@remix-run/node";
+import { json, LoaderFunction } from "@remix-run/node";
+import { Goal } from "@prisma/client";
+import { calculateGoalProgress } from "~/utils/calculateGoalProgress";
+import { formatDateDisplay } from "~/utils/dates";
+
+interface DashBoardLoaderData {
+  upcomingGoal: Goal | undefined;
+}
 
 export const loader: LoaderFunction = async ({ request }) => {
-  await requireUser(request);
+  const baseUrl = new URL(request.url).origin;
+  const user = await requireUser(request);
+  const goals: Goal[] = await fetch(
+    `${baseUrl}/.netlify/functions/get-goals?userId=${user?.id}`
+  )
+    .then((goals) => goals.json())
+    .catch(() => {
+      console.error("Failed to get goals, please try again in a few minutes.");
+    });
+  // filter to only current goals and sort by most recent first
+  const filtered = goals
+    .filter((goal) => new Date(goal.dueDate).getTime() > new Date().getTime())
+    .sort((a, b) => {
+      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+    });
+
+  const upcomingGoal = filtered.at(0);
+  return json({ upcomingGoal });
   return null;
 };
 
 const Dashboard = () => {
+  const data = useLoaderData<DashBoardLoaderData>();
   const user = useUser();
-  const userObject = {
-    industry: "Engineering",
-    mentorName: "Ian Mckellen",
-    date: "August 1st, 2022",
-    nextMilestone: "Learn React and Redux",
-    nextMilestoneDate: "August 10th, 2022",
-    ...user,
-  };
-
+  const goalProgress = calculateGoalProgress(data.upcomingGoal?.milestones);
   return (
     <Grid gap={6}>
-      <GridItem boxShadow="2xl" colSpan={12} w="100%" borderRadius="5">
+      <GridItem boxShadow="md" colSpan={12} w="100%" borderRadius="5">
         <Box padding="5">
           <Grid gap={6}>
             <GridItem colSpan={12}>
               <Text fontSize="xl" fontWeight="bold">
-                {userObject && `${userObject.firstName} ${userObject.lastName}`}
+                {user && `${user.firstName} ${user.lastName}`}
               </Text>
-              <Text fontSize="sm">{userObject.email}</Text>
-            </GridItem>
-            <GridItem colSpan={3}>
-              <Text textColor="#9faec0" fontWeight="bold">
-                Mentor
-              </Text>
-              <Box pt="2" display="flex">
-                <Avatar
-                  size={"sm"}
-                  src={
-                    "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                  }
-                />
-                <Text
-                  justifyContent="center"
-                  alignItems="center"
-                  display="flex"
-                  pl="2"
-                  fontSize="sm"
-                >
-                  {userObject.mentorName}
-                </Text>
-              </Box>
+              <Text fontSize="sm">{user?.email}</Text>
             </GridItem>
             <GridItem colSpan={3}>
               <Text textColor="#9faec0" fontWeight="bold">
                 Industry
               </Text>
               <Text pt="3" m="auto" fontSize="sm">
-                {userObject.industry}
+                {user?.industry || "-"}
               </Text>
             </GridItem>
           </Grid>
         </Box>
       </GridItem>
-      <GridItem boxShadow="2xl" w="100%" colSpan={4} borderRadius="5">
+      <GridItem boxShadow="md" w="100%" colSpan={12} borderRadius="5">
         <Grid padding="5" gap={4}>
           <GridItem colSpan={12}>
             <Text fontSize="xl" fontWeight="bold">
-              Upcoming Meeting
+              Upcoming Goal Progress
             </Text>
-            <Text fontSize="sm">{userObject.date}</Text>
+            {data.upcomingGoal && (
+              <Box display="flex" justifyContent="center">
+                <Box>
+                  <Text fontSize="lg">
+                    {data.upcomingGoal.name
+                      ? `"${data.upcomingGoal.name}"`
+                      : "-"}
+                  </Text>
+                  <Text fontSize="sm">
+                    {formatDateDisplay(data.upcomingGoal.dueDate)}
+                  </Text>
+                </Box>
+              </Box>
+            )}
           </GridItem>
-          <GridItem display="flex" justifyContent="center" colSpan={12}>
-            <Text fontSize="6xl" fontWeight="bold">
-              10
-            </Text>
-            <Text
-              fontSize="xl"
-              justifyContent="center"
-              alignItems="center"
-              display="flex"
-              pl="2"
-              fontWeight="bold"
-            >
-              Days away
-            </Text>
-          </GridItem>
-          <GridItem colSpan={12}>
-            <Link
-              as={NavLink}
-              justifyContent="center"
-              href={routes.home}
-              style={{ textDecoration: "none", display: "flex" }}
-              _focus={{ boxShadow: "none" }}
-              to={`${routes.meet}/12345`}
-            >
-              <Button background="brand.900" textColor="white">
-                Add Agenda Items
-              </Button>
-            </Link>
-          </GridItem>
-        </Grid>
-      </GridItem>
-      <GridItem boxShadow="2xl" w="100%" colSpan={4} borderRadius="5">
-        <Grid padding="5" gap={4}>
-          <GridItem colSpan={12}>
-            <Text fontSize="xl" fontWeight="bold">
-              Goal Progress
-            </Text>
-            <Text fontSize="sm">{userObject.nextMilestone}</Text>
-          </GridItem>
-          <GridItem display="flex" justifyContent="center" colSpan={12}>
-            <CircularProgress value={75} color="green.400" size="90px">
-              <CircularProgressLabel fontSize="xs">
-                75% Complete
-              </CircularProgressLabel>
-            </CircularProgress>
-          </GridItem>
+          {data.upcomingGoal ? (
+            <GridItem display="flex" justifyContent="center" colSpan={12}>
+              <CircularProgress
+                value={goalProgress}
+                color="green.400"
+                size="150px"
+              >
+                <CircularProgressLabel>
+                  {`${goalProgress}%`}
+                </CircularProgressLabel>
+              </CircularProgress>
+            </GridItem>
+          ) : (
+            <GridItem display="flex" justifyContent="center" colSpan={12}>
+              <Text fontSize="lg">No upcoming goal found.</Text>
+            </GridItem>
+          )}
           <GridItem colSpan={12}>
             <Link
               justifyContent="center"
@@ -138,31 +117,6 @@ const Dashboard = () => {
             >
               <Button background="brand.900" textColor="white">
                 Manage Goals
-              </Button>
-            </Link>
-          </GridItem>
-        </Grid>
-      </GridItem>
-      <GridItem boxShadow="2xl" w="100%" colSpan={4} borderRadius="5">
-        <Grid padding="5" gap={4}>
-          <GridItem colSpan={12}>
-            <Text fontSize="xl" fontWeight="bold">
-              Next Milestone
-            </Text>
-            <Text fontSize="sm">{userObject.nextMilestoneDate}</Text>
-          </GridItem>
-          <GridItem display="flex" justifyContent="center" colSpan={12}>
-            <Text fontSize="lg">{userObject.nextMilestone}</Text>
-          </GridItem>
-          <GridItem colSpan={12}>
-            <Link
-              justifyContent="center"
-              href={routes.home}
-              style={{ textDecoration: "none", display: "flex" }}
-              _focus={{ boxShadow: "none" }}
-            >
-              <Button background="brand.900" textColor="white">
-                Mark as Complete
               </Button>
             </Link>
           </GridItem>
