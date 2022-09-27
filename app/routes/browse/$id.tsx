@@ -58,6 +58,8 @@ export const MentorPage = () => {
           _hover={{ bg: "brand.200" }}
           style={{ color: "white" }}
           float="right"
+          as={Link}
+          to={"apply"}
         >
           Apply{" "}
           <FontAwesomeIcon
