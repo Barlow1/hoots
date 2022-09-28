@@ -42,11 +42,14 @@ export async function requireUser(request: Request): Promise<Profile> {
   if (!user) {
     const session = await getUserSession(request);
     await session.destroy();
-    throw redirect("/login", {
-      headers: {
-        "Set-Cookie": await session.destroy(),
-      },
-    });
+    throw redirect(
+      `/login?returnTo=${encodeURIComponent(new URL(request.url).toString())}`,
+      {
+        headers: {
+          "Set-Cookie": await session.destroy(),
+        },
+      }
+    );
   }
   return user;
 }

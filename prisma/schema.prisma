@@ -8,10 +8,10 @@ datasource db {
 }
 
 type GoalMilestone {
-  id       String  @default(uuid())
-  date     String
-  name     String
-  notes    String
+  id        String  @default(uuid())
+  date      String
+  name      String
+  notes     String
   completed Boolean
 }
 
@@ -39,37 +39,59 @@ model Meeting {
 }
 
 model Mentor {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  bio           String
-  company       String
-  cost          Int?
-  experience    Int
-  img           String
-  name          String
-  occupation    String
-  tags          String[]
-  industry      String
-  mentorBio     String?
-  achievements  String?
-  mentoringGoal String?
-  twitter       String?
-  website       String?
-  linkedIn      String?
-  github        String?
-  profile       Profile? @relation(fields: [profileId], references: [id])
-  profileId     String?  @unique
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
+  bio                String
+  company            String
+  cost               Int?
+  experience         Int
+  img                String
+  name               String
+  occupation         String
+  tags               String[]
+  industry           String
+  mentorBio          String?
+  achievements       String?
+  mentoringGoal      String?
+  twitter            String?
+  website            String?
+  linkedIn           String?
+  github             String?
+  profile            Profile?      @relation(fields: [profileId], references: [id])
+  profileId          String?       @unique
+  mentorApplications Application[] @relation("MentorApplications")
 }
 
 model Profile {
-  id                String                    @id @default(auto()) @map("_id") @db.ObjectId
-  bio               String?
-  email             String                    @unique
-  experience        Int?
-  firstName         String
-  img               String?
-  industry          String?
-  lastName          String
-  mentorPreferences ProfileMentorPreferences?
-  password          String
-  mentorProfile     Mentor?
+  id                 String                    @id @default(auto()) @map("_id") @db.ObjectId
+  bio                String?
+  email              String                    @unique
+  experience         Int?
+  firstName          String
+  img                String?
+  industry           String?
+  lastName           String
+  mentorPreferences  ProfileMentorPreferences?
+  password           String
+  mentorProfile      Mentor?
+  menteeApplications Application[]             @relation("MenteeApplications")
+}
+
+model Application {
+  id        String            @id @default(auto()) @map("_id") @db.ObjectId
+  desires   String
+  goal      String
+  progress  String
+  deadline  String
+  questions String?
+  mentee    Profile           @relation("MenteeApplications", fields: [menteeId], references: [id])
+  menteeId  String
+  mentor    Mentor            @relation("MentorApplications", fields: [mentorId], references: [id])
+  mentorId  String
+  status    ApplicationStatus @default(UNREAD)
+}
+
+enum ApplicationStatus {
+  UNREAD
+  DENIED
+  APPROVED
 }

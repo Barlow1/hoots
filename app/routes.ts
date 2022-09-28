@@ -10,4 +10,5 @@ export const routes = {
   startAbout: "/start/about",
   newMentorProfile: "/new-mentor-profile",
   createMentor: "/mentor-profile/create",
+  applicationsInbox: "applications/inbox"
 };
