@@ -66,7 +66,7 @@ export const MentorPage = () => {
           <Text>🏢 {mentor?.company}</Text>
           <Text>🕒 {mentor?.experience} years</Text>
           <Text>💲 {mentor?.cost || "FREE"}</Text>
-          <Flex wrap={"wrap"}>
+          <Flex py={1} wrap={"wrap"}>
             {mentor?.tags.map((tag: any) => {
               return (
                 <Tag
@@ -81,7 +81,7 @@ export const MentorPage = () => {
               );
             })}
           </Flex>
-          <Text pt={1}>{mentor?.bio}</Text>
+          <Text>{mentor?.bio}</Text>
           <Button
             backgroundColor={"brand.500"}
             _hover={{ bg: "brand.200" }}
