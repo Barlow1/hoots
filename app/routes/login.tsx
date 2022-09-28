@@ -32,6 +32,7 @@ export const action: ActionFunction = async ({
 }) => {
   const requestText = await request.text();
   const form = new URLSearchParams(requestText);
+  const returnTo = new URL(request.url).searchParams.get("returnTo");
   const values = {
     email: form.get("email") ?? "",
     password: form.get("password") ?? "",
@@ -56,7 +57,7 @@ export const action: ActionFunction = async ({
     const userSession = await getUserSession(request);
     userSession.setUser(user);
     data = { status: "success" };
-    return redirect(routes.home, {
+    return redirect(returnTo ?? routes.home, {
       headers: { "Set-Cookie": await userSession.commit() },
     });
   }
