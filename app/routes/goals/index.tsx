@@ -1,4 +1,19 @@
-import { Box, Button, Grid, GridItem, Progress } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Grid,
+  GridItem,
+  Link,
+  Progress,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  Text,
+} from "@chakra-ui/react";
 import {
   AddIcon,
   EditIcon,
@@ -9,7 +24,13 @@ import * as React from "react";
 import { GoalsDialog } from "../../components/goalsDialog";
 import { routes } from "../../routes";
 import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  Link as NavLink,
+  useFetcher,
+  useLoaderData,
+  useNavigate,
+} from "@remix-run/react";
 import { getUser, requireUser } from "~/utils/user.session";
 import { Goal, GoalMilestone } from "@prisma/client";
 import { formatDateDisplay } from "~/utils/dates";
@@ -44,7 +65,7 @@ export const action: ActionFunction = async ({ request }) => {
       }`,
       {
         method: "DELETE",
-        body: null
+        body: null,
       }
     ).catch(() => {
       console.error(
@@ -114,47 +135,61 @@ export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
           Add Goal <AddIcon style={{ marginLeft: "0.5em" }} />
         </Button>
       </Box>
-      <Grid
-        templateColumns="repeat(16, 1fr)"
-        style={{
-          border: "2px solid #E2E8F0",
-          borderRadius: "10px",
-          padding: "0rem 1rem 1rem 1rem",
-        }}
-      >
-        <GridItem colSpan={1} style={{ padding: "1rem" }}></GridItem>
-        <GridItem colSpan={4} style={{ padding: "1rem", fontWeight: "bold" }}>
-          Goal
-        </GridItem>
-        <GridItem colSpan={4} style={{ padding: "1rem", fontWeight: "bold" }}>
-          Due
-        </GridItem>
-        <GridItem
-          colSpan={4}
-          style={{ padding: "1rem", textAlign: "right", fontWeight: "bold" }}
+      <TableContainer whiteSpace={{ md: "nowrap", base: "unset" }}>
+        <Table
+          style={{
+            border: "2px solid #E2E8F0",
+            borderRadius: "10px",
+            padding: "1rem",
+            minWidth: "20%",
+          }}
         >
-          Progress
-        </GridItem>
-        <GridItem
-          colSpan={3}
-          style={{ padding: "1rem", fontWeight: "bold", textAlign: "center" }}
-        >
-          Actions
-        </GridItem>
-        {userGoals.map((item, index) => {
-          return (
-            <GoalsItem
-              key={`goal-${index}`}
-              name={item.name ?? ""}
-              dueDate={item.dueDate ?? ""}
-              progress={calculateGoalProgress(item.milestones) ?? 0}
-              id={item.id}
-              openDialog={openDialog}
-              onDelete={onDelete}
-            />
-          );
-        })}
-      </Grid>
+          <Thead>
+            <Tr>
+              <Th style={{ padding: "1rem", fontWeight: "bold" }}>Goal</Th>
+              <Th
+                style={{ padding: "1rem", fontWeight: "bold" }}
+                display={{ md: "revert", base: "none" }}
+              >
+                Due
+              </Th>
+              <Th
+                style={{
+                  padding: "1rem",
+                  textAlign: "right",
+                  fontWeight: "bold",
+                }}
+                display={{ md: "revert", base: "none" }}
+              >
+                Progress
+              </Th>
+              <Th
+                style={{
+                  padding: "1rem",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+                display={{ md: "revert", base: "none" }}
+              ></Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {userGoals.map((item, index) => {
+              return (
+                <GoalsItem
+                  key={`goal-${index}`}
+                  name={item.name ?? ""}
+                  dueDate={item.dueDate ?? ""}
+                  progress={calculateGoalProgress(item.milestones) ?? 0}
+                  id={item.id}
+                  openDialog={openDialog}
+                  onDelete={onDelete}
+                />
+              );
+            })}
+          </Tbody>
+        </Table>
+      </TableContainer>
       <GoalsDialog
         userGoals={userGoals}
         isDialogOpen={isDialogOpen}
@@ -192,29 +227,33 @@ export const GoalsItem = ({
   const utcDate = formatDateDisplay(dueDate);
   const deleteFetcher = useFetcher();
   return (
-    <>
-      <GridItem colSpan={1} style={gridItemStyle}>
-        <Link to={`${routes.goals}/${id}`}>
-          <ChevronRightIcon />
-        </Link>
-      </GridItem>
-      <GridItem colSpan={4} style={gridItemStyle}>
-        <Link to={`${routes.goals}/${id}`}>{name}</Link>
-      </GridItem>
-      <GridItem colSpan={4} style={gridItemStyle}>
-        <Link to={`${routes.goals}/${id}`}>{utcDate}</Link>
-      </GridItem>
-      <GridItem
-        colSpan={4}
-        style={
-          progress < 100
-            ? {
-                padding: "1rem",
-                borderTop: "2px solid #E2E8F0",
-              }
-            : { ...gridItemStyle, justifyContent: "right" }
-        }
+    <Tr
+      _focus={{ bgColor: "blackAlpha.50", cursor: "pointer" }}
+      display={{
+        md: "revert",
+        base: "flex",
+      }}
+      flexDirection={{
+        md: "unset",
+        base: "column",
+      }}
+    >
+      <Td
+        display={{
+          md: "revert",
+          base: "flex",
+        }}
+        flexDirection={{
+          md: "unset",
+          base: "column",
+        }}
       >
+        <Link as={NavLink} to={`${routes.goals}/${id}`} color={"brand.900"}>
+          <Text fontWeight={"bold"}>{name}</Text>
+        </Link>
+      </Td>
+      <Td>{utcDate}</Td>
+      <Td>
         {progress < 100 && (
           <>
             <Progress
@@ -227,31 +266,40 @@ export const GoalsItem = ({
           </>
         )}
         {progress === 100 && "Complete 🎉"}
-      </GridItem>
-      <GridItem
-        colSpan={3}
+      </Td>
+      <Td
         style={{
           display: "flex",
           padding: "1rem",
-          borderTop: "2px solid #E2E8F0",
           justifyContent: "space-evenly",
           alignContent: "center",
         }}
+        borderBottom={{
+          md: "0",
+          base: "2px solid #E2E8F0",
+        }}
       >
         <Button
-          style={{ backgroundColor: "#3182CE" }}
+          colorScheme="blue"
+          name="editGoal"
           onClick={() => openDialog(id)}
+          variant="ghost"
         >
-          <EditIcon style={{ color: "white" }} />
+          <EditIcon style={{ color: "grey" }} />
         </Button>
         <deleteFetcher.Form method="delete">
           <input hidden name="goalId" value={id} />
-          <Button style={{ backgroundColor: "#E53E3E" }} type="submit">
-            <DeleteIcon style={{ color: "white" }} />
+          <Button
+            colorScheme="red"
+            type="submit"
+            name="deleteGoal"
+            variant="ghost"
+          >
+            <DeleteIcon style={{ color: "grey" }} />
           </Button>
         </deleteFetcher.Form>
-      </GridItem>
-    </>
+      </Td>
+    </Tr>
   );
 };
 
