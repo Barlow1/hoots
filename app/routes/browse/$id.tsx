@@ -53,24 +53,10 @@ export const MentorPage = () => {
         >
           Back
         </Button>
-        <Button
-          backgroundColor={"brand.500"}
-          _hover={{ bg: "brand.200" }}
-          style={{ color: "white" }}
-          float="right"
-          as={Link}
-          to={"apply"}
-        >
-          Apply{" "}
-          <FontAwesomeIcon
-            icon={faPaperPlane}
-            style={{ marginLeft: "0.5em" }}
-          />
-        </Button>
       </Flex>
-      <Flex justifyContent={"center"}>
+      <Flex justifyContent={"center"} maxW="xl" mx={"auto"}>
         <Flex direction={"column"}>
-          <Flex justifyContent={"center"}>
+          <Flex justifyContent={"center"} pb={5}>
             <Avatar size="2xl" src={mentor?.img} />
           </Flex>
           <Heading as="h2" size="lg" noOfLines={1}>
@@ -80,16 +66,39 @@ export const MentorPage = () => {
           <Text>🏢 {mentor?.company}</Text>
           <Text>🕒 {mentor?.experience} years</Text>
           <Text>💲 {mentor?.cost || "FREE"}</Text>
-          <HStack spacing={2}>
+          <Flex py={1} wrap={"wrap"}>
             {mentor?.tags.map((tag: any) => {
               return (
-                <Tag key={tag} background="brand.500" color="white">
+                <Tag
+                  key={tag}
+                  background="brand.500"
+                  color="white"
+                  mr={1}
+                  mb={1}
+                >
                   {tag}
                 </Tag>
               );
             })}
-          </HStack>
+          </Flex>
           <Text>{mentor?.bio}</Text>
+          <Button
+            backgroundColor={"brand.500"}
+            _hover={{ bg: "brand.200" }}
+            style={{ color: "white" }}
+            justifySelf="center"
+            as={Link}
+            to={"apply"}
+            mt={5}
+            w="full"
+            mx={"auto"}
+          >
+            Apply{" "}
+            <FontAwesomeIcon
+              icon={faPaperPlane}
+              style={{ marginLeft: "0.5em" }}
+            />
+          </Button>
         </Flex>
       </Flex>
     </Box>

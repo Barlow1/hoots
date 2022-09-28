@@ -32,6 +32,8 @@ type Route = {
   data: { mentors: Mentor[] };
 };
 
+const TAG_LIMIT = 5;
+
 const buildMentorFetchUrl = (
   baseUrl: string | undefined,
   query: string | null,
@@ -165,6 +167,8 @@ const Browse = () => {
           templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
           gap={5}
           pt="5"
+          display={{ md: "grid", base: "flex" }}
+          flexDir={{ md: "unset", base: "column" }}
         >
           {data.mentors?.map((mentor) => {
             return (
@@ -191,15 +195,21 @@ const Browse = () => {
                     <Text>🏢 {mentor.company}</Text>
                     <Text>🕒 {mentor.experience} years</Text>
                     <Text>💲 {mentor.cost || "FREE"}</Text>
-                    <HStack spacing={2}>
-                      {mentor.tags.map((tag) => {
+                    <Flex wrap={"wrap"}>
+                      {mentor.tags.slice(0, TAG_LIMIT).map((tag) => {
                         return (
-                          <Tag key={tag} background="brand.500" color="white">
+                          <Tag
+                            key={tag}
+                            background="brand.500"
+                            color="white"
+                            mr={1}
+                            mb={1}
+                          >
                             {tag}
                           </Tag>
                         );
                       })}
-                    </HStack>
+                    </Flex>
                     <Text noOfLines={3}>{mentor.bio}</Text>
                   </Box>
                 </Link>

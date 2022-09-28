@@ -243,7 +243,7 @@ const MilestonePage = () => {
         </Stack>
       </Box>
       <Box style={{ minWidth: "70%", height: "100%" }}>
-        <Box style={{ width: "100%", textAlign: "left" }}>
+        <Box style={{ width: "100%", textAlign: "right" }}>
           <Button
             backgroundColor={"brand.500"}
             _hover={{ bg: "brand.200" }}
@@ -253,7 +253,7 @@ const MilestonePage = () => {
             Add Milestone <AddIcon style={{ marginLeft: "0.5em" }} />
           </Button>
         </Box>
-        <TableContainer>
+        <TableContainer whiteSpace={{ md: "nowrap", base: "unset" }}>
           <Table
             style={{
               border: "2px solid #E2E8F0",
@@ -459,7 +459,12 @@ export const MilestoneDrawer = ({
 
           <deleteFetcher.Form method="delete">
             <Stack marginTop={3} direction={"row"}>
-              <Button colorScheme="gray" mr={3} onClick={onDrawerClose} w="100%">
+              <Button
+                colorScheme="gray"
+                mr={3}
+                onClick={onDrawerClose}
+                w="100%"
+              >
                 Cancel
                 <FontAwesomeIcon
                   style={{ marginLeft: "1rem" }}
