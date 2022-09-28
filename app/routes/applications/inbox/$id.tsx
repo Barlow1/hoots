@@ -7,10 +7,7 @@ import {
   Heading,
   Stack,
 } from "@chakra-ui/react";
-import {
-  faCheck,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Application, prisma, PrismaClient, Profile } from "@prisma/client";
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
@@ -136,10 +133,29 @@ export default function ApplicationInboxRequest() {
         <Flex>
           <Avatar src={mentee?.img ?? undefined} />
           <Text fontSize={"md"} color={"gray.600"} alignSelf={"center"} ml={3}>
-            Submitted by {mentee?.firstName} {mentee?.lastName}
+            Submitted by {mentee?.firstName} {mentee?.lastName}{" "}
+            {`(${mentee?.email})`}
           </Text>
         </Flex>
         <Stack spacing={3}>
+          <Box>
+            <Text fontSize={"sm"} textColor="grey.400" fontWeight={"bold"}>
+              Industry
+            </Text>
+            <Text>{mentee?.industry}</Text>
+          </Box>
+          <Box>
+            <Text fontSize={"sm"} textColor="grey.400" fontWeight={"bold"}>
+              Experience
+            </Text>
+            <Text>{mentee?.experience} years</Text>
+          </Box>
+          <Box>
+            <Text fontSize={"sm"} textColor="grey.400" fontWeight={"bold"}>
+              Bio
+            </Text>
+            <Text>{mentee?.bio}</Text>
+          </Box>
           <Box>
             <Text fontSize={"sm"} textColor="grey.400" fontWeight={"bold"}>
               Desires
