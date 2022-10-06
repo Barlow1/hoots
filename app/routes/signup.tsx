@@ -28,6 +28,11 @@ import { useUser } from "~/utils/useRootData";
 import Logo from "../assets/Logo.svg";
 import { getUserSession } from "~/utils/user.session";
 import { ActionFunction, json, redirect } from "@remix-run/node";
+import {
+  createVerificationLink,
+} from "~/utils/email-verification.server";
+import { sendEmail } from "~/utils/email.server";
+import { Profile } from "@prisma/client";
 
 export const action: ActionFunction = async ({
   request,
@@ -57,12 +62,26 @@ export const action: ActionFunction = async ({
   if (response.error) {
     error = response.error;
   } else if (response.user) {
-    console.log("found user", response.user);
-    const user = response.user;
+    const user: Profile = response.user;
+    const verificationLink = createVerificationLink({
+      email: user.email,
+      domainUrl: baseUrl,
+    });
+    sendEmail({
+      toName: `${user.firstName} ${user.lastName}`,
+      fromName: "Hoots",
+      email: user.email,
+      subject: "Email Verification",
+      variables: {
+        firstName: user.firstName,
+        verificationLink,
+      },
+      template: "email-verification",
+    });
     const userSession = await getUserSession(request);
     userSession.setUser(user);
     data = { status: "success" };
-    return redirect(routes.start, {
+    return redirect(routes.startCheckEmail, {
       headers: { "Set-Cookie": await userSession.commit() },
     });
   }

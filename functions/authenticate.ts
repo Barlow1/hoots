@@ -1,8 +1,7 @@
 import { Handler } from "@netlify/functions";
 import { PrismaClient } from "@prisma/client";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 import { exclude } from "~/utils/exclude";
-
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -12,8 +11,6 @@ const CORS_HEADERS = {
 
 const handler: Handler = async (event, context) => {
   const body = JSON.parse(event.body ?? "{}");
-  console.log("BODY", body);
-
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -66,7 +63,7 @@ const handler: Handler = async (event, context) => {
     }
   } catch (error) {
     if (error instanceof Error)
-    console.error("Failed to authenticate user", error.message);
+      console.error("Failed to authenticate user", error.message);
     throw error;
   } finally {
     await prisma.$disconnect();

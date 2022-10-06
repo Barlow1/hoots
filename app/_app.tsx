@@ -18,6 +18,7 @@ const App = ({ children, user }: AppProps) => {
       routes.start,
       routes.newMentorProfile,
       routes.startCheckEmail,
+      routes.startVerifyEmail
     ].includes(location.pathname)
   ) {
     return <>{children}</>;

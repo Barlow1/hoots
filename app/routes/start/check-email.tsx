@@ -26,13 +26,17 @@ import {
   LoaderFunction,
   redirect,
 } from "@remix-run/server-runtime";
+import { userInfo } from "os";
 import LargeCheckBox from "~/components/LargeCheckBox";
 import { routes } from "~/routes";
-import { requireUser } from "~/utils/user.session";
+import { getUser, requireUser } from "~/utils/user.session";
 import Logo from "../../assets/Logo.svg";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  await requireUser(request);
+  const user = await getUser(request);
+  if (user.verified) {
+    throw redirect(routes.start);
+  }
   return null;
 };
 
