@@ -1,5 +1,6 @@
 import type { Profile } from "@prisma/client";
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
+import { routes } from "~/routes";
 
 const date = new Date();
 const userSessionExpirationDate = new Date(date.setDate(date.getDate() + 30));
@@ -38,10 +39,9 @@ export const getUser = async (request: Request) => {
 };
 
 export async function requireUser(request: Request): Promise<Profile> {
-  const user = await getUser(request);
+  const user: Profile = await getUser(request);
+  const session = await getUserSession(request);
   if (!user) {
-    const session = await getUserSession(request);
-    await session.destroy();
     throw redirect(
       `/login?returnTo=${encodeURIComponent(new URL(request.url).toString())}`,
       {
@@ -50,6 +50,9 @@ export async function requireUser(request: Request): Promise<Profile> {
         },
       }
     );
+  }
+  if (!user.verified) {
+    throw redirect(routes.startCheckEmail);
   }
   return user;
 }

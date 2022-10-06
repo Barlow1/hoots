@@ -74,6 +74,7 @@ model Profile {
   password           String
   mentorProfile      Mentor?
   menteeApplications Application[]             @relation("MenteeApplications")
+  verified           Boolean                   @default(false)
 }
 
 model Application {
