@@ -135,61 +135,67 @@ export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
           Add Goal <AddIcon style={{ marginLeft: "0.5em" }} />
         </Button>
       </Box>
-      <TableContainer whiteSpace={{ md: "nowrap", base: "unset" }}>
-        <Table
-          style={{
-            border: "2px solid #E2E8F0",
-            borderRadius: "10px",
-            padding: "1rem",
-            minWidth: "20%",
-          }}
-        >
-          <Thead>
-            <Tr>
-              <Th style={{ padding: "1rem", fontWeight: "bold" }}>Goal</Th>
-              <Th
-                style={{ padding: "1rem", fontWeight: "bold" }}
-                display={{ md: "revert", base: "none" }}
-              >
-                Due
-              </Th>
-              <Th
-                style={{
-                  padding: "1rem",
-                  textAlign: "right",
-                  fontWeight: "bold",
-                }}
-                display={{ md: "revert", base: "none" }}
-              >
-                Progress
-              </Th>
-              <Th
-                style={{
-                  padding: "1rem",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                }}
-                display={{ md: "revert", base: "none" }}
-              ></Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {userGoals.map((item, index) => {
-              return (
-                <GoalsItem
-                  key={`goal-${index}`}
-                  name={item.name ?? ""}
-                  dueDate={item.dueDate ?? ""}
-                  progress={calculateGoalProgress(item.milestones) ?? 0}
-                  id={item.id}
-                  openDialog={openDialog}
-                  onDelete={onDelete}
-                />
-              );
-            })}
-          </Tbody>
-        </Table>
-      </TableContainer>
+      {userGoals.length > 0 ? (
+        <TableContainer whiteSpace={{ md: "nowrap", base: "unset" }}>
+          <Table
+            style={{
+              border: "2px solid #E2E8F0",
+              borderRadius: "10px",
+              padding: "1rem",
+              minWidth: "20%",
+            }}
+          >
+            <Thead>
+              <Tr>
+                <Th style={{ padding: "1rem", fontWeight: "bold" }}>Goal</Th>
+                <Th
+                  style={{ padding: "1rem", fontWeight: "bold" }}
+                  display={{ md: "revert", base: "none" }}
+                >
+                  Due
+                </Th>
+                <Th
+                  style={{
+                    padding: "1rem",
+                    textAlign: "right",
+                    fontWeight: "bold",
+                  }}
+                  display={{ md: "revert", base: "none" }}
+                >
+                  Progress
+                </Th>
+                <Th
+                  style={{
+                    padding: "1rem",
+                    fontWeight: "bold",
+                    textAlign: "center",
+                  }}
+                  display={{ md: "revert", base: "none" }}
+                ></Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {userGoals.map((item, index) => {
+                return (
+                  <GoalsItem
+                    key={`goal-${index}`}
+                    name={item.name ?? ""}
+                    dueDate={item.dueDate ?? ""}
+                    progress={calculateGoalProgress(item.milestones) ?? 0}
+                    id={item.id}
+                    openDialog={openDialog}
+                    onDelete={onDelete}
+                  />
+                );
+              })}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      ) : (
+        <Text fontSize="md" textAlign={"center"}>
+          No goals found. 😢 Add one now!
+        </Text>
+      )}
       <GoalsDialog
         userGoals={userGoals}
         isDialogOpen={isDialogOpen}
