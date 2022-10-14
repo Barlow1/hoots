@@ -10,11 +10,13 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useLocation,
 } from "@remix-run/react";
 import React, { useContext, useEffect } from "react";
 import { ClientStyleContext, ServerStyleContext } from "./context";
 import { getUser } from "./utils/user.session";
 import App from "./_app";
+import * as gtag from "~/utils/gtags.client";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -79,9 +81,36 @@ export const Root = withEmotionCache(
     }, []);
 
     const data = useLoaderData();
+    const gaTrackingId = "G-N1KVNXJ313";
+    const location = useLocation();
+
+    useEffect(() => {
+      if (gaTrackingId?.length) {
+        gtag.pageview(location.pathname, gaTrackingId);
+      }
+    }, [location]);
     return (
       <html lang="en">
         <head>
+          {/* <!-- Global site tag (gtag.js) - Google Analytics --> */}
+          <script
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${gaTrackingId}`}
+          ></script>
+          <script
+            async
+            id="gtag-init"
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${gaTrackingId}', {
+                  page_path: window.location.pathname,
+                });
+              `,
+            }}
+          />
           <Meta />
           <Links />
           <link rel="icon" type="image/png" sizes="16x16" href="/emblem.png" />
