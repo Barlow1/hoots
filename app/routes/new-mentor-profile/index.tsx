@@ -79,7 +79,11 @@ export const action: ActionFunction = async ({ request }) => {
   if (response.error) {
     error = response.error;
   } else if (response.mentorProfile) {
-    return redirect(isSeekingMentor ? routes.browse : routes.home);
+    return redirect(
+      isSeekingMentor
+        ? routes.browse
+        : `${routes.browse}/${response.mentorProfile.id}`
+    );
   }
   return json({
     error,
