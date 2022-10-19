@@ -6,28 +6,40 @@ import {
   Flex,
   Heading,
   HStack,
+  IconButton,
   Image,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Tag,
   Text,
+  Link,
 } from "@chakra-ui/react";
-import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import {
+  faFacebook,
+  faLinkedin,
+  faTwitter,
+} from "@fortawesome/free-brands-svg-icons";
+import { faEllipsis, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Mentor } from "@prisma/client";
 import { json, LoaderFunction } from "@remix-run/node";
 import {
-  Link,
+  Link as NavLink,
   useLoaderData,
   useLocation,
   useNavigate,
 } from "@remix-run/react";
+import { getFacebookHref } from "~/utils/facebook";
+import { getLinkedInHref } from "~/utils/linkedIn";
+import { getTwitterHref } from "~/utils/twitter";
 
-type Route = {
-  LoaderData: { mentor: Mentor };
-  Params: { id: string };
-};
+type LoaderData = { data: { mentor: Mentor; shareUrl: string } };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const baseUrl = new URL(request.url).origin;
+  const shareUrl = request.url;
   const mentor = await fetch(
     `${baseUrl}/.netlify/functions/get-mentor?id=${params.id}`
   )
@@ -36,12 +48,14 @@ export const loader: LoaderFunction = async ({ params, request }) => {
       console.error("Failed to get mentor, please try again in a few minutes.");
     });
 
-  return json({ data: { mentor: mentor as Mentor } });
+  return json({ data: { mentor: mentor as Mentor, shareUrl } });
 };
 
 export const MentorPage = () => {
-  const { data } = useLoaderData();
+  const { data } = useLoaderData<LoaderData>();
   const mentor = data.mentor;
+  const shareUrl = data.shareUrl;
+  const title = `I'm mentoring on Hoots 🦉 Can't wait to meet with you!`;
   return (
     <Box justifyContent={"center"} key={mentor?.id}>
       <Flex w="full" justifyContent={"space-between"} mb="5">
@@ -53,6 +67,46 @@ export const MentorPage = () => {
         >
           Back
         </Button>
+        <Menu>
+          <MenuButton
+            as={IconButton}
+            aria-label="Options"
+            icon={<FontAwesomeIcon icon={faEllipsis} />}
+          ></MenuButton>
+          <MenuList>
+            <MenuItem
+              as={Link}
+              icon={<FontAwesomeIcon icon={faTwitter} />}
+              href={getTwitterHref({
+                url: shareUrl,
+                title,
+              })}
+              isExternal
+            >
+              Share on Twitter
+            </MenuItem>
+            <MenuItem
+              as={Link}
+              icon={<FontAwesomeIcon icon={faLinkedin} />}
+              href={getLinkedInHref({
+                url: shareUrl,
+              })}
+              isExternal
+            >
+              Share on LinkedIn
+            </MenuItem>
+            <MenuItem
+              as={Link}
+              icon={<FontAwesomeIcon icon={faFacebook} />}
+              href={getFacebookHref({
+                url: shareUrl,
+              })}
+              isExternal
+            >
+              Share on Facebook
+            </MenuItem>
+          </MenuList>
+        </Menu>
       </Flex>
       <Flex justifyContent={"center"} maxW="xl" mx={"auto"}>
         <Flex direction={"column"}>
@@ -87,7 +141,7 @@ export const MentorPage = () => {
             _hover={{ bg: "brand.200" }}
             style={{ color: "white" }}
             justifySelf="center"
-            as={Link}
+            as={NavLink}
             to={"apply"}
             mt={5}
             w="full"
