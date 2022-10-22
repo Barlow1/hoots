@@ -39,7 +39,7 @@ export const action: ActionFunction = async ({ request }) => {
     email: user.email,
     domainUrl: baseUrl,
   });
-  sendEmail({
+  await sendEmail({
     toName: `${user.firstName} ${user.lastName}`,
     fromName: "Hoots",
     email: user.email,

@@ -28,9 +28,7 @@ import { useUser } from "~/utils/useRootData";
 import Logo from "../assets/Logo.svg";
 import { getUserSession } from "~/utils/user.session";
 import { ActionFunction, json, redirect } from "@remix-run/node";
-import {
-  createVerificationLink,
-} from "~/utils/email-verification.server";
+import { createVerificationLink } from "~/utils/email-verification.server";
 import { sendEmail } from "~/utils/email.server";
 import { Profile } from "@prisma/client";
 
@@ -67,7 +65,7 @@ export const action: ActionFunction = async ({
       email: user.email,
       domainUrl: baseUrl,
     });
-    sendEmail({
+    await sendEmail({
       toName: `${user.firstName} ${user.lastName}`,
       fromName: "Hoots",
       email: user.email,

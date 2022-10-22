@@ -10,7 +10,7 @@ export interface IMailgunMessage {
   variables: { [key: string]: string };
 }
 
-export function sendEmail({
+export async function sendEmail({
   toName,
   fromName,
   email,
@@ -38,5 +38,5 @@ export function sendEmail({
     template,
     message,
   };
-  mgClient.messages.create(DOMAIN, data);
+  await mgClient.messages.create(DOMAIN, data);
 }

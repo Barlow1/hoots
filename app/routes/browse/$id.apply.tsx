@@ -75,7 +75,7 @@ export const action: ActionFunction = async ({ request }) => {
     prisma.$disconnect();
   }
   try {
-    sendEmail({
+    await sendEmail({
       fromName: `${user.firstName} ${user.lastName} via Hoots`,
       toName: values.mentorFirstName,
       email: values.mentorEmail,
