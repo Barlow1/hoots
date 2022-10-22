@@ -103,7 +103,7 @@ export const action: ActionFunction = async ({ request }) => {
         .finally(() => {
           prisma.$disconnect();
         });
-      sendEmail({
+      await sendEmail({
         fromName: `${user.firstName} ${user.lastName} via Hoots`,
         toName: values.menteeFirstName,
         email: values.menteeEmail,
@@ -134,7 +134,7 @@ export const action: ActionFunction = async ({ request }) => {
         .finally(() => {
           prisma.$disconnect();
         });
-      sendEmail({
+      await sendEmail({
         fromName: `${user.firstName} ${user.lastName} via Hoots`,
         toName: values.menteeFirstName,
         email: values.menteeEmail,
