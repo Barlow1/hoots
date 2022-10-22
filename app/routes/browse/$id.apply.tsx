@@ -129,7 +129,7 @@ export default function Apply() {
       <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
         <Heading>Mentorship Application</Heading>
         <Flex>
-          <Avatar src={mentor.img} />
+          <Avatar src={mentor.img ?? undefined} />
           <Text fontSize={"lg"} color={"gray.600"} alignSelf={"center"} ml={3}>
             {mentor.name}
           </Text>

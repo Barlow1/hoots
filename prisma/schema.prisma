@@ -44,7 +44,7 @@ model Mentor {
   company            String
   cost               Int?
   experience         Int
-  img                String
+  img                String?
   name               String
   occupation         String
   tags               String[]
