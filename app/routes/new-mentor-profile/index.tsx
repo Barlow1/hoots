@@ -8,7 +8,6 @@ import {
   FormControl,
   FormLabel,
   Button,
-  transition,
   Link,
   Box,
   Input,
@@ -27,7 +26,7 @@ import {
   LoaderFunction,
   redirect,
 } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData, useTransition } from "@remix-run/react";
 import { routes } from "~/routes";
 import { getUserSession, requireUser } from "~/utils/user.session";
 import Logo from "../../assets/Logo.svg";
@@ -93,6 +92,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 const NewMentorProfile = () => {
   const data = useLoaderData();
+  const transition = useTransition();
   return (
     <Flex
       minH={"100vh"}

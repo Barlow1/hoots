@@ -111,7 +111,7 @@ export const MentorPage = () => {
       <Flex justifyContent={"center"} maxW="xl" mx={"auto"}>
         <Flex direction={"column"}>
           <Flex justifyContent={"center"} pb={5}>
-            <Avatar size="2xl" src={mentor?.img} />
+            <Avatar size="2xl" src={mentor?.img ?? undefined} />
           </Flex>
           <Heading as="h2" size="lg" noOfLines={1}>
             {mentor?.name}
