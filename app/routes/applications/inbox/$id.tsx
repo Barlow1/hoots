@@ -8,6 +8,7 @@ import {
   Stack,
   ListItem,
   UnorderedList,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -165,12 +166,17 @@ export default function ApplicationInboxRequest() {
         <Heading>Mentorship Request</Heading>
         <Flex>
           <Avatar src={mentee?.img ?? undefined} />
-          <Text fontSize={"md"} color={"gray.600"} alignSelf={"center"} ml={3}>
+          <Text
+            fontSize={"md"}
+            color={useColorModeValue("gray.600", "gray.200")}
+            alignSelf={"center"}
+            ml={3}
+          >
             Submitted by {mentee?.firstName} {mentee?.lastName}{" "}
             {`(${mentee?.email})`}
           </Text>
         </Flex>
-        <Box bgColor={"gray.200"} p={5}>
+        <Box bgColor={useColorModeValue("gray.200", "gray.800")} p={5}>
           <Text>Details</Text>
           <UnorderedList>
             <ListItem>

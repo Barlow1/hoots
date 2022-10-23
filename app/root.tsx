@@ -160,7 +160,6 @@ function Document({
         {children}
         <Scripts />
         <ScrollRestoration />
-        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
       </body>
     </html>
   );
