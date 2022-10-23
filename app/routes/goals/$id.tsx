@@ -89,7 +89,7 @@ export const action: ActionFunction = async ({ request }) => {
   let options;
   console.log("method", request.method);
 
-  if (request.method === "DELETE") {
+  if (values.formType === FormType.DELETE) {
     options = {
       method: "DELETE",
       body: JSON.stringify({
@@ -383,6 +383,7 @@ export enum FormType {
   NEW = "New",
   EDIT = "Edit",
   COMPLETED = "Completed",
+  DELETE = "Delete",
 }
 
 export const MilestoneDrawer = ({
@@ -478,6 +479,7 @@ export const MilestoneDrawer = ({
                   name="milestoneId"
                   value={milestoneBeingEdited?.id}
                 />
+                <input hidden name="formType" value={FormType.DELETE} />
                 Delete
                 <DeleteIcon style={{ color: "white", marginLeft: "1rem" }} />
               </Button>
