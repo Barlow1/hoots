@@ -58,6 +58,7 @@ export const GoalsDialog = ({
           <AlertDialogBody>
             <milestoneFetcher.Form method="post">
               <input hidden name="goalId" value={goal?.id}></input>
+              <input hidden name="method" value={"post"}></input>
               <Stack spacing={3}>
                 <FormControl>
                   <FormLabel>Name</FormLabel>

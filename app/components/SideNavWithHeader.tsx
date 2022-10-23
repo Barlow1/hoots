@@ -23,9 +23,17 @@ import {
   ComponentWithAs,
   IconProps,
   Tooltip,
+  useColorMode,
+  Button,
 } from "@chakra-ui/react";
 import { ReactText } from "react";
-import { BellIcon, ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
+import {
+  BellIcon,
+  ChevronDownIcon,
+  HamburgerIcon,
+  MoonIcon,
+  SunIcon,
+} from "@chakra-ui/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
@@ -111,13 +119,19 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         <Link
           to={routes.home}
           style={{ textDecoration: "none", display: "flex" }}
+          onClick={onClose}
         >
           <img src={Logo} alt="Hoots Logo" />
         </Link>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon} link={link.link}>
+        <NavItem
+          key={link.name}
+          icon={link.icon}
+          link={link.link}
+          onClick={onClose}
+        >
           {link.name}
         </NavItem>
       ))}
@@ -163,6 +177,7 @@ interface MobileProps extends FlexProps {
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const signOutFetcher = useFetcher();
   const user = useUser();
+  const { colorMode, toggleColorMode } = useColorMode();
   return (
     <Flex
       ml={{ base: 0, md: "6.5em" }}
@@ -188,11 +203,21 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         </Link>
       </Box>
       <HStack spacing={{ base: "0", md: "6" }}>
+        <IconButton
+          onClick={() => {
+            toggleColorMode();
+            window.location.reload();
+          }}
+          icon={colorMode === "dark" ? <SunIcon /> : <MoonIcon />}
+          size="lg"
+          variant="ghost"
+          aria-label="toggle color mode"
+        />
         {user && (
           <IconButton
             size="lg"
             variant="ghost"
-            aria-label="open menu"
+            aria-label="notifications"
             icon={<BellIcon />}
           />
         )}

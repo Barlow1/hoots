@@ -1,11 +1,12 @@
 import { PassThrough } from "stream";
+
 import type { EntryContext } from "@remix-run/node";
 import { Response } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
-import { renderToPipeableStream, renderToString } from "react-dom/server";
-import { ServerStyleContext } from "./context";
-import { CacheProvider, EmotionCache } from "@emotion/react";
-import createEmotionCache from "./createEmotionCache";
+import isbot from "isbot";
+import { renderToPipeableStream } from "react-dom/server";
+import createEmotionCache from "@emotion/cache";
+import { CacheProvider as EmotionCacheProvider } from "@emotion/react";
 import createEmotionServer from "@emotion/server/create-instance";
 
 const ABORT_DELAY = 5000;
@@ -16,45 +17,42 @@ export default function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
-  const cache = createEmotionCache();
-  const { extractCriticalToChunks } = createEmotionServer(cache);
-  const html = renderToString(
-    <ServerStyleContext.Provider value={null}>
-      <CacheProvider value={cache}>
-        <RemixServer context={remixContext} url={request.url} />
-      </CacheProvider>
-    </ServerStyleContext.Provider>
-  );
-  const chunks = extractCriticalToChunks(html);
+  const callbackMethod = isbot(request.headers.get("user-agent"))
+    ? "onAllReady"
+    : "onShellReady";
 
   return new Promise((resolve, reject) => {
     let didError = false;
 
-    let { pipe, abort } = renderToPipeableStream(
-      <ServerStyleContext.Provider value={chunks.styles}>
-        <CacheProvider value={cache}>
-          <RemixServer context={remixContext} url={request.url} />
-        </CacheProvider>
-      </ServerStyleContext.Provider>,
+    const emotionCache = createEmotionCache({ key: "css" });
+
+    const { pipe, abort } = renderToPipeableStream(
+      <EmotionCacheProvider value={emotionCache}>
+        <RemixServer context={remixContext} url={request.url} />
+      </EmotionCacheProvider>,
       {
-        onShellReady: () => {
-          let body = new PassThrough();
+        [callbackMethod]() {
+          const reactBody = new PassThrough();
+          const emotionServer = createEmotionServer(emotionCache);
+
+          const bodyWithStyles = emotionServer.renderStylesToNodeStream();
+          reactBody.pipe(bodyWithStyles);
 
           responseHeaders.set("Content-Type", "text/html");
 
           resolve(
-            new Response(body, {
+            new Response(bodyWithStyles, {
               headers: responseHeaders,
               status: didError ? 500 : responseStatusCode,
             })
           );
 
-          pipe(body);
+          pipe(reactBody);
         },
-        onShellError: (err) => {
+        onShellError(err: unknown) {
           reject(err);
         },
-        onError: (error) => {
+        onError(error: unknown) {
           didError = true;
 
           console.error(error);

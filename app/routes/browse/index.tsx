@@ -12,6 +12,7 @@ import {
   Tag,
   Text,
   Tooltip,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { Mentor } from "@prisma/client";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
@@ -182,10 +183,13 @@ const Browse = () => {
                     key={mentor.id}
                     p="5"
                     h="100%"
-                    _hover={{ backgroundColor: "gray.100" }}
+                    _hover={useColorModeValue(
+                      { backgroundColor: "gray.100" },
+                      { backgroundColor: "gray.800" }
+                    )}
                   >
                     <Flex justifyContent={"center"}>
-                      <Avatar size="md" src={mentor.img} />
+                      <Avatar size="md" src={mentor?.img ?? undefined} />
                     </Flex>
 
                     <Heading as="h2" size="lg" noOfLines={1}>

@@ -197,6 +197,7 @@ const Preferences = () => {
                   type="file"
                   accept="image/png, image/gif, image/jpeg"
                   onChange={onProfilePhotoChange}
+                  style={{maxWidth: '70vw'}}
                 ></input>
               </FormControl>
               <FormControl>

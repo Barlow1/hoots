@@ -58,7 +58,8 @@ export const action: ActionFunction = async ({ request }) => {
   const values = Object.fromEntries((await request.formData()).entries());
   const user = await requireUser(request);
   const baseUrl = new URL(request.url).origin;
-  if (request.method === "DELETE") {
+  console.log("method", request.method);
+  if (values.method === "delete") {
     const response = await fetch(
       `${baseUrl}/.netlify/functions/put-goal${
         values.goalId ? `?id=${values.goalId}` : ""
@@ -72,7 +73,7 @@ export const action: ActionFunction = async ({ request }) => {
         "Failed to delete goal, please try again in a few minutes."
       );
     });
-  } else if (request.method === "POST") {
+  } else if (values.method === "post") {
     const response = await fetch(
       `${baseUrl}/.netlify/functions/put-goal?userId=${user?.id}${
         values.goalId ? `&id=${values.goalId}` : ""
@@ -139,7 +140,8 @@ export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
         <TableContainer whiteSpace={{ md: "nowrap", base: "unset" }}>
           <Table
             style={{
-              border: "2px solid #E2E8F0",
+              borderWidth: "2px",
+              borderStyle: "solid",
               borderRadius: "10px",
               padding: "1rem",
               minWidth: "20%",
@@ -295,6 +297,7 @@ export const GoalsItem = ({
         </Button>
         <deleteFetcher.Form method="delete">
           <input hidden name="goalId" value={id} />
+          <input hidden name="method" value={"delete"} />
           <Button
             colorScheme="red"
             type="submit"

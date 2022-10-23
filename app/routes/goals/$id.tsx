@@ -89,7 +89,7 @@ export const action: ActionFunction = async ({ request }) => {
   let options;
   console.log("method", request.method);
 
-  if (request.method === "DELETE") {
+  if (values.formType === FormType.DELETE) {
     options = {
       method: "DELETE",
       body: JSON.stringify({
@@ -221,10 +221,11 @@ const MilestonePage = () => {
     >
       <Box
         style={{
-          border: "2px solid #E2E8F0",
           borderRadius: "10px",
           padding: "1rem",
           minWidth: "20%",
+          borderWidth: "2px",
+          borderStyle: "solid",
         }}
       >
         <Stack spacing={6} style={{ textAlign: "center" }}>
@@ -256,7 +257,8 @@ const MilestonePage = () => {
         <TableContainer whiteSpace={{ md: "nowrap", base: "unset" }}>
           <Table
             style={{
-              border: "2px solid #E2E8F0",
+              borderWidth: "2px",
+              borderStyle: "solid",
               borderRadius: "10px",
               padding: "1rem",
               minWidth: "20%",
@@ -326,13 +328,6 @@ const MilestonePage = () => {
   );
 };
 
-export const gridItemStyle: React.CSSProperties = {
-  padding: "1rem",
-  borderTop: "2px solid #E2E8F0",
-  display: "flex",
-  alignItems: "center",
-};
-
 export interface MilestoneItemProps {
   openDrawer: Function;
   onCheck: any;
@@ -388,6 +383,7 @@ export enum FormType {
   NEW = "New",
   EDIT = "Edit",
   COMPLETED = "Completed",
+  DELETE = "Delete",
 }
 
 export const MilestoneDrawer = ({
@@ -483,6 +479,7 @@ export const MilestoneDrawer = ({
                   name="milestoneId"
                   value={milestoneBeingEdited?.id}
                 />
+                <input hidden name="formType" value={FormType.DELETE} />
                 Delete
                 <DeleteIcon style={{ color: "white", marginLeft: "1rem" }} />
               </Button>

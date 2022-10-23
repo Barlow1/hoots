@@ -12,6 +12,7 @@ import {
   Text,
   Textarea,
   UnorderedList,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -130,11 +131,16 @@ export default function Apply() {
         <Heading>Mentorship Application</Heading>
         <Flex>
           <Avatar src={mentor.img ?? undefined} />
-          <Text fontSize={"lg"} color={"gray.600"} alignSelf={"center"} ml={3}>
+          <Text
+            fontSize={"lg"}
+            color={useColorModeValue("gray.600", "gray.200")}
+            alignSelf={"center"}
+            ml={3}
+          >
             {mentor.name}
           </Text>
         </Flex>
-        <Box bgColor={"gray.200"} p={5}>
+        <Box bgColor={useColorModeValue("gray.200", "gray.800")} p={5}>
           <Text>Details</Text>
           <UnorderedList>
             <ListItem>
