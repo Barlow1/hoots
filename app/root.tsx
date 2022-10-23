@@ -6,8 +6,8 @@ import {
   extendTheme,
   Heading,
   Link,
+  Text,
 } from "@chakra-ui/react";
-import { withEmotionCache } from "@emotion/react";
 import { Profile } from "@prisma/client";
 import {
   json,
@@ -92,6 +92,11 @@ export const Root = () => {
         portalZIndex={40}
         colorModeManager={cookieStorageManagerSSR(data.cookies)}
       >
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.env = ${JSON.stringify(data.env)}`,
+          }}
+        />
         <App user={data.user}>
           <Outlet />
         </App>
@@ -119,8 +124,6 @@ function Document({
 }) {
   const gaTrackingId = "G-N1KVNXJ313";
   const location = useLocation();
-  const data = useLoaderData();
-
   useEffect(() => {
     if (gaTrackingId?.length) {
       gtag.pageview(location.pathname, gaTrackingId);
@@ -150,11 +153,6 @@ function Document({
               `,
           }}
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.env = ${JSON.stringify(data.env)}`,
-          }}
-        />
       </head>
       <body>
         {children}
@@ -172,9 +170,11 @@ export function CatchBoundary() {
     <Document title={`${caught.status} ${caught.statusText}`}>
       <ChakraProvider theme={theme} portalZIndex={40}>
         <Box>
-          <Heading as="h1" bg="purple.600">
-            [CatchBoundary]: {caught.status} {caught.statusText}
-          </Heading>
+          <Heading as="h1">This page does not exist...</Heading>
+          <Text>
+            If you think this is an error, please contact support{" "}
+            <Link href="mailto:help@inhoots.com">help@inhoots.com</Link>
+          </Text>
         </Box>
       </ChakraProvider>
     </Document>
@@ -187,11 +187,11 @@ export function ErrorBoundary({ error }: { error: Error }) {
     <Document title="Error!">
       <ChakraProvider theme={theme} portalZIndex={40}>
         <Box>
-          <Heading as="h1">
-            There was an error: {error.message}
-            Please contact support{" "}
-            <Link href="mailto:help@inhoots.com">help@inhoots.com</Link>
-          </Heading>
+          <Heading as="h1">There was an error: {error.message}</Heading>
+          <Text>
+            Try refreshing the page and if the issue persists, please contact
+            support <Link href="mailto:help@inhoots.com">help@inhoots.com</Link>
+          </Text>
         </Box>
       </ChakraProvider>
     </Document>
