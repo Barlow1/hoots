@@ -23,9 +23,17 @@ import {
   ComponentWithAs,
   IconProps,
   Tooltip,
+  useColorMode,
+  Button,
 } from "@chakra-ui/react";
 import { ReactText } from "react";
-import { BellIcon, ChevronDownIcon, HamburgerIcon } from "@chakra-ui/icons";
+import {
+  BellIcon,
+  ChevronDownIcon,
+  HamburgerIcon,
+  MoonIcon,
+  SunIcon,
+} from "@chakra-ui/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
@@ -163,6 +171,7 @@ interface MobileProps extends FlexProps {
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const signOutFetcher = useFetcher();
   const user = useUser();
+  const { colorMode, toggleColorMode } = useColorMode();
   return (
     <Flex
       ml={{ base: 0, md: "6.5em" }}
@@ -192,10 +201,20 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
           <IconButton
             size="lg"
             variant="ghost"
-            aria-label="open menu"
+            aria-label="notifications"
             icon={<BellIcon />}
           />
         )}
+        <IconButton
+          onClick={() => {
+            toggleColorMode();
+            window.location.reload();
+          }}
+          icon={colorMode === "dark" ? <SunIcon /> : <MoonIcon />}
+          size="lg"
+          variant="ghost"
+          aria-label="toggle color mode"
+        />
         <Flex alignItems={"center"}>
           <Menu>
             <MenuButton

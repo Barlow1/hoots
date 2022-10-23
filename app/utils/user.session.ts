@@ -30,7 +30,7 @@ async function getUserSession(request: Request) {
   };
 }
 
-export { getUserSession };
+export { getUserSession, getSession };
 
 export const getUser = async (request: Request) => {
   const userSession = await getUserSession(request);
