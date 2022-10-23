@@ -139,7 +139,8 @@ export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
         <TableContainer whiteSpace={{ md: "nowrap", base: "unset" }}>
           <Table
             style={{
-              border: "2px solid #E2E8F0",
+              borderWidth: "2px",
+              borderStyle: "solid",
               borderRadius: "10px",
               padding: "1rem",
               minWidth: "20%",

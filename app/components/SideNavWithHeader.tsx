@@ -119,13 +119,19 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         <Link
           to={routes.home}
           style={{ textDecoration: "none", display: "flex" }}
+          onClick={onClose}
         >
           <img src={Logo} alt="Hoots Logo" />
         </Link>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon} link={link.link}>
+        <NavItem
+          key={link.name}
+          icon={link.icon}
+          link={link.link}
+          onClick={onClose}
+        >
           {link.name}
         </NavItem>
       ))}
@@ -197,14 +203,6 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
         </Link>
       </Box>
       <HStack spacing={{ base: "0", md: "6" }}>
-        {user && (
-          <IconButton
-            size="lg"
-            variant="ghost"
-            aria-label="notifications"
-            icon={<BellIcon />}
-          />
-        )}
         <IconButton
           onClick={() => {
             toggleColorMode();
@@ -215,6 +213,14 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
           variant="ghost"
           aria-label="toggle color mode"
         />
+        {user && (
+          <IconButton
+            size="lg"
+            variant="ghost"
+            aria-label="notifications"
+            icon={<BellIcon />}
+          />
+        )}
         <Flex alignItems={"center"}>
           <Menu>
             <MenuButton

@@ -221,10 +221,11 @@ const MilestonePage = () => {
     >
       <Box
         style={{
-          border: "2px solid #E2E8F0",
           borderRadius: "10px",
           padding: "1rem",
           minWidth: "20%",
+          borderWidth: "2px",
+          borderStyle: "solid",
         }}
       >
         <Stack spacing={6} style={{ textAlign: "center" }}>
@@ -256,7 +257,8 @@ const MilestonePage = () => {
         <TableContainer whiteSpace={{ md: "nowrap", base: "unset" }}>
           <Table
             style={{
-              border: "2px solid #E2E8F0",
+              borderWidth: "2px",
+              borderStyle: "solid",
               borderRadius: "10px",
               padding: "1rem",
               minWidth: "20%",
@@ -324,13 +326,6 @@ const MilestonePage = () => {
       />
     </Box>
   );
-};
-
-export const gridItemStyle: React.CSSProperties = {
-  padding: "1rem",
-  borderTop: "2px solid #E2E8F0",
-  display: "flex",
-  alignItems: "center",
 };
 
 export interface MilestoneItemProps {
