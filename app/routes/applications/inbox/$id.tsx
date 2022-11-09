@@ -12,7 +12,13 @@ import {
 } from "@chakra-ui/react";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Application, prisma, PrismaClient, Profile } from "@prisma/client";
+import {
+  Application,
+  Mentor,
+  prisma,
+  PrismaClient,
+  Profile,
+} from "@prisma/client";
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
 import { Form, useLoaderData, useTransition } from "@remix-run/react";
 import { routes } from "~/routes";
@@ -35,6 +41,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const user = await requireUser(request);
   const baseUrl = new URL(request.url).origin;
   let application: Application | null = null;
+  let mentor: Mentor | null = null;
+
   try {
     const prisma = new PrismaClient();
     await prisma.$connect();
@@ -43,10 +51,15 @@ export const loader: LoaderFunction = async ({ params, request }) => {
         id: params.id,
       },
     });
+    mentor = await prisma.mentor.findUnique({
+      where: {
+        profileId: user.id,
+      },
+    });
   } catch (e) {
     console.error("Failed to fetch application", e);
   }
-  if (user.id !== application?.mentorId) {
+  if (mentor?.id !== application?.mentorId) {
     // a user shouldn't ever get to an application that isn't theirs but
     // let's sign out & return to the login page anyway
     const session = await getUserSession(request);
@@ -118,6 +131,27 @@ export const action: ActionFunction = async ({ request }) => {
       });
     } catch (e) {
       console.error("Failed to mark application", e);
+    }
+    if (application) {
+      try {
+        const prisma = new PrismaClient();
+        await prisma.$connect();
+        await prisma.mentor.update({
+          where: {
+            id: application.mentorId,
+          },
+          data: {
+            mentees: {
+              connect: {
+                id: application.menteeId,
+              },
+            },
+          },
+        });
+        await prisma.$disconnect();
+      } catch (e) {
+        console.error("Failed to assign mentor", e);
+      }
     }
   } else if (values.actionType === ApplicationStatus.DENIED) {
     try {
