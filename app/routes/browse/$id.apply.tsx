@@ -168,7 +168,7 @@ export default function Apply() {
             name="mentorLastName"
             value={mentor.profile?.lastName}
           />
-          <input hidden name="mentorId" value={mentor.profile?.id} />
+          <input hidden name="mentorId" value={mentor.id} />
           <Stack spacing={3}>
             <FormControl isRequired isDisabled={isSubmitted}>
               <FormLabel>Desires</FormLabel>

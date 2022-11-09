@@ -56,9 +56,11 @@ model Mentor {
   website            String?
   linkedIn           String?
   github             String?
-  profile            Profile?      @relation(fields: [profileId], references: [id])
+  profile            Profile?      @relation(fields: [profileId], references: [id], name: "MentorProfile")
   profileId          String?       @unique
   mentorApplications Application[] @relation("MentorApplications")
+  menteeIDs          String[]      @db.ObjectId
+  mentees            Profile[]     @relation(fields: [menteeIDs], references: [id], name: "MentorConnection")
 }
 
 model Profile {
@@ -72,9 +74,12 @@ model Profile {
   lastName           String
   mentorPreferences  ProfileMentorPreferences?
   password           String
-  mentorProfile      Mentor?
+  mentorProfile      Mentor?                   @relation("MentorProfile")
   menteeApplications Application[]             @relation("MenteeApplications")
   verified           Boolean                   @default(false)
+  mentorId           String?                   @db.ObjectId
+  mentorIDs          String[]                  @db.ObjectId
+  mentors            Mentor[]                  @relation(fields: [mentorIDs], references: [id], name: "MentorConnection")
 }
 
 model Application {

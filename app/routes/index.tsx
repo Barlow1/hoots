@@ -6,6 +6,7 @@ import {
   CircularProgressLabel,
   Grid,
   GridItem,
+  HStack,
   Link,
   Stack,
   Text,
@@ -15,7 +16,7 @@ import { routes } from "../routes";
 import { Link as NavLink, useLoaderData } from "@remix-run/react";
 import { requireUser } from "~/utils/user.session";
 import { json, LoaderFunction } from "@remix-run/node";
-import { Goal } from "@prisma/client";
+import { Goal, Mentor, PrismaClient } from "@prisma/client";
 import { calculateGoalProgress } from "~/utils/calculateGoalProgress";
 import { formatDateDisplay } from "~/utils/dates";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -23,6 +24,7 @@ import { faAward, faListDots } from "@fortawesome/free-solid-svg-icons";
 
 interface DashBoardLoaderData {
   upcomingGoal: Goal | undefined;
+  mentors: Mentor[] | null;
 }
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -42,8 +44,23 @@ export const loader: LoaderFunction = async ({ request }) => {
       return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
     });
 
+  let mentors: Mentor[] | null = null;
+  try {
+    const prisma = new PrismaClient();
+    await prisma.$connect();
+    mentors = await prisma.mentor.findMany({
+      where: {
+        menteeIDs: {
+          hasSome: [user?.id],
+        },
+      },
+    });
+  } catch (e) {
+    console.error("Failed to fetch mentors", e);
+  }
+
   const upcomingGoal = filtered.at(0);
-  return json({ upcomingGoal });
+  return json({ upcomingGoal, mentors });
   return null;
 };
 
@@ -51,6 +68,7 @@ const Dashboard = () => {
   const data = useLoaderData<DashBoardLoaderData>();
   const user = useUser();
   const goalProgress = calculateGoalProgress(data.upcomingGoal?.milestones);
+  const currentMentors = data?.mentors;
   return (
     <Grid gap={6}>
       <GridItem boxShadow="md" colSpan={12} w="100%" borderRadius="5">
@@ -70,6 +88,23 @@ const Dashboard = () => {
                 {user?.industry || "-"}
               </Text>
             </GridItem>
+            {currentMentors?.length ? (
+              <GridItem colSpan={3}>
+                <Text textColor="#9faec0" fontWeight="bold">
+                  Mentors
+                </Text>
+                {currentMentors.slice(0, 3).map((mentor) => (
+                  <>
+                    <HStack pt="3">
+                      <Avatar size={"sm"} src={mentor.img ?? undefined} />
+                      <Text m="auto" fontSize="sm">
+                        {mentor.name || "-"}
+                      </Text>
+                    </HStack>
+                  </>
+                ))}
+              </GridItem>
+            ) : null}
           </Grid>
         </Box>
       </GridItem>
