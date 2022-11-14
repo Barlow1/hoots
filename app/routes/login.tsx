@@ -22,8 +22,18 @@ import {
 import { useUser } from "~/utils/useRootData";
 import { routes } from "../routes";
 import Logo from "../assets/Logo.svg";
-import { ActionFunction, json, redirect } from "@remix-run/node";
+import { ActionFunction, json, MetaFunction, redirect } from "@remix-run/node";
 import { getUserSession } from "~/utils/user.session";
+import { getDisplayUrl } from "~/utils/url";
+import { getSocialMetas } from "~/utils/seo";
+
+export const meta: MetaFunction = ({ data, parentsData }) => {
+  const { requestInfo } = parentsData.root;
+  return getSocialMetas({
+    url: getDisplayUrl(requestInfo),
+    title: "Login",
+  });
+};
 
 export const action: ActionFunction = async ({
   request,

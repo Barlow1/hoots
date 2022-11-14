@@ -18,7 +18,7 @@ import { Mentor } from "@prisma/client";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { routes } from "../../routes";
 import debounce from "lodash.debounce";
-import { json, LoaderFunction } from "@remix-run/node";
+import { json, LoaderFunction, MetaFunction } from "@remix-run/node";
 import {
   Link,
   useLoaderData,
@@ -28,6 +28,8 @@ import {
 import { faFilter, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FilterDialog, { FilterValues } from "~/components/FilterDialog";
+import { getSocialMetas } from "~/utils/seo";
+import { getDisplayUrl } from "~/utils/url";
 
 type Route = {
   data: { mentors: Mentor[] };
@@ -52,6 +54,15 @@ const buildMentorFetchUrl = (
     getMentorsUrl += `?${params}`;
   }
   return getMentorsUrl;
+};
+
+export const meta: MetaFunction = ({ parentsData }) => {
+  const { requestInfo } = parentsData.root;
+  return getSocialMetas({
+    url: getDisplayUrl(requestInfo),
+    title: `Find a mentor`,
+    description: `Find a mentor who gives a hoot!`,
+  });
 };
 
 export const loader: LoaderFunction = async ({ request }) => {

@@ -27,10 +27,20 @@ import { routes } from "../routes";
 import { useUser } from "~/utils/useRootData";
 import Logo from "../assets/Logo.svg";
 import { getUserSession } from "~/utils/user.session";
-import { ActionFunction, json, redirect } from "@remix-run/node";
+import { ActionFunction, json, MetaFunction, redirect } from "@remix-run/node";
 import { createVerificationLink } from "~/utils/email-verification.server";
 import { sendEmail } from "~/utils/email.server";
 import { Profile } from "@prisma/client";
+import { getSocialMetas } from "~/utils/seo";
+import { getDisplayUrl } from "~/utils/url";
+
+export const meta: MetaFunction = ({ data, parentsData }) => {
+  const { requestInfo } = parentsData.root;
+  return getSocialMetas({
+    url: getDisplayUrl(requestInfo),
+    title: "Sign Up",
+  });
+};
 
 export const action: ActionFunction = async ({
   request,

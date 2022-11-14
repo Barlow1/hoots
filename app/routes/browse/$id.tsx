@@ -24,7 +24,7 @@ import {
 import { faEllipsis, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Mentor } from "@prisma/client";
-import { json, LoaderFunction } from "@remix-run/node";
+import { json, LoaderFunction, MetaFunction } from "@remix-run/node";
 import {
   Link as NavLink,
   useLoaderData,
@@ -33,9 +33,22 @@ import {
 } from "@remix-run/react";
 import { getFacebookHref } from "~/utils/facebook";
 import { getLinkedInHref } from "~/utils/linkedIn";
+import { getSocialMetas } from "~/utils/seo";
 import { getTwitterHref } from "~/utils/twitter";
+import { getDisplayUrl } from "~/utils/url";
 
 type LoaderData = { data: { mentor: Mentor; shareUrl: string } };
+
+export const meta: MetaFunction = ({ data, parentsData }) => {
+  const { requestInfo } = parentsData.root;
+  return getSocialMetas({
+    url: getDisplayUrl(requestInfo),
+    title: `${data.data.mentor.name}`,
+    description: `${data.data.mentor.bio}`,
+    ogTitle: `Get mentored by ${data.data.mentor.name} on Hoots!`,
+    image: data.data.mentor.img,
+  });
+};
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const baseUrl = new URL(request.url).origin;

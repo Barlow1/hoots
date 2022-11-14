@@ -31,11 +31,17 @@ import { ClientStyleContext, ServerStyleContext } from "./context";
 import { getSession, getUser } from "./utils/user.session";
 import App from "./_app";
 import * as gtag from "~/utils/gtags.client";
+import { getSocialMetas } from "./utils/seo";
+import { getDisplayUrl } from "./utils/url";
 
-export const meta: MetaFunction = () => ({
-  charset: "utf-8",
-  viewport: "width=device-width,initial-scale=1",
-});
+export const meta: MetaFunction = ({ data }) => {
+  const { requestInfo } = data;
+  return {
+    charset: "utf-8",
+    viewport: "width=device-width,initial-scale=1",
+    ...getSocialMetas({ url: getDisplayUrl(requestInfo) }),
+  };
+};
 
 const colors = {
   brand: {
