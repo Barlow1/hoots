@@ -29,6 +29,7 @@ import {
 import { Form, useLoaderData, useTransition } from "@remix-run/react";
 import { routes } from "~/routes";
 import { getUserSession, requireUser } from "~/utils/user.session";
+import { useMentorProfile, useUser } from "~/utils/useRootData";
 import Logo from "../../assets/Logo.svg";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -55,9 +56,11 @@ export const action: ActionFunction = async ({ request }) => {
     website: form.get("website") ?? "",
     linkedIn: form.get("linkedIn") ?? "",
     github: form.get("github") ?? "",
-    experience: user.experience,
+    id: form.get("mentorID") ?? undefined,
+    priorExperience: form.get("priorExperience") ?? "",
+    experience: user.experience ?? 0,
     img: user.img,
-    industry: user.industry,
+    industry: user.industry ?? "",
     name: `${user.firstName} ${user.lastName}`,
     profileId: user.id,
   };
@@ -93,6 +96,8 @@ export const action: ActionFunction = async ({ request }) => {
 const NewMentorProfile = () => {
   const data = useLoaderData();
   const transition = useTransition();
+  const mentorProfile = useMentorProfile();
+  const user = useUser();
   return (
     <Flex
       minH={"100vh"}
@@ -103,7 +108,9 @@ const NewMentorProfile = () => {
       <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
         <Stack align={"center"}>
           <Image src={Logo} />
-          <Heading fontSize={"4xl"}>New Mentor Profile</Heading>
+          <Heading fontSize={"4xl"}>
+            {mentorProfile ? "Edit Mentor Profile" : "New Mentor Profile"}
+          </Heading>
           <Text fontSize={"lg"} color={"gray.600"}>
             Let's get to know you so you can start helping mentees crush their
             goals!
@@ -116,6 +123,9 @@ const NewMentorProfile = () => {
           p={8}
         >
           <Form method="post" style={{ padding: 5 }}>
+            {mentorProfile ? (
+              <input hidden name="mentorID" value={mentorProfile?.id} />
+            ) : null}
             <Stack spacing={3}>
               <FormControl>
                 <FormLabel>Tags</FormLabel>
@@ -125,6 +135,7 @@ const NewMentorProfile = () => {
                 <Input
                   name="tags"
                   placeholder="Ex. Product Design, Javascript, Real Estate"
+                  defaultValue={mentorProfile?.tags}
                 ></Input>
               </FormControl>
               <FormControl>
@@ -132,14 +143,22 @@ const NewMentorProfile = () => {
                 <Text fontSize={"xs"} textColor="grey.600">
                   Current workplace or business
                 </Text>
-                <Input name="company" placeholder="Company"></Input>
+                <Input
+                  name="company"
+                  placeholder="Company"
+                  defaultValue={mentorProfile?.company}
+                ></Input>
               </FormControl>
               <FormControl>
                 <FormLabel>Occupation</FormLabel>
                 <Text fontSize={"xs"} textColor="grey.600">
                   Current position or title
                 </Text>
-                <Input name="occupation" placeholder="Occupation"></Input>
+                <Input
+                  name="occupation"
+                  placeholder="Occupation"
+                  defaultValue={mentorProfile?.occupation}
+                ></Input>
               </FormControl>
               <FormControl>
                 <FormLabel>Mentor Bio </FormLabel>
@@ -152,6 +171,7 @@ const NewMentorProfile = () => {
                   size="sm"
                   name="mentorBio"
                   placeholder="I work at...💼&#10;I have achieved...🏆&#10;I'm looking for a mentee who...🧑🏽‍🏫"
+                  defaultValue={mentorProfile?.bio ?? user?.bio ?? undefined}
                 />
               </FormControl>
               <FormControl>
@@ -161,7 +181,11 @@ const NewMentorProfile = () => {
                   override this later.)
                 </Text>
                 <NumberInput min={0} name="cost">
-                  <NumberInputField placeholder="Cost" required />
+                  <NumberInputField
+                    placeholder="Cost"
+                    required
+                    defaultValue={mentorProfile?.cost ?? undefined}
+                  />
                   <NumberInputStepper>
                     <NumberIncrementStepper />
                     <NumberDecrementStepper />
@@ -175,7 +199,12 @@ const NewMentorProfile = () => {
                   career coaching? (This will NOT be public.)
                 </Text>
                 <FormLabel></FormLabel>
-                <Textarea size="sm" name="priorExperience" required />
+                <Textarea
+                  size="sm"
+                  name="priorExperience"
+                  required
+                  defaultValue={mentorProfile?.priorExperience ?? undefined}
+                />
               </FormControl>
               <FormControl>
                 <FormLabel>Achievements</FormLabel>
@@ -184,7 +213,12 @@ const NewMentorProfile = () => {
                   awards? (This will NOT be public.)
                 </Text>
                 <FormLabel></FormLabel>
-                <Textarea size="sm" name="achievements" required />
+                <Textarea
+                  size="sm"
+                  name="achievements"
+                  required
+                  defaultValue={mentorProfile?.achievements ?? undefined}
+                />
               </FormControl>
               <FormControl>
                 <FormLabel>Mentoring Goal</FormLabel>
@@ -192,22 +226,47 @@ const NewMentorProfile = () => {
                   What is your goal as a mentor? (This will NOT be public.)
                 </Text>
                 <FormLabel></FormLabel>
-                <Textarea size="sm" name="mentoringGoal" required />
+                <Textarea
+                  size="sm"
+                  name="mentoringGoal"
+                  required
+                  defaultValue={mentorProfile?.mentoringGoal ?? undefined}
+                />
               </FormControl>
               <FormControl>
                 <FormLabel>Social Media (Optional)</FormLabel>
                 <Grid templateColumns={"repeat(2, 1fr)"} gap={2}>
                   <GridItem>
-                    <Input size="sm" name="twitter" placeholder="Twitter" />
+                    <Input
+                      size="sm"
+                      name="twitter"
+                      placeholder="Twitter"
+                      defaultValue={mentorProfile?.twitter ?? undefined}
+                    />
                   </GridItem>
                   <GridItem>
-                    <Input size="sm" name="website" placeholder="Website" />
+                    <Input
+                      size="sm"
+                      name="website"
+                      placeholder="Website"
+                      defaultValue={mentorProfile?.website ?? undefined}
+                    />
                   </GridItem>
                   <GridItem>
-                    <Input size="sm" name="linkedIn" placeholder="LinkedIn" />
+                    <Input
+                      size="sm"
+                      name="linkedIn"
+                      placeholder="LinkedIn"
+                      defaultValue={mentorProfile?.linkedIn ?? undefined}
+                    />
                   </GridItem>
                   <GridItem>
-                    <Input size="sm" name="github" placeholder="Github" />
+                    <Input
+                      size="sm"
+                      name="github"
+                      placeholder="Github"
+                      defaultValue={mentorProfile?.github ?? undefined}
+                    />
                   </GridItem>
                 </Grid>
               </FormControl>
@@ -226,7 +285,7 @@ const NewMentorProfile = () => {
                   type="submit"
                   _hover={{ backgroundColor: "brand.200" }}
                 >
-                  Next
+                  Save
                 </Button>
               </Stack>
             </Stack>

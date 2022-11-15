@@ -1,5 +1,6 @@
 import { Handler } from "@netlify/functions";
 import { Mentor, PrismaClient } from "@prisma/client";
+import { exclude } from "~/utils/exclude";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -23,13 +24,39 @@ const handler: Handler = async (event, context) => {
 
   const prisma = new PrismaClient();
   await prisma.$connect();
+  const mentorId = mentor.id;
+  const mentorWithoutId = exclude({ ...mentor }, "id");
+  const mentorWithoutProfileId = exclude({ ...mentorWithoutId }, "profileId");
 
   try {
-    const mentorProfile = await prisma.mentor.create({
-      data: {
-        ...mentor,
-      },
-    });
+    let mentorProfile;
+    if (mentorId) {
+      mentorProfile = await prisma.mentor.update({
+        data: {
+          ...mentorWithoutProfileId,
+          profile: {
+            connect: {
+              id: mentorWithoutId.profileId ?? undefined,
+            },
+          },
+        },
+        where: {
+          id: mentorId,
+        },
+      });
+    } else {
+      mentorProfile = await prisma.mentor.create({
+        data: {
+          ...mentorWithoutProfileId,
+          profile: {
+            connect: {
+              id: mentorWithoutId.profileId ?? undefined,
+            },
+          },
+        },
+      });
+    }
+
     return {
       statusCode: 200,
       body: JSON.stringify({ mentorProfile }),

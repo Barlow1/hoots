@@ -8,7 +8,7 @@ import {
   Link,
   Text,
 } from "@chakra-ui/react";
-import { Profile } from "@prisma/client";
+import { Mentor, prisma, PrismaClient, Profile } from "@prisma/client";
 import {
   json,
   LinksFunction,
@@ -35,7 +35,10 @@ import { getSocialMetas } from "./utils/seo";
 import { getDisplayUrl } from "./utils/url";
 
 export const meta: MetaFunction = ({ data }) => {
-  const { requestInfo } = data;
+  let requestInfo;
+  if (data) {
+    ({ requestInfo } = data);
+  }
   return {
     charset: "utf-8",
     viewport: "width=device-width,initial-scale=1",
@@ -67,6 +70,7 @@ export type LoaderData = {
     API_URL: string;
   };
   user: Profile | null;
+  mentorProfile: Mentor | null;
 };
 
 export const handle: { id: string } = {
@@ -77,6 +81,18 @@ const theme = extendTheme({ colors, config });
 export const loader: LoaderFunction = async ({ request }) => {
   const baseUrl = new URL(request.url).origin;
   const user = await getUser(request);
+  let mentorProfile = null;
+  if (user) {
+    const prisma = new PrismaClient();
+    prisma
+      .$connect()
+      .catch((err) => console.error("Failed to connect to db", err));
+    mentorProfile = await prisma.mentor.findUnique({
+      where: {
+        profileId: user.id,
+      },
+    });
+  }
   const cookies = request.headers.get("Cookie") ?? "";
 
   return json({
@@ -86,6 +102,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     },
     user,
     cookies,
+    mentorProfile,
   });
 };
 

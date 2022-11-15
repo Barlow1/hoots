@@ -52,6 +52,7 @@ model Mentor {
   mentorBio          String?
   achievements       String?
   mentoringGoal      String?
+  priorExperience    String?
   twitter            String?
   website            String?
   linkedIn           String?
@@ -74,7 +75,7 @@ model Profile {
   lastName           String
   mentorPreferences  ProfileMentorPreferences?
   password           String
-  mentorProfile      Mentor?                   @relation("MentorProfile")
+  mentorProfile      Mentor?                   @relation( "MentorProfile")
   menteeApplications Application[]             @relation("MenteeApplications")
   verified           Boolean                   @default(false)
   mentorId           String?                   @db.ObjectId
