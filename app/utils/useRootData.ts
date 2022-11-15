@@ -10,6 +10,11 @@ export function useUser() {
   const { user } = useRootData();
   return user;
 }
+
+export function useMentorProfile() {
+  const { mentorProfile } = useRootData();
+  return mentorProfile;
+}
 export function useRequiredUser() {
   const { user } = useRootData();
   if (!user) throw new Error("User is required when using useUser");

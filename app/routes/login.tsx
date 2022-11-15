@@ -28,7 +28,10 @@ import { getDisplayUrl } from "~/utils/url";
 import { getSocialMetas } from "~/utils/seo";
 
 export const meta: MetaFunction = ({ data, parentsData }) => {
-  const { requestInfo } = parentsData.root;
+  let requestInfo;
+  if (parentsData.root) {
+    ({ requestInfo } = parentsData.root);
+  }
   return getSocialMetas({
     url: getDisplayUrl(requestInfo),
     title: "Login",

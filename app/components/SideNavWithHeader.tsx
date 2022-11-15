@@ -45,7 +45,7 @@ import {
 import { routes } from "../routes";
 import Logo from "../assets/Logo.svg";
 import { Link, useFetcher } from "@remix-run/react";
-import { useUser } from "~/utils/useRootData";
+import { useMentorProfile, useUser } from "~/utils/useRootData";
 
 interface LinkItemProps {
   name: string;
@@ -177,6 +177,7 @@ interface MobileProps extends FlexProps {
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const signOutFetcher = useFetcher();
   const user = useUser();
+  const mentorProfile = useMentorProfile();
   const { colorMode, toggleColorMode } = useColorMode();
   return (
     <Flex
@@ -260,6 +261,14 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                 <>
                   <Link to={routes.startAbout}>
                     <MenuItem>About Me</MenuItem>
+                  </Link>
+                  <MenuDivider />
+                  <Link to={routes.newMentorProfile}>
+                    <MenuItem>
+                      {mentorProfile
+                        ? "Edit Mentor Profile"
+                        : "Create Mentor Profile"}
+                    </MenuItem>
                   </Link>
                   <MenuDivider />
                   <MenuItem
