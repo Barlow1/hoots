@@ -242,7 +242,11 @@ export const GoalsContainer = ({
 
   return (
     <Box style={{ width: "90%", height: "100%", margin: "auto" }}>
-      <Box display="flex" justifyContent={"space-between"}>
+      <Box
+        display="flex"
+        flexWrap="wrap-reverse"
+        justifyContent={"space-between"}
+      >
         {!isReadOnly && usersWithSharedGoals?.length ? (
           <Menu>
             <MenuButton
@@ -250,6 +254,7 @@ export const GoalsContainer = ({
               style={{ margin: "1rem" }}
               rightIcon={<ChevronDownIcon />}
               as={Button}
+              width={{ base: "100%", md: "auto" }}
             >
               Shared with me
             </MenuButton>
@@ -269,13 +274,16 @@ export const GoalsContainer = ({
               ))}
             </MenuList>
           </Menu>
-        ) : <div/>}
+        ) : (
+          <div />
+        )}
         {!isReadOnly && (
           <Button
             backgroundColor={"brand.500"}
             _hover={{ bg: "brand.200" }}
             style={{ color: "white", margin: "1rem" }}
             onClick={() => openDialog("")}
+            width={{ base: "100%", md: "auto" }}
           >
             Add Goal <AddIcon style={{ marginLeft: "0.5em" }} />
           </Button>
