@@ -21,14 +21,17 @@ type ProfileMentorPreferences {
 }
 
 model Goal {
-  id         String          @id @default(auto()) @map("_id") @db.ObjectId
-  dueDate    String
-  milestones GoalMilestone[]
-  name       String
-  notes      String
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  dueDate             String
+  milestones          GoalMilestone[]
+  name                String
+  notes               String
   /// Multiple data types found: Int: 25%, BigInt: 75% out of 4 sampled entries
-  progress   Json
-  userId     String
+  progress            Json
+  userId              String          @db.ObjectId
+  user                Profile         @relation(name: "Goals", fields: [userId], references: [id])
+  sharedWithMentorIDs String[]        @db.ObjectId
+  sharedWithMentors   Mentor[]        @relation(name: "SharedWithMentors", fields: [sharedWithMentorIDs], references: [id])
 }
 
 model Meeting {
@@ -62,6 +65,8 @@ model Mentor {
   mentorApplications Application[] @relation("MentorApplications")
   menteeIDs          String[]      @db.ObjectId
   mentees            Profile[]     @relation(fields: [menteeIDs], references: [id], name: "MentorConnection")
+  sharedGoalIDs      String[]      @db.ObjectId
+  sharedGoals        Goal[]        @relation(name: "SharedWithMentors", fields: [sharedGoalIDs], references: [id])
 }
 
 model Profile {
@@ -75,12 +80,14 @@ model Profile {
   lastName           String
   mentorPreferences  ProfileMentorPreferences?
   password           String
-  mentorProfile      Mentor?                   @relation( "MentorProfile")
+  mentorProfile      Mentor?                   @relation("MentorProfile")
   menteeApplications Application[]             @relation("MenteeApplications")
   verified           Boolean                   @default(false)
   mentorId           String?                   @db.ObjectId
   mentorIDs          String[]                  @db.ObjectId
   mentors            Mentor[]                  @relation(fields: [mentorIDs], references: [id], name: "MentorConnection")
+  goals              Goal[]                    @relation("Goals")
+  goalIDs            String[]
 }
 
 model Application {

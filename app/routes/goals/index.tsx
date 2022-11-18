@@ -13,12 +13,20 @@ import {
   Thead,
   Tr,
   Text,
+  MenuButton,
+  Menu,
+  MenuItem,
+  MenuList,
+  Avatar,
+  useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import {
   AddIcon,
   EditIcon,
   DeleteIcon,
   ChevronRightIcon,
+  ChevronDownIcon,
 } from "@chakra-ui/icons";
 import * as React from "react";
 import { GoalsDialog } from "../../components/goalsDialog";
@@ -27,21 +35,31 @@ import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import {
   Form,
   Link as NavLink,
+  useActionData,
   useFetcher,
   useLoaderData,
   useNavigate,
+  useTransition,
 } from "@remix-run/react";
 import { getUser, requireUser } from "~/utils/user.session";
-import { Goal, GoalMilestone } from "@prisma/client";
+import {
+  Goal,
+  GoalMilestone,
+  Mentor,
+  PrismaClient,
+  Profile,
+} from "@prisma/client";
 import { formatDateDisplay } from "~/utils/dates";
 import { calculateGoalProgress } from "~/utils/calculateGoalProgress";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUpFromBracket, faEye } from "@fortawesome/free-solid-svg-icons";
 
 type Route = {
   data: { goals: Goal[] };
   params: { id: string };
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({ request, context }) => {
   const baseUrl = new URL(request.url).origin;
   const user = await requireUser(request);
   const goals = await fetch(
@@ -51,7 +69,67 @@ export const loader: LoaderFunction = async ({ request }) => {
     .catch(() => {
       console.error("Failed to get goals, please try again in a few minutes.");
     });
-  return json({ goals: goals as Goal[] });
+  const prisma = new PrismaClient();
+  try {
+    prisma.$connect();
+  } catch (e) {
+    console.error("Failed to establish db connection", e);
+  }
+  let mentorProfile = null;
+  let usersWithSharedGoals;
+  if (user) {
+    const prisma = new PrismaClient();
+    prisma
+      .$connect()
+      .catch((err) => console.error("Failed to connect to db", err));
+    mentorProfile = await prisma.mentor.findUnique({
+      where: {
+        profileId: user.id,
+      },
+    });
+    if (mentorProfile) {
+      console.log("mentor profile id", mentorProfile.id);
+      usersWithSharedGoals = await prisma.profile
+        .findMany({
+          include: {
+            goals: true,
+          },
+          where: {
+            goals: {
+              some: {
+                sharedWithMentors: {
+                  some: {
+                    id: mentorProfile.id,
+                  },
+                },
+              },
+            },
+          },
+        })
+        .catch((e) => {
+          console.error("Failed to fetch mentors", e);
+        })
+        .finally(() => {
+          prisma.$disconnect();
+        });
+    }
+  }
+  const userMentors = await prisma.mentor
+    .findMany({
+      where: {
+        id: {
+          in: user.mentorIDs,
+        },
+      },
+    })
+    .catch((e) => {
+      console.error("Failed to fetch mentors", e);
+    })
+    .finally(() => {
+      prisma.$disconnect();
+    });
+
+  return json({ goals: goals as Goal[], userMentors, usersWithSharedGoals });
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -98,24 +176,62 @@ export const action: ActionFunction = async ({ request }) => {
     } else if (response.goal) {
       return response.goal;
     }
+  } else if (values.method === "share" && values.goalId && values.mentorId) {
+    const prisma = new PrismaClient();
+    try {
+      prisma.$connect();
+    } catch (e) {
+      console.error("Failed to establish db connection", e);
+    }
+    await prisma.goal
+      .update({
+        where: {
+          id: values.goalId.toString(),
+        },
+        data: {
+          sharedWithMentors: {
+            connect: {
+              id: values.mentorId.toString(),
+            },
+          },
+        },
+      })
+      .catch((e) => {
+        console.error("Failed to fetch mentors", e);
+      })
+      .finally(() => {
+        prisma.$disconnect();
+      });
+    return { success: true, method: "share" };
   }
   return null;
 };
 
 const GoalsPage = () => {
-  const { goals } = useLoaderData();
-
+  const { goals, userMentors, usersWithSharedGoals } = useLoaderData();
   return (
     <>
-      <GoalsContainer userGoals={goals} />
+      <GoalsContainer
+        userGoals={goals}
+        userMentors={userMentors}
+        usersWithSharedGoals={usersWithSharedGoals}
+      />
     </>
   );
 };
 
 export interface IGoalsContainerProps {
   userGoals: Goal[];
+  userMentors?: Mentor[];
+  usersWithSharedGoals?: Profile[];
+  isReadOnly?: boolean;
 }
-export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
+export const GoalsContainer = ({
+  userGoals,
+  userMentors,
+  usersWithSharedGoals,
+  isReadOnly,
+}: IGoalsContainerProps) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
   const [editingIndex, setEditingIndex] = React.useState<string>("");
   const openDialog = (param: string) => {
@@ -126,15 +242,44 @@ export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
 
   return (
     <Box style={{ width: "90%", height: "100%", margin: "auto" }}>
-      <Box style={{ width: "100%", textAlign: "right" }}>
-        <Button
-          backgroundColor={"brand.500"}
-          _hover={{ bg: "brand.200" }}
-          style={{ color: "white", margin: "1rem" }}
-          onClick={() => openDialog("")}
-        >
-          Add Goal <AddIcon style={{ marginLeft: "0.5em" }} />
-        </Button>
+      <Box display="flex" justifyContent={"space-between"}>
+        {!isReadOnly && usersWithSharedGoals?.length ? (
+          <Menu>
+            <MenuButton
+              variant={"solid"}
+              style={{ margin: "1rem" }}
+              rightIcon={<ChevronDownIcon />}
+              as={Button}
+            >
+              Shared with me
+            </MenuButton>
+            <MenuList>
+              {usersWithSharedGoals?.map((user) => (
+                <NavLink to={`shared/${user.id}`}>
+                  <MenuItem
+                    icon={
+                      <Avatar src={user.img ?? undefined} size={"xs"}></Avatar>
+                    }
+                    as={Button}
+                    type="submit"
+                  >
+                    {user.firstName} {user.lastName}
+                  </MenuItem>
+                </NavLink>
+              ))}
+            </MenuList>
+          </Menu>
+        ) : <div/>}
+        {!isReadOnly && (
+          <Button
+            backgroundColor={"brand.500"}
+            _hover={{ bg: "brand.200" }}
+            style={{ color: "white", margin: "1rem" }}
+            onClick={() => openDialog("")}
+          >
+            Add Goal <AddIcon style={{ marginLeft: "0.5em" }} />
+          </Button>
+        )}
       </Box>
       {userGoals.length > 0 ? (
         <TableContainer whiteSpace={{ md: "nowrap", base: "unset" }}>
@@ -166,14 +311,16 @@ export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
                 >
                   Progress
                 </Th>
-                <Th
-                  style={{
-                    padding: "1rem",
-                    fontWeight: "bold",
-                    textAlign: "center",
-                  }}
-                  display={{ md: "revert", base: "none" }}
-                ></Th>
+                {!isReadOnly && (
+                  <Th
+                    style={{
+                      padding: "1rem",
+                      fontWeight: "bold",
+                      textAlign: "center",
+                    }}
+                    display={{ md: "revert", base: "none" }}
+                  ></Th>
+                )}
               </Tr>
             </Thead>
             <Tbody>
@@ -187,6 +334,9 @@ export const GoalsContainer = ({ userGoals }: IGoalsContainerProps) => {
                     id={item.id}
                     openDialog={openDialog}
                     onDelete={onDelete}
+                    userMentors={userMentors}
+                    sharedWithMentorIDs={item.sharedWithMentorIDs}
+                    isReadOnly={isReadOnly}
                   />
                 );
               })}
@@ -222,6 +372,9 @@ export interface GoalsItemProps {
   id: string;
   openDialog: Function;
   onDelete: Function;
+  userMentors?: Mentor[];
+  sharedWithMentorIDs?: String[];
+  isReadOnly?: boolean;
 }
 
 export const GoalsItem = ({
@@ -231,9 +384,11 @@ export const GoalsItem = ({
   id,
   openDialog,
   onDelete,
+  userMentors,
+  sharedWithMentorIDs,
+  isReadOnly,
 }: GoalsItemProps) => {
   const utcDate = formatDateDisplay(dueDate);
-  const deleteFetcher = useFetcher();
   return (
     <Tr
       _focus={{ bgColor: "blackAlpha.50", cursor: "pointer" }}
@@ -275,39 +430,99 @@ export const GoalsItem = ({
         )}
         {progress === 100 && "Complete 🎉"}
       </Td>
-      <Td
-        style={{
-          display: "flex",
-          padding: "1rem",
-          justifyContent: "space-evenly",
-          alignContent: "center",
-        }}
-        borderBottom={{
-          md: "0",
-          base: "2px solid #E2E8F0",
-        }}
-      >
-        <Button
-          colorScheme="blue"
-          name="editGoal"
-          onClick={() => openDialog(id)}
-          variant="ghost"
+      {!isReadOnly && (
+        <Td
+          style={{
+            display: "flex",
+            padding: "1rem",
+            justifyContent: "space-evenly",
+            alignContent: "center",
+          }}
+          borderBottom={{
+            md: "0",
+            base: "2px solid #E2E8F0",
+          }}
         >
-          <EditIcon style={{ color: "grey" }} />
-        </Button>
-        <deleteFetcher.Form method="delete">
-          <input hidden name="goalId" value={id} />
-          <input hidden name="method" value={"delete"} />
+          <Menu>
+            <MenuButton
+              name="shareGoal"
+              as={Button}
+              colorScheme="blue"
+              variant="ghost"
+              aria-label="Share with mentor"
+            >
+              <FontAwesomeIcon
+                icon={faArrowUpFromBracket}
+                style={{ color: "grey" }}
+              />
+            </MenuButton>
+            <MenuList>
+              {userMentors?.length ? (
+                userMentors.map((mentorOption) => {
+                  const isAlreadyShared = sharedWithMentorIDs?.includes(
+                    mentorOption.id
+                  );
+                  return (
+                    <Form method="post" name="share">
+                      <input hidden name="goalId" value={id} />
+                      <input hidden name="mentorId" value={mentorOption.id} />
+                      <input hidden name="method" value={"share"} />
+                      <MenuItem
+                        icon={
+                          <Avatar
+                            src={mentorOption.img ?? undefined}
+                            size={"xs"}
+                          ></Avatar>
+                        }
+                        isDisabled={isAlreadyShared}
+                        as={Button}
+                        type="submit"
+                      >
+                        {mentorOption.name}
+                        {isAlreadyShared && (
+                          <Text
+                            fontSize={"xs"}
+                            color={useColorModeValue(
+                              "grey.200",
+                              "whiteAlpha.700"
+                            )}
+                          >
+                            Shared
+                          </Text>
+                        )}
+                      </MenuItem>
+                    </Form>
+                  );
+                })
+              ) : (
+                <Text marginLeft={5}>No mentors found</Text>
+              )}
+            </MenuList>
+          </Menu>
           <Button
-            colorScheme="red"
-            type="submit"
-            name="deleteGoal"
+            colorScheme="blue"
+            name="editGoal"
+            onClick={() => openDialog(id)}
             variant="ghost"
+            aria-label="Edit Goal"
           >
-            <DeleteIcon style={{ color: "grey" }} />
+            <EditIcon style={{ color: "grey" }} />
           </Button>
-        </deleteFetcher.Form>
-      </Td>
+          <Form method="delete">
+            <input hidden name="goalId" value={id} />
+            <input hidden name="method" value={"delete"} />
+            <Button
+              colorScheme="red"
+              type="submit"
+              name="deleteGoal"
+              variant="ghost"
+              aria-label="Delete Goal"
+            >
+              <DeleteIcon style={{ color: "grey" }} />
+            </Button>
+          </Form>
+        </Td>
+      )}
     </Tr>
   );
 };
