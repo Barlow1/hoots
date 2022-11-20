@@ -77,6 +77,7 @@ export const loader: LoaderFunction = async ({ request, context }) => {
   }
   let mentorProfile = null;
   let usersWithSharedGoals;
+  let freshUser;
   if (user) {
     const prisma = new PrismaClient();
     prisma
@@ -85,6 +86,11 @@ export const loader: LoaderFunction = async ({ request, context }) => {
     mentorProfile = await prisma.mentor.findUnique({
       where: {
         profileId: user.id,
+      },
+    });
+    freshUser = await prisma.profile.findUnique({
+      where: {
+        id: user.id,
       },
     });
     if (mentorProfile) {
@@ -118,7 +124,7 @@ export const loader: LoaderFunction = async ({ request, context }) => {
     .findMany({
       where: {
         id: {
-          in: user.mentorIDs,
+          in: freshUser ? freshUser.mentorIDs : user.mentorIDs,
         },
       },
     })
