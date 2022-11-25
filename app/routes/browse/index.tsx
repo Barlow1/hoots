@@ -1,23 +1,6 @@
-import {
-  Avatar,
-  Box,
-  Flex,
-  FormLabel,
-  Grid,
-  GridItem,
-  Heading,
-  HStack,
-  IconButton,
-  Input,
-  Tag,
-  Text,
-  Tooltip,
-  useColorModeValue,
-} from "@chakra-ui/react";
 import { Mentor } from "@prisma/client";
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { routes } from "../../routes";
-import debounce from "lodash.debounce";
 import { json, LoaderFunction, MetaFunction } from "@remix-run/node";
 import {
   Link,
@@ -30,6 +13,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FilterDialog, { FilterValues } from "~/components/FilterDialog";
 import { getSocialMetas } from "~/utils/seo";
 import { getDisplayUrl } from "~/utils/url";
+import { H1, H2, H3, Paragraph } from "~/components/Typography";
+import Tag from "~/components/Tag";
+import IconButton from "~/components/Buttons/IconButton";
 
 type Route = {
   data: { mentors: Mentor[] };
@@ -128,113 +114,97 @@ const Browse = () => {
 
   return (
     <div>
-      <Grid>
-        <GridItem boxShadow="md" colSpan={12} w="100%" borderRadius="5">
-          <Box padding="5">
-            <Flex justifyContent={"space-between"}>
-              <Heading as="h1" size="xl">
+      <div className={"grid"}>
+        <div className={"rounded-sm shadow"}>
+          <div className={"p-5"}>
+            <div className={"flex justify-between"}>
+              <H3 as="h1" className="font-bold">
                 Browse
-              </Heading>
+              </H3>
               <FilterDialog
                 onSave={onFilterSave}
                 minCost={searchParams.get("min_cost") ?? undefined}
                 maxCost={searchParams.get("max_cost") ?? undefined}
               />
-            </Flex>
-            <Box pt="5">
-              <Flex>
-                <Input
+            </div>
+            <div className={"pt-5"}>
+              <div className="flex">
+                <input
+                  className="w-52 mr-2 block rounded-md border-gray-300 dark:border-gray-300/10 border shadow-sm focus-visible:outline-0 focus:ring-2 focus:ring-brand-500 sm:text-sm indent-2 dark:bg-slate-900"
                   name="search"
                   onChange={onSearchChange}
                   placeholder="Search..."
-                  maxW="200"
                   onKeyUp={onSearchKeyUp}
-                  mr="2"
                   defaultValue={searchParams.get("query") ?? undefined}
-                ></Input>
+                ></input>
                 <IconButton
                   aria-label="Search"
-                  background="brand.500"
-                  textColor="white"
                   onClick={updateQueryAndNavigate}
-                  _hover={{ backgroundColor: "brand.200" }}
                   icon={<FontAwesomeIcon icon={faMagnifyingGlass} />}
+                  variant="primary"
                 />
-              </Flex>
-              <FormLabel
-                color="gray.500"
-                fontSize={"xs"}
-                ml="1"
-                htmlFor="search"
-              >
+              </div>
+              <label className="text-gray-500 text-sm ml-1" htmlFor="search">
                 Hint: try searching for "React"
-              </FormLabel>
-            </Box>
-          </Box>
-        </GridItem>
-      </Grid>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {data.mentors && (
-        <Grid
-          templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
-          gap={5}
-          pt="5"
-          display={{ md: "grid", base: "flex" }}
-          flexDir={{ md: "unset", base: "column" }}
-        >
+        <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8 pt-5">
           {data.mentors?.map((mentor) => {
             return (
-              <GridItem key={mentor.id}>
-                <Link to={`${routes.browse}/${mentor.id}`}>
-                  <Box
-                    maxW={{ base: "full", md: "md" }}
-                    borderWidth="1px"
-                    borderRadius="lg"
-                    overflow="hidden"
-                    key={mentor.id}
-                    p="5"
-                    h="100%"
-                    _hover={useColorModeValue(
-                      { backgroundColor: "gray.100" },
-                      { backgroundColor: "gray.800" }
+              <div
+                key={mentor.id}
+                className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white hover:bg-gray-100 dark:bg-slate-900 dark:hover:bg-slate-800 focus-within:ring-brand-500 focus-within:ring-2"
+              >
+                <Link
+                  className="w-full h-full"
+                  to={`${routes.browse}/${mentor.id}`}
+                >
+                  <div className="aspect-w-3 aspect-h-4 bg-gray-200 group-hover:opacity-75 sm:aspect-none sm:h-96">
+                    {mentor.img ? (
+                      <img
+                        src={mentor.img ?? undefined}
+                        className="h-full w-full object-cover object-center sm:h-full sm:w-full"
+                      />
+                    ) : (
+                      <svg
+                        className="h-full w-full text-gray-300 p-5"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
                     )}
-                  >
-                    <Flex justifyContent={"center"}>
-                      <Avatar size="md" src={mentor?.img ?? undefined} />
-                    </Flex>
-
-                    <Heading as="h2" size="lg" noOfLines={1}>
-                      {mentor.name}
-                    </Heading>
-                    <Text>💼 {mentor.occupation}</Text>
-                    <Text>🏢 {mentor.company}</Text>
-                    <Text>🕒 {mentor.experience} years</Text>
-                    <Text>💲 {mentor.cost || "FREE"}</Text>
-                    <Flex wrap={"wrap"}>
+                  </div>
+                  <div className="flex flex-1 flex-col space-y-2 p-4">
+                    <H3 className="font-bold">{mentor.name}</H3>
+                    <Paragraph>💼 {mentor.occupation}</Paragraph>
+                    <Paragraph>🏢 {mentor.company}</Paragraph>
+                    <Paragraph>🕒 {mentor.experience} years</Paragraph>
+                    <Paragraph>💲 {mentor.cost || "FREE"}</Paragraph>
+                    <div className="flex flex-wrap">
                       {mentor.tags.slice(0, TAG_LIMIT).map((tag) => {
-                        return (
-                          <Tag
-                            key={tag}
-                            background="brand.500"
-                            color="white"
-                            mr={1}
-                            mb={1}
-                          >
-                            {tag}
-                          </Tag>
-                        );
+                        return <Tag key={tag}>{tag}</Tag>;
                       })}
-                    </Flex>
-                    <Text noOfLines={3}>{mentor.bio}</Text>
-                  </Box>
+                    </div>
+                    <Paragraph className={"line-clamp-3 text-ellipsis"}>
+                      {mentor.bio || "-"}
+                    </Paragraph>
+                  </div>
                 </Link>
-              </GridItem>
+              </div>
             );
           })}
-        </Grid>
+        </div>
       )}
       {!data.mentors?.length && (
-        <Text>No results found. Please update your search and try again.</Text>
+        <Paragraph>
+          No results found. Please update your search and try again.
+        </Paragraph>
       )}
     </div>
   );
