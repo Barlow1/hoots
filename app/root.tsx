@@ -33,6 +33,7 @@ import App from "./_app";
 import * as gtag from "~/utils/gtags.client";
 import { getSocialMetas } from "./utils/seo";
 import { getDisplayUrl } from "./utils/url";
+import tailwindStyleUrls from "./styles/tailwind.css";
 
 export const meta: MetaFunction = ({ data }) => {
   let requestInfo;
@@ -135,6 +136,7 @@ export const links: LinksFunction = () => {
       href: "https://use.fontawesome.com/releases/v6.1.1/css/svg-with-js.css",
       rel: "stylesheet",
     },
+    { rel: "stylesheet", href: tailwindStyleUrls },
   ];
 };
 

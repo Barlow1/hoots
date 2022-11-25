@@ -4,13 +4,16 @@
   "sideEffects": false,
   "version": "0.0.1",
   "scripts": {
-    "build": "remix build",
+    "build": "npm run build:css && remix build",
     "dev": "remix dev",
-    "start": "cross-env NODE_ENV=production netlify dev"
+    "start": "concurrently \"npm run dev:css\" \"npm run dev:netlify\" ",
+    "dev:netlify": "cross-env NODE_ENV=production netlify dev",
+    "build:css": "concurrently \"tailwindcss -o ./app/styles/tailwind.css\" \"postcss styles --base styles --dir app/styles --env production\"",
+    "dev:css": "concurrently \"postcss styles --base styles --dir app/styles -w\" \"tailwindcss -o ./app/styles/tailwind.css --watch\""
   },
   "dependencies": {
-    "@chakra-ui/icons": "^2.0.11",
-    "@chakra-ui/react": "^2.3.6",
+    "@chakra-ui/icons": "^2.0.12",
+    "@chakra-ui/react": "^2.4.1",
     "@emotion/react": "^11.10.4",
     "@emotion/server": "^11.10.0",
     "@emotion/styled": "^11.10.4",
@@ -18,6 +21,8 @@
     "@fortawesome/free-brands-svg-icons": "^6.2.0",
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@headlessui/react": "^1.7.4",
+    "@heroicons/react": "^2.0.13",
     "@netlify/functions": "^1.3.0",
     "@prisma/client": "^4.5.0",
     "@remix-run/netlify": "^1.7.3",
@@ -25,6 +30,7 @@
     "@remix-run/react": "^1.7.3",
     "bcrypt": "^5.1.0",
     "cloudinary": "^1.32.0",
+    "clsx": "^1.2.1",
     "cross-env": "^7.0.3",
     "formik": "^2.2.9",
     "framer-motion": "^6.5.1",
@@ -43,9 +49,13 @@
     "@types/node": "^18.11.3",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
+    "autoprefixer": "^10.4.13",
+    "concurrently": "^7.6.0",
     "eslint": "^8.26.0",
     "netlify-cli": "^10.18.0",
+    "postcss": "^8.4.19",
     "prisma": "^4.5.0",
+    "tailwindcss": "^3.2.4",
     "typescript": "^4.8.4"
   },
   "engines": {

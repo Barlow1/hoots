@@ -1,21 +1,3 @@
-import { ArrowBackIcon, TimeIcon } from "@chakra-ui/icons";
-import {
-  Avatar,
-  Box,
-  Button,
-  Flex,
-  Heading,
-  HStack,
-  IconButton,
-  Image,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Tag,
-  Text,
-  Link,
-} from "@chakra-ui/react";
 import {
   faFacebook,
   faLinkedin,
@@ -31,11 +13,18 @@ import {
   useLocation,
   useNavigate,
 } from "@remix-run/react";
+import IconButton from "~/components/Buttons/IconButton";
 import { getFacebookHref } from "~/utils/facebook";
 import { getLinkedInHref } from "~/utils/linkedIn";
 import { getSocialMetas } from "~/utils/seo";
 import { getTwitterHref } from "~/utils/twitter";
 import { getDisplayUrl } from "~/utils/url";
+import { ArrowLeftIcon } from "@heroicons/react/20/solid";
+import MenuButton from "~/components/Buttons/MenuButton";
+import CTAButton from "~/components/Buttons/CTAButton";
+import Tag from "~/components/Tag";
+import { H2, Paragraph } from "~/components/Typography";
+import Avatar from "~/components/Avatar";
 
 type LoaderData = { data: { mentor: Mentor; shareUrl: string } };
 
@@ -70,105 +59,82 @@ export const MentorPage = () => {
   const shareUrl = data.shareUrl;
   const title = `I'm mentoring on Hoots 🦉 Can't wait to meet with you!`;
   return (
-    <Box justifyContent={"center"} key={mentor?.id}>
-      <Flex w="full" justifyContent={"space-between"} mb="5">
-        <Button
-          leftIcon={<ArrowBackIcon />}
+    <div className="justify-center" key={mentor?.id}>
+      <div className="flex justify-between mb-5">
+        <IconButton
+          icon={
+            <ArrowLeftIcon
+              className="-ml-0.5 mr-2 h-4 w-4"
+              aria-hidden="true"
+            />
+          }
           onClick={() => {
             window.history.back();
           }}
         >
           Back
-        </Button>
-        <Menu>
-          <MenuButton
-            as={IconButton}
-            aria-label="Options"
-            icon={<FontAwesomeIcon icon={faEllipsis} />}
-          ></MenuButton>
-          <MenuList>
-            <MenuItem
-              as={Link}
-              icon={<FontAwesomeIcon icon={faTwitter} />}
-              href={getTwitterHref({
+        </IconButton>
+        <MenuButton
+          icon={<FontAwesomeIcon icon={faEllipsis} />}
+          options={[
+            {
+              title: "Share on Twitter",
+              href: getTwitterHref({
                 url: shareUrl,
                 title,
-              })}
-              isExternal
-            >
-              Share on Twitter
-            </MenuItem>
-            <MenuItem
-              as={Link}
-              icon={<FontAwesomeIcon icon={faLinkedin} />}
-              href={getLinkedInHref({
+              }),
+              icon: <FontAwesomeIcon icon={faTwitter} />,
+            },
+            {
+              title: "Share on LinkedIn",
+              href: getLinkedInHref({
                 url: shareUrl,
-              })}
-              isExternal
-            >
-              Share on LinkedIn
-            </MenuItem>
-            <MenuItem
-              as={Link}
-              icon={<FontAwesomeIcon icon={faFacebook} />}
-              href={getFacebookHref({
+              }),
+              icon: <FontAwesomeIcon icon={faLinkedin} />,
+            },
+            {
+              title: "Share on Facebook",
+              href: getFacebookHref({
                 url: shareUrl,
-              })}
-              isExternal
-            >
-              Share on Facebook
-            </MenuItem>
-          </MenuList>
-        </Menu>
-      </Flex>
-      <Flex justifyContent={"center"} maxW="xl" mx={"auto"}>
-        <Flex direction={"column"}>
-          <Flex justifyContent={"center"} pb={5}>
-            <Avatar size="2xl" src={mentor?.img ?? undefined} />
-          </Flex>
-          <Heading as="h2" size="lg" noOfLines={1}>
-            {mentor?.name}
-          </Heading>
-          <Text>💼 {mentor?.occupation}</Text>
-          <Text>🏢 {mentor?.company}</Text>
-          <Text>🕒 {mentor?.experience} years</Text>
-          <Text>💲 {mentor?.cost || "FREE"}</Text>
-          <Flex py={1} wrap={"wrap"}>
-            {mentor?.tags.map((tag: any) => {
-              return (
-                <Tag
-                  key={tag}
-                  background="brand.500"
-                  color="white"
-                  mr={1}
-                  mb={1}
-                >
-                  {tag}
-                </Tag>
-              );
-            })}
-          </Flex>
-          <Text>{mentor?.bio}</Text>
-          <Button
-            backgroundColor={"brand.500"}
-            _hover={{ bg: "brand.200" }}
-            style={{ color: "white" }}
-            justifySelf="center"
-            as={NavLink}
-            to={"apply"}
-            mt={5}
-            w="full"
-            mx={"auto"}
-          >
-            Apply{" "}
-            <FontAwesomeIcon
-              icon={faPaperPlane}
-              style={{ marginLeft: "0.5em" }}
+              }),
+              icon: <FontAwesomeIcon icon={faFacebook} />,
+            },
+          ]}
+        ></MenuButton>
+      </div>
+      <div className="flex justify-center max-w-xl mx-auto">
+        <div className="flex flex-col">
+          <div className="flex justify-center pb-5">
+            <Avatar
+              src={mentor?.img ?? undefined}
+              alt={`${mentor?.name} profile picture`}
             />
-          </Button>
-        </Flex>
-      </Flex>
-    </Box>
+          </div>
+          <H2 className="font-bold">{mentor?.name}</H2>
+          <Paragraph>💼 {mentor?.occupation}</Paragraph>
+          <Paragraph>🏢 {mentor?.company}</Paragraph>
+          <Paragraph>🕒 {mentor?.experience} years</Paragraph>
+          <Paragraph>💲 {mentor?.cost || "FREE"}</Paragraph>
+          <div className="py-1 flex flex-wrap">
+            {mentor?.tags.map((tag: any) => {
+              return <Tag key={tag}>{tag}</Tag>;
+            })}
+          </div>
+          <Paragraph>{mentor?.bio}</Paragraph>
+          <CTAButton
+            icon={
+              <FontAwesomeIcon
+                icon={faPaperPlane}
+                style={{ marginLeft: "0.5em" }}
+              />
+            }
+            href={"apply"}
+          >
+            Apply
+          </CTAButton>
+        </div>
+      </div>
+    </div>
   );
 };
 
