@@ -1,6 +1,6 @@
 import type { ReactNode, ReactText } from "react";
 import React from "react";
-import type { BoxProps, FlexProps } from "@chakra-ui/react";
+import type { FlexProps } from "@chakra-ui/react";
 import {
   IconButton,
   Avatar,
@@ -62,11 +62,8 @@ export default function SidebarWithHeader({
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <Box minH="100vh" bg={useColorModeValue("white", "gray.900")}>
-      <SidebarContent
-        onClose={() => onClose}
-        display={{ base: "none", md: "block" }}
-      />
+    <div className="bg-white dark:bg-zinc-900">
+      <SidebarContent onClose={() => onClose} className="hidden md:block" />
       <Drawer
         autoFocus={false}
         isOpen={isOpen}
@@ -85,25 +82,19 @@ export default function SidebarWithHeader({
       <Box ml={{ base: 0, md: "6.5em" }} p="4">
         {children}
       </Box>
-    </Box>
+    </div>
   );
 }
 
-interface SidebarProps extends BoxProps {
+interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   onClose: () => void;
 }
 
 function SidebarContent({ onClose, ...rest }: SidebarProps) {
   return (
-    <Box
-      transition="3s ease"
-      bg={useColorModeValue("white", "gray.900")}
-      borderRight="1px"
-      borderRightColor={useColorModeValue("gray.200", "gray.700")}
-      w={{ base: "full", md: "6.5em" }}
-      pos="fixed"
-      h="full"
+    <div
       {...rest}
+      className={`transition ease-in-out fixed h-full w-full md:w-[6.5em] border-r bg-white dark:bg-zinc-900 ${rest.className}`}
     >
       <Flex
         h="20"
@@ -130,7 +121,7 @@ function SidebarContent({ onClose, ...rest }: SidebarProps) {
           {link.name}
         </NavItem>
       ))}
-    </Box>
+    </div>
   );
 }
 
@@ -166,7 +157,7 @@ function NavItem({ icon, children, link, ...rest }: NavItemProps) {
   );
 }
 
-interface MobileProps extends FlexProps {
+interface MobileProps extends React.HTMLAttributes<HTMLDivElement> {
   onOpen: () => void;
 }
 function MobileNav({ onOpen, ...rest }: MobileProps) {
@@ -175,16 +166,9 @@ function MobileNav({ onOpen, ...rest }: MobileProps) {
   const mentorProfile = useMentorProfile();
   const { colorMode, toggleColorMode } = useColorMode();
   return (
-    <Flex
-      ml={{ base: 0, md: "6.5em" }}
-      px={{ base: 4, md: 4 }}
-      height="20"
-      alignItems="center"
-      bg={useColorModeValue("white", "gray.900")}
-      borderBottomWidth="1px"
-      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
-      justifyContent={{ base: "space-between", md: "flex-end" }}
+    <div
       {...rest}
+      className={`flex ml-0 md:ml-[6.5em] px-4 h-20 items-center bg-white dark:bg-zinc-900 border-b justify-between md:justify-end ${rest.className}`}
     >
       <IconButton
         display={{ base: "flex", md: "none" }}
@@ -295,6 +279,6 @@ function MobileNav({ onOpen, ...rest }: MobileProps) {
           </Menu>
         </Flex>
       </HStack>
-    </Flex>
+    </div>
   );
 }

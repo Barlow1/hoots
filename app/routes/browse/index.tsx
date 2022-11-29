@@ -133,7 +133,7 @@ function Browse() {
             <div className="pt-5">
               <div className="flex">
                 <input
-                  className="w-52 mr-2 block rounded-md border-gray-300 dark:border-gray-300/10 border shadow-sm focus-visible:outline-0 focus:ring-2 focus:ring-brand-500 sm:text-sm indent-2 dark:bg-slate-900 focus:ring-offset-2 dark:ring-offset-slate-900"
+                  className="w-52 mr-2 block rounded-md border-gray-300 dark:border-gray-300/10 border shadow-sm focus-visible:outline-0 focus:ring-2 focus:ring-brand-500 sm:text-sm indent-2 dark:bg-zinc-900 focus:ring-offset-2 dark:ring-offset-zinc-900"
                   name="search"
                   onChange={onSearchChange}
                   placeholder="Search..."
@@ -165,7 +165,7 @@ function Browse() {
           {data.mentors?.map((mentor) => (
             <div
               key={mentor.id}
-              className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white hover:bg-gray-100 dark:bg-slate-900 dark:hover:bg-slate-800 focus-within:ring-brand-500 focus-within:ring-2 focus-within:ring-offset-2 dark:ring-offset-slate-900	"
+              className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 focus-within:ring-brand-500 focus-within:ring-2 focus-within:ring-offset-2 dark:ring-offset-zinc-900	"
             >
               <Link
                 className="w-full h-full"
