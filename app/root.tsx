@@ -1,23 +1,22 @@
 import {
   Box,
   ChakraProvider,
-  ColorModeScript,
   cookieStorageManagerSSR,
   extendTheme,
   Heading,
   Link,
   Text,
 } from "@chakra-ui/react";
-import { Mentor, prisma, PrismaClient, Profile } from "@prisma/client";
-import {
-  json,
+import type { Mentor, Profile } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import type {
   LinksFunction,
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
@@ -26,11 +25,11 @@ import {
   useLoaderData,
   useLocation,
 } from "@remix-run/react";
-import React, { useContext, useEffect } from "react";
-import { ClientStyleContext, ServerStyleContext } from "./context";
-import { getSession, getUser } from "./utils/user.session";
-import App from "./_app";
+import React, { useEffect } from "react";
 import * as gtag from "~/utils/gtags.client";
+import { getUser } from "./utils/user.session.server";
+// eslint-disable-next-line import/no-cycle
+import App from "./_app";
 import { getSocialMetas } from "./utils/seo";
 import { getDisplayUrl } from "./utils/url";
 import tailwindStyleUrls from "./styles/tailwind.css";
@@ -107,7 +106,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   });
 };
 
-export const Root = () => {
+export function Root() {
   const data = useLoaderData();
   return (
     <Document>
@@ -127,18 +126,21 @@ export const Root = () => {
       </ChakraProvider>
     </Document>
   );
-};
+}
 
-export const links: LinksFunction = () => {
-  return [
-    { rel: "icon", type: "image/png", sizes: "16x16", href: "/emblem.png" },
-    {
-      href: "https://use.fontawesome.com/releases/v6.1.1/css/svg-with-js.css",
-      rel: "stylesheet",
-    },
-    { rel: "stylesheet", href: tailwindStyleUrls },
-  ];
-};
+export const links: LinksFunction = () => [
+  {
+    rel: "icon",
+    type: "image/png",
+    sizes: "16x16",
+    href: "/emblem.png",
+  },
+  {
+    href: "https://use.fontawesome.com/releases/v6.1.1/css/svg-with-js.css",
+    rel: "stylesheet",
+  },
+  { rel: "stylesheet", href: tailwindStyleUrls },
+];
 
 function Document({
   children,
@@ -163,7 +165,7 @@ function Document({
         <script
           async
           src={`https://www.googletagmanager.com/gtag/js?id=${gaTrackingId}`}
-        ></script>
+        />
         <script
           async
           id="gtag-init"
@@ -183,6 +185,7 @@ function Document({
         {children}
         <Scripts />
         <ScrollRestoration />
+        <div id="hoots-portal" />
       </body>
     </html>
   );
@@ -212,7 +215,10 @@ export function ErrorBoundary({ error }: { error: Error }) {
     <Document title="Error!">
       <ChakraProvider theme={theme} portalZIndex={40}>
         <Box>
-          <Heading as="h1">There was an error: {error.message}</Heading>
+          <Heading as="h1">
+            There was an error:
+            {error.message}
+          </Heading>
           <Text>
             Try refreshing the page and if the issue persists, please contact
             support <Link href="mailto:help@inhoots.com">help@inhoots.com</Link>

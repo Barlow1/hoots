@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   AlertDialog,
   AlertDialogBody,
@@ -12,12 +12,11 @@ import {
   Input,
   Textarea,
   Box,
-} from "@chakra-ui/react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFloppyDisk, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { useUser } from "~/utils/useRootData";
-import { Goal } from "@prisma/client";
-import { Form, useFetcher } from "@remix-run/react";
+} from '@chakra-ui/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
+import type { Goal } from '@prisma/client';
+import { useFetcher } from '@remix-run/react';
 
 export interface GoalsDialogProps {
   userGoals: Goal[];
@@ -26,21 +25,20 @@ export interface GoalsDialogProps {
   id: string;
 }
 
-export const GoalsDialog = ({
+export function GoalsDialog({
   userGoals,
   isDialogOpen,
   setIsDialogOpen,
   id,
-}: GoalsDialogProps) => {
+}: GoalsDialogProps) {
   const onClose = () => {
     setIsDialogOpen(false);
   };
   const cancelRef = React.useRef(null);
   const goal = userGoals.find((userGoal) => userGoal.id === id);
-  let nameInput = goal?.name;
-  let dateInput = goal?.dueDate;
-  let notesInput = goal?.notes;
-  const user = useUser();
+  const nameInput = goal?.name;
+  const dateInput = goal?.dueDate;
+  const notesInput = goal?.notes;
   const milestoneFetcher = useFetcher();
 
   return (
@@ -52,19 +50,19 @@ export const GoalsDialog = ({
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            {id ? "Edit Goal" : "New Goal"}
+            {id ? 'Edit Goal' : 'New Goal'}
           </AlertDialogHeader>
 
           <AlertDialogBody>
             <milestoneFetcher.Form method="post">
-              <input hidden name="goalId" value={goal?.id}></input>
-              <input hidden name="method" value={"post"}></input>
+              <input hidden name="goalId" value={goal?.id} />
+              <input hidden name="method" value="post" />
               <Stack spacing={3}>
                 <FormControl>
                   <FormLabel>Name</FormLabel>
                   <Input
                     name="nameInput"
-                    placeholder={"Enter new goal"}
+                    placeholder="Enter new goal"
                     defaultValue={nameInput}
                   />
                 </FormControl>
@@ -78,26 +76,26 @@ export const GoalsDialog = ({
                 <FormLabel>Notes</FormLabel>
                 <Textarea
                   name="notesInput"
-                  placeholder={"Enter notes for your goal"}
+                  placeholder="Enter notes for your goal"
                   defaultValue={notesInput}
                 />
-                <Box style={{ width: "100%", textAlign: "right" }}>
+                <Box style={{ width: '100%', textAlign: 'right' }}>
                   <Button
                     colorScheme="gray"
                     ref={cancelRef}
                     onClick={onClose}
-                    style={{ marginRight: "2rem" }}
+                    style={{ marginRight: '2rem' }}
                   >
                     Cancel
                     <FontAwesomeIcon
-                      style={{ marginLeft: "1rem" }}
+                      style={{ marginLeft: '1rem' }}
                       icon={faXmark}
                     />
                   </Button>
                   <Button type="submit" colorScheme="blue" onClick={onClose}>
                     Save
                     <FontAwesomeIcon
-                      style={{ marginLeft: "1rem" }}
+                      style={{ marginLeft: '1rem' }}
                       icon={faFloppyDisk}
                     />
                   </Button>
@@ -109,4 +107,4 @@ export const GoalsDialog = ({
       </AlertDialogOverlay>
     </AlertDialog>
   );
-};
+}

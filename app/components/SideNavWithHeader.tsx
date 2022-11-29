@@ -1,4 +1,6 @@
-import React, { ReactNode } from "react";
+import type { ReactNode, ReactText } from "react";
+import React from "react";
+import type { BoxProps, FlexProps } from "@chakra-ui/react";
 import {
   IconButton,
   Avatar,
@@ -7,26 +9,19 @@ import {
   Flex,
   HStack,
   VStack,
-  Icon,
   useColorModeValue,
   Drawer,
   DrawerContent,
   Text,
   useDisclosure,
-  BoxProps,
-  FlexProps,
   Menu,
   MenuButton,
   MenuDivider,
   MenuItem,
   MenuList,
-  ComponentWithAs,
-  IconProps,
   Tooltip,
   useColorMode,
-  Button,
 } from "@chakra-ui/react";
-import { ReactText } from "react";
 import {
   BellIcon,
   ChevronDownIcon,
@@ -35,17 +30,17 @@ import {
   SunIcon,
 } from "@chakra-ui/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import {
   faHome,
   faAward,
   faTableList,
-  faHandshake,
-  IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
+import { Link, useFetcher } from "@remix-run/react";
+// eslint-disable-next-line import/no-cycle
+import { useMentorProfile, useUser } from "~/utils/useRootData";
 import { routes } from "../routes";
 import Logo from "../assets/Logo.svg";
-import { Link, useFetcher } from "@remix-run/react";
-import { useMentorProfile, useUser } from "~/utils/useRootData";
 
 interface LinkItemProps {
   name: string;
@@ -98,7 +93,7 @@ interface SidebarProps extends BoxProps {
   onClose: () => void;
 }
 
-const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+function SidebarContent({ onClose, ...rest }: SidebarProps) {
   return (
     <Box
       transition="3s ease"
@@ -137,14 +132,14 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       ))}
     </Box>
   );
-};
+}
 
 interface NavItemProps extends FlexProps {
   icon: IconDefinition;
   children: ReactText;
   link: string;
 }
-const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
+function NavItem({ icon, children, link, ...rest }: NavItemProps) {
   return (
     <Flex align="center" p="4" mx="4" {...rest}>
       <Tooltip
@@ -169,12 +164,12 @@ const NavItem = ({ icon, children, link, ...rest }: NavItemProps) => {
       </Tooltip>
     </Flex>
   );
-};
+}
 
 interface MobileProps extends FlexProps {
   onOpen: () => void;
 }
-const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
+function MobileNav({ onOpen, ...rest }: MobileProps) {
   const signOutFetcher = useFetcher();
   const user = useUser();
   const mentorProfile = useMentorProfile();
@@ -222,7 +217,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
             icon={<BellIcon />}
           />
         )}
-        <Flex alignItems={"center"}>
+        <Flex alignItems="center">
           <Menu>
             <MenuButton
               py={2}
@@ -230,7 +225,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
               _focus={{ boxShadow: "none" }}
             >
               <HStack>
-                {user && <Avatar size={"sm"} src={user.img ?? undefined} />}
+                {user && <Avatar size="sm" src={user.img ?? undefined} />}
                 <VStack
                   display={{ base: "none", md: "flex" }}
                   alignItems="flex-start"
@@ -302,4 +297,4 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       </HStack>
     </Flex>
   );
-};
+}

@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   AlertDialog,
   AlertDialogBody,
@@ -12,16 +12,20 @@ import {
   Input,
   Textarea,
   Box,
-} from "@chakra-ui/react";
-import { Field, FieldAttributes, Form, Formik } from "formik";
+} from '@chakra-ui/react';
+import type { FieldAttributes} from 'formik';
+import {
+  Field, Form, Formik,
+} from 'formik';
 // import { UserGoal } from "../pages/goals";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFloppyDisk, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFloppyDisk, faXmark } from '@fortawesome/free-solid-svg-icons';
+
 export interface NewAgendaItem {
   name: string;
   notes?: string;
 }
-export interface NewAgendaDialog {
+export interface INewAgendaDialog {
   userAgendaItem: NewAgendaItem[];
   setAgendaItem: Function;
   isDialogOpen: boolean;
@@ -29,24 +33,22 @@ export interface NewAgendaDialog {
   index?: number;
 }
 
-export const NewAgendaDialog = ({
+export function NewAgendaDialog({
   userAgendaItem,
   setAgendaItem,
   isDialogOpen,
   setIsDialogOpen,
   index,
-}: NewAgendaDialog) => {
-  console.log(`userAgenda: ${JSON.stringify(userAgendaItem)}`);
+}: INewAgendaDialog) {
   const onClose = () => {
     setIsDialogOpen(false);
   };
   const cancelRef = React.useRef(null);
-  let nameInput = index || index === 0 ? userAgendaItem[index].name : "";
+  const nameInput = index || index === 0 ? userAgendaItem[index].name : '';
   // let dateInput = index || index === 0 ? userGoals[index].dueDate : "";
-  let notesInput =
-    (index || index === 0) && userAgendaItem[index].notes
-      ? userAgendaItem[index].notes
-      : "";
+  const notesInput = (index || index === 0) && userAgendaItem[index].notes
+    ? userAgendaItem[index].notes
+    : '';
 
   return (
     <AlertDialog
@@ -57,7 +59,7 @@ export const NewAgendaDialog = ({
       <AlertDialogOverlay>
         <AlertDialogContent>
           <AlertDialogHeader fontSize="lg" fontWeight="bold">
-            {"New Agenda Item"}
+            New Agenda Item
           </AlertDialogHeader>
 
           <AlertDialogBody>
@@ -65,7 +67,7 @@ export const NewAgendaDialog = ({
               initialValues={{ nameInput, notesInput }}
               onSubmit={(values, actions) => {
                 setTimeout(() => {
-                  let newUserGoals: NewAgendaItem[] = userAgendaItem;
+                  const newUserGoals: NewAgendaItem[] = userAgendaItem;
                   if (index) {
                     newUserGoals[index] = {
                       ...newUserGoals[index],
@@ -78,7 +80,7 @@ export const NewAgendaDialog = ({
                       notes: values.notesInput,
                     });
                   }
-                  console.log(`justBefore ${JSON.stringify(newUserGoals)}`)
+                  console.log(`justBefore ${JSON.stringify(newUserGoals)}`);
                   setAgendaItem(newUserGoals);
                   actions.setSubmitting(false);
                   onClose();
@@ -86,52 +88,54 @@ export const NewAgendaDialog = ({
               }}
             >
               {(props) => (
-        <Form style={{padding: 5}}>
+                <Form style={{ padding: 5 }}>
 
-                <Stack spacing={3}>
-                  <Field name="nameInput">
-                    {({ field }: FieldAttributes<any>) => (
-                      <FormControl>
-                        <FormLabel>Name</FormLabel>
-                        <Input {...field} placeholder={"Enter name of new agenda item"} />
-                      </FormControl>
-                    )}
-                  </Field>
-                  <Field name="notesInput">
-                    {({ field }:FieldAttributes<any>) => (
-                      <FormControl>
-                        <FormLabel>Notes</FormLabel>
-                        <Textarea
-                          {...field}
-                          placeholder={"Enter notes for your agenda item"}
+                  <Stack spacing={3}>
+                    <Field name="nameInput">
+                      {({ field }: FieldAttributes<any>) => (
+                        <FormControl>
+                          <FormLabel>Name</FormLabel>
+                          <Input {...field} placeholder="Enter name of new agenda item" />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Field name="notesInput">
+                      {({ field }:FieldAttributes<any>) => (
+                        <FormControl>
+                          <FormLabel>Notes</FormLabel>
+                          <Textarea
+                            {...field}
+                            placeholder="Enter notes for your agenda item"
+                          />
+                        </FormControl>
+                      )}
+                    </Field>
+                    <Box style={{ width: '100%', textAlign: 'right' }}>
+                      <Button
+                        colorScheme="gray"
+                        ref={cancelRef}
+                        onClick={onClose}
+                        style={{ marginRight: '2rem' }}
+                      >
+                        Cancel
+                        <FontAwesomeIcon
+                          style={{ marginLeft: '1rem' }}
+                          icon={faXmark}
                         />
-                      </FormControl>
-                    )}
-                  </Field>
-                  <Box style={{ width: "100%", textAlign: "right" }}>
-                    <Button
-                      colorScheme="gray"
-                      ref={cancelRef}
-                      onClick={onClose}
-                      style={{ marginRight: "2rem" }}
-                    >
-                      Cancel
-                      <FontAwesomeIcon
-                        style={{ marginLeft: "1rem" }}
-                        icon={faXmark}
-                      />
-                    </Button>
-                    <Button type="submit" colorScheme="blue"
-                isLoading={props.isSubmitting} 
-                >
-                      Save
-                      <FontAwesomeIcon
-                        style={{ marginLeft: "1rem" }}
-                        icon={faFloppyDisk}
-                      />
-                    </Button>
-                  </Box>
-                </Stack>
+                      </Button>
+                      <Button
+                        type="submit"
+                        colorScheme="blue"
+                        isLoading={props.isSubmitting}
+                      >
+                        Save
+                        <FontAwesomeIcon
+                          style={{ marginLeft: '1rem' }}
+                          icon={faFloppyDisk}
+                        />
+                      </Button>
+                    </Box>
+                  </Stack>
                 </Form>
               )}
             </Formik>
@@ -140,4 +144,4 @@ export const NewAgendaDialog = ({
       </AlertDialogOverlay>
     </AlertDialog>
   );
-};
+}

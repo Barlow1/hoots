@@ -1,4 +1,3 @@
-import { DOMAttributes } from "react";
 
 function Avatar({
   src,

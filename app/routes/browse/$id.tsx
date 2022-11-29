@@ -5,21 +5,17 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { faEllipsis, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Mentor } from "@prisma/client";
-import { json, LoaderFunction, MetaFunction } from "@remix-run/node";
-import {
-  Link as NavLink,
-  useLoaderData,
-  useLocation,
-  useNavigate,
-} from "@remix-run/react";
+import type { Mentor } from "@prisma/client";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { ArrowLeftIcon } from "@heroicons/react/20/solid";
 import IconButton from "~/components/Buttons/IconButton";
 import { getFacebookHref } from "~/utils/facebook";
 import { getLinkedInHref } from "~/utils/linkedIn";
 import { getSocialMetas } from "~/utils/seo";
 import { getTwitterHref } from "~/utils/twitter";
 import { getDisplayUrl } from "~/utils/url";
-import { ArrowLeftIcon } from "@heroicons/react/20/solid";
 import MenuButton from "~/components/Buttons/MenuButton";
 import CTAButton from "~/components/Buttons/CTAButton";
 import Tag from "~/components/Tag";
@@ -53,11 +49,11 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   return json({ data: { mentor: mentor as Mentor, shareUrl } });
 };
 
-export const MentorPage = () => {
+export function MentorPage() {
   const { data } = useLoaderData<LoaderData>();
-  const mentor = data.mentor;
-  const shareUrl = data.shareUrl;
-  const title = `I'm mentoring on Hoots 🦉 Can't wait to meet with you!`;
+  const { mentor } = data;
+  const { shareUrl } = data;
+  const title = "I'm mentoring on Hoots 🦉 Can't wait to meet with you!";
   return (
     <div className="justify-center" key={mentor?.id}>
       <div className="flex justify-between mb-5">
@@ -100,7 +96,7 @@ export const MentorPage = () => {
               icon: <FontAwesomeIcon icon={faFacebook} />,
             },
           ]}
-        ></MenuButton>
+        />
       </div>
       <div className="flex justify-center max-w-xl mx-auto">
         <div className="flex flex-col">
@@ -116,9 +112,9 @@ export const MentorPage = () => {
           <Paragraph>🕒 {mentor?.experience} years</Paragraph>
           <Paragraph>💲 {mentor?.cost || "FREE"}</Paragraph>
           <div className="py-1 flex flex-wrap">
-            {mentor?.tags.map((tag: any) => {
-              return <Tag key={tag}>{tag}</Tag>;
-            })}
+            {mentor?.tags.map((tag: any) => (
+              <Tag key={tag}>{tag}</Tag>
+            ))}
           </div>
           <Paragraph>{mentor?.bio}</Paragraph>
           <CTAButton
@@ -128,7 +124,7 @@ export const MentorPage = () => {
                 style={{ marginLeft: "0.5em" }}
               />
             }
-            href={"apply"}
+            href="apply"
           >
             Apply
           </CTAButton>
@@ -136,6 +132,6 @@ export const MentorPage = () => {
       </div>
     </div>
   );
-};
+}
 
 export default MentorPage;

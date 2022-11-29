@@ -13,16 +13,16 @@ import {
   WrapItem,
   ButtonGroup,
   GridItem,
-} from "@chakra-ui/react";
-import { CSSProperties } from "react";
-import { CloseIcon, PhoneIcon } from "@chakra-ui/icons";
-import getRoomCode, { generateToken } from "../../utils/telnyx";
-import { routes } from "../../routes";
+} from '@chakra-ui/react';
+import type { CSSProperties } from 'react';
+import { CloseIcon, PhoneIcon } from '@chakra-ui/icons';
+import getRoomCode, { generateToken } from '../../utils/telnyx';
+import { routes } from '../../routes';
 
 const headingStyle: CSSProperties = {
-  color: "#A0AEC0",
-  fontWeight: "700",
-  paddingBottom: "5px",
+  color: '#A0AEC0',
+  fontWeight: '700',
+  paddingBottom: '5px',
 };
 
 export interface IMeetDeetsProps {
@@ -32,11 +32,12 @@ export interface IMeetDeetsProps {
   upcomingMeetingTime: string;
 }
 
-const pad = "5";
+const pad = '5';
 
-const MeetDeets = (props: IMeetDeetsProps) => {
-  const { mentorId, mentorName, upcomingMeetingDate, upcomingMeetingTime } =
-    props;
+function MeetDeets(props: IMeetDeetsProps) {
+  const {
+    mentorId, mentorName, upcomingMeetingDate, upcomingMeetingTime,
+  } = props;
 
   const handleJoinButtonClick = async () => {
     const roomCode = await getRoomCode();
@@ -50,7 +51,7 @@ const MeetDeets = (props: IMeetDeetsProps) => {
   //     );
   //   }
   // };
-  }
+  };
 
   return (
     <Box
@@ -67,7 +68,7 @@ const MeetDeets = (props: IMeetDeetsProps) => {
         gap={4}
       >
         <GridItem rowSpan={2} colSpan={1}>
-          <Flex flexDirection={"column"} justifyContent={"space-between"}>
+          <Flex flexDirection="column" justifyContent="space-between">
             <Box p={pad}>
               <Wrap>
                 <WrapItem>
@@ -84,22 +85,22 @@ const MeetDeets = (props: IMeetDeetsProps) => {
             <Box p={pad}>
               <ButtonGroup gap="2">
                 <Button
-                  backgroundColor={"brand.200"}
+                  backgroundColor="brand.200"
                   color="white"
                   size="lg"
                   variant="solid"
                   onClick={handleJoinButtonClick}
                 >
-                  <Text style={{ paddingRight: "10px" }}>Join</Text>
+                  <Text style={{ paddingRight: '10px' }}>Join</Text>
                   <PhoneIcon />
                 </Button>
                 <Button
-                  backgroundColor={"buttons.fail"}
+                  backgroundColor="buttons.fail"
                   color="white"
                   size="lg"
                   variant="solid"
                 >
-                  <Text style={{ paddingRight: "10px" }}>Reject</Text>
+                  <Text style={{ paddingRight: '10px' }}>Reject</Text>
                   <CloseIcon />
                 </Button>
               </ButtonGroup>
@@ -110,7 +111,7 @@ const MeetDeets = (props: IMeetDeetsProps) => {
           <Heading as="h6" size="s" style={headingStyle}>
             Mentor
           </Heading>
-          <Flex dir="row" flexWrap={"nowrap"}>
+          <Flex dir="row" flexWrap="nowrap">
             <Wrap>
               <WrapItem>
                 <Avatar size="sm" />
@@ -136,6 +137,6 @@ const MeetDeets = (props: IMeetDeetsProps) => {
       </Grid>
     </Box>
   );
-};
+}
 
 export default MeetDeets;

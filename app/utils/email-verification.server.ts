@@ -1,7 +1,9 @@
+import type { Profile } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
+import { routes } from '~/routes';
+
 const SALT_ROUNDS = 10;
-import { PrismaClient, Profile } from "@prisma/client";
-import bcrypt from "bcrypt";
-import { routes } from "~/routes";
 
 export function createVerificationLink({
   email,
@@ -13,7 +15,7 @@ export function createVerificationLink({
   const url = new URL(domainUrl);
   const token = createToken({ email });
   url.pathname = routes.startVerifyEmail;
-  url.searchParams.set("token", token);
+  url.searchParams.set('token', token);
   return url.toString();
 }
 
@@ -49,9 +51,7 @@ export async function updateVerifiedProfile({
         verified,
       },
     })
-    .then((response) => {
-      return response;
-    })
+    .then((response) => response)
     .catch((error) => {
       console.error(`Error updating email for id: ${profileId}`, error);
       throw error;

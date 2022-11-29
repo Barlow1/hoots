@@ -1,21 +1,13 @@
 import * as React from "react";
-import {
-  AddIcon,
-  EditIcon,
-  DeleteIcon,
-  ChevronRightIcon,
-} from "@chakra-ui/icons";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { faFloppyDisk, faXmark } from "@fortawesome/free-solid-svg-icons";
 import {
   Box,
   Button,
   Checkbox,
-  Grid,
-  GridItem,
   Heading,
   Drawer,
   DrawerBody,
-  DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
   DrawerContent,
@@ -27,20 +19,17 @@ import {
   Textarea,
   Divider,
   Table,
-  TableCaption,
   TableContainer,
   Tbody,
   Td,
-  Tfoot,
   Th,
   Thead,
   Tr,
-  useMediaQuery,
   Show,
 } from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { routes } from "../../routes";
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   Form,
   useFetcher,
@@ -48,9 +37,9 @@ import {
   useSubmit,
   useTransition,
 } from "@remix-run/react";
-import { Goal, GoalMilestone } from "@prisma/client";
+import type { Goal, GoalMilestone } from "@prisma/client";
 import { formatDateDisplay } from "~/utils/dates";
-import { requireUser } from "~/utils/user.session";
+import { requireUser } from "~/utils/user.session.server";
 
 type Route = {
   data: { goal: Goal };
@@ -143,6 +132,7 @@ export const action: ActionFunction = async ({ request }) => {
     } else if (response.goal) {
       data = response.goal;
     }
+    // eslint-disable-next-line no-shadow
   } catch (error) {
     console.error(error);
   }
@@ -163,7 +153,7 @@ const convertFormToMilestone = (form: FormData): GoalMilestone => {
   };
 };
 
-const MilestonePage = () => {
+function MilestonePage() {
   const { data } = useLoaderData<Route>();
   const [isDrawerOpen, setIsDrawerOpen] = React.useState<boolean>(false);
   const [milestoneBeingEditedId, setMilestoneBeingEditedId] = React.useState<
@@ -197,17 +187,19 @@ const MilestonePage = () => {
     submit(formData, { replace: true, method: "post" });
   };
 
+  const sortedMilestones = [...(data.goal?.milestones ?? [])].reverse();
+
+  const milestoneBeingEdited = React.useMemo(
+    () =>
+      data.goal?.milestones.find(
+        (milestone) => milestone.id === milestoneBeingEditedId
+      ),
+    [milestoneBeingEditedId, data.goal?.milestones]
+  );
+
   if (!data.goal || data.goal === undefined) {
-    return <Heading color={"red"}>Error Grabbing Goal Data</Heading>;
+    return <Heading color="red">Error Grabbing Goal Data</Heading>;
   }
-
-  const sortedMilestones = [...data.goal?.milestones].reverse();
-
-  const milestoneBeingEdited = React.useMemo(() => {
-    return data.goal?.milestones.find(
-      (milestone) => milestone.id === milestoneBeingEditedId
-    );
-  }, [milestoneBeingEditedId, data.goal?.milestones]);
 
   return (
     <Box
@@ -236,7 +228,10 @@ const MilestonePage = () => {
             <Divider />
           </Box>
           <Box>{data.goal?.name}</Box>
-          <Box>Due: {formatDateDisplay(data.goal?.dueDate) ?? "-"}</Box>
+          <Box>
+            Due:
+            {formatDateDisplay(data.goal?.dueDate) ?? "-"}
+          </Box>
           <Box>
             Notes:
             <Box>{data.goal?.notes ?? "-"}</Box>
@@ -246,7 +241,7 @@ const MilestonePage = () => {
       <Box style={{ minWidth: "70%", height: "100%" }}>
         <Box style={{ width: "100%", textAlign: "right" }}>
           <Button
-            backgroundColor={"brand.500"}
+            backgroundColor="brand.500"
             _hover={{ bg: "brand.200" }}
             style={{ color: "white", margin: "1rem 1rem 1rem 0" }}
             onClick={() => openDrawer(undefined)}
@@ -267,7 +262,7 @@ const MilestonePage = () => {
             <Thead>
               <Tr>
                 <Th>
-                  <Show above={"md"}>Completed</Show>
+                  <Show above="md">Completed</Show>
                 </Th>
                 <Th>Milestone</Th>
                 <Th display={{ md: "block", base: "none" }}>Due</Th>
@@ -326,7 +321,7 @@ const MilestonePage = () => {
       />
     </Box>
   );
-};
+}
 
 export interface MilestoneItemProps {
   openDrawer: Function;
@@ -334,11 +329,11 @@ export interface MilestoneItemProps {
   item: GoalMilestone;
 }
 
-export const MilestoneItem = ({
+export function MilestoneItem({
   openDrawer,
   onCheck,
   item,
-}: MilestoneItemProps) => {
+}: MilestoneItemProps) {
   return (
     <Tr
       _hover={{ bgColor: "blackAlpha.50", cursor: "pointer" }}
@@ -353,6 +348,7 @@ export const MilestoneItem = ({
           isChecked={item.completed ?? false}
           onChange={(e) => {
             // optimistic UI, remix will revalidate if the update fails
+            // eslint-disable-next-line no-param-reassign
             item.completed = e.target.checked;
             onCheck(e, item.id);
           }}
@@ -369,7 +365,7 @@ export const MilestoneItem = ({
       </Td>
     </Tr>
   );
-};
+}
 
 export interface MilestoneDrawerProps {
   goalId: string | undefined;
@@ -379,6 +375,7 @@ export interface MilestoneDrawerProps {
   milestoneBeingEdited: GoalMilestone | undefined;
 }
 
+// eslint-disable-next-line no-shadow
 export enum FormType {
   NEW = "New",
   EDIT = "Edit",
@@ -386,13 +383,13 @@ export enum FormType {
   DELETE = "Delete",
 }
 
-export const MilestoneDrawer = ({
+export function MilestoneDrawer({
   goalId,
   isDrawerOpen,
   onDrawerClose,
   formType,
   milestoneBeingEdited,
-}: MilestoneDrawerProps) => {
+}: MilestoneDrawerProps) {
   const deleteFetcher = useFetcher();
 
   return (
@@ -400,7 +397,7 @@ export const MilestoneDrawer = ({
       isOpen={isDrawerOpen}
       placement="right"
       onClose={onDrawerClose}
-      size={"md"}
+      size="md"
     >
       <DrawerOverlay />
       <DrawerContent>
@@ -422,7 +419,7 @@ export const MilestoneDrawer = ({
               <FormLabel>Name</FormLabel>
               <Input
                 name="name"
-                placeholder={"Enter new milestone"}
+                placeholder="Enter new milestone"
                 defaultValue={milestoneBeingEdited?.name}
               />
               <FormControl>
@@ -430,7 +427,7 @@ export const MilestoneDrawer = ({
                 <Input
                   name="date"
                   type="date"
-                  placeholder={"Enter Due Date"}
+                  placeholder="Enter Due Date"
                   defaultValue={milestoneBeingEdited?.date}
                 />
               </FormControl>
@@ -439,7 +436,7 @@ export const MilestoneDrawer = ({
                 <Textarea
                   name="notes"
                   style={{ minHeight: "8rem" }}
-                  placeholder={"Enter notes for your milestone"}
+                  placeholder="Enter notes for your milestone"
                   defaultValue={milestoneBeingEdited?.notes}
                 />
               </FormControl>
@@ -454,7 +451,7 @@ export const MilestoneDrawer = ({
           </Form>
 
           <deleteFetcher.Form method="delete">
-            <Stack marginTop={3} direction={"row"}>
+            <Stack marginTop={3} direction="row">
               <Button
                 colorScheme="gray"
                 mr={3}
@@ -489,5 +486,5 @@ export const MilestoneDrawer = ({
       </DrawerContent>
     </Drawer>
   );
-};
+}
 export default MilestonePage;

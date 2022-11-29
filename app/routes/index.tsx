@@ -10,17 +10,19 @@ import {
   Link,
   Stack,
   Text,
-} from "@chakra-ui/react";
-import { useUser } from "~/utils/useRootData";
-import { routes } from "../routes";
-import { Link as NavLink, useLoaderData } from "@remix-run/react";
-import { requireUser } from "~/utils/user.session";
-import { json, LoaderFunction } from "@remix-run/node";
-import { Goal, Mentor, PrismaClient } from "@prisma/client";
-import { calculateGoalProgress } from "~/utils/calculateGoalProgress";
-import { formatDateDisplay } from "~/utils/dates";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAward, faListDots } from "@fortawesome/free-solid-svg-icons";
+} from '@chakra-ui/react';
+import { Link as NavLink, useLoaderData } from '@remix-run/react';
+import type { LoaderFunction } from '@remix-run/node';
+import { json } from '@remix-run/node';
+import type { Goal, Mentor} from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAward, faListDots } from '@fortawesome/free-solid-svg-icons';
+import { useUser } from '~/utils/useRootData';
+import { requireUser } from '~/utils/user.session.server';
+import { calculateGoalProgress } from '~/utils/calculateGoalProgress';
+import { formatDateDisplay } from '~/utils/dates';
+import { routes } from '../routes';
 
 interface DashBoardLoaderData {
   upcomingGoal: Goal | undefined;
@@ -31,18 +33,16 @@ export const loader: LoaderFunction = async ({ request }) => {
   const baseUrl = new URL(request.url).origin;
   const user = await requireUser(request);
   const goals: Goal[] = await fetch(
-    `${baseUrl}/.netlify/functions/get-goals?userId=${user?.id}`
+    `${baseUrl}/.netlify/functions/get-goals?userId=${user?.id}`,
   )
-    .then((goals) => goals.json())
+    .then((response) => response.json())
     .catch(() => {
-      console.error("Failed to get goals, please try again in a few minutes.");
+      console.error('Failed to get goals, please try again in a few minutes.');
     });
   // filter to only current goals and sort by most recent first
   const filtered = goals
     .filter((goal) => new Date(goal.dueDate).getTime() > new Date().getTime())
-    .sort((a, b) => {
-      return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-    });
+    .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
   let mentors: Mentor[] | null = null;
   try {
@@ -56,7 +56,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       },
     });
   } catch (e) {
-    console.error("Failed to fetch mentors", e);
+    console.error('Failed to fetch mentors', e);
   }
 
   const upcomingGoal = filtered.at(0);
@@ -64,7 +64,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return null;
 };
 
-const Dashboard = () => {
+function Dashboard() {
   const data = useLoaderData<DashBoardLoaderData>();
   const user = useUser();
   const goalProgress = calculateGoalProgress(data.upcomingGoal?.milestones);
@@ -85,7 +85,7 @@ const Dashboard = () => {
                 Industry
               </Text>
               <Text pt="3" m="auto" fontSize="sm">
-                {user?.industry || "-"}
+                {user?.industry || '-'}
               </Text>
             </GridItem>
             {currentMentors?.length ? (
@@ -94,14 +94,12 @@ const Dashboard = () => {
                   Mentors
                 </Text>
                 {currentMentors.slice(0, 3).map((mentor) => (
-                  <>
-                    <HStack pt="3">
-                      <Avatar size={"sm"} src={mentor.img ?? undefined} />
-                      <Text m="auto" fontSize="sm">
-                        {mentor.name || "-"}
-                      </Text>
-                    </HStack>
-                  </>
+                  <HStack pt="3">
+                    <Avatar size="sm" src={mentor.img ?? undefined} />
+                    <Text m="auto" fontSize="sm">
+                      {mentor.name || '-'}
+                    </Text>
+                  </HStack>
                 ))}
               </GridItem>
             ) : null}
@@ -121,24 +119,24 @@ const Dashboard = () => {
               Find a mentor
             </Text>
           </GridItem>
-          <GridItem colSpan={12} display="flex" justifyContent={"center"}>
+          <GridItem colSpan={12} display="flex" justifyContent="center">
             <Text fontSize="md" w="50%">
               Easily find the mentor or coach you've been looking for 🕵️
             </Text>
           </GridItem>
           <GridItem
             colSpan={12}
-            justifyContent={"end"}
+            justifyContent="end"
             display="flex"
-            flexDirection={"column"}
+            flexDirection="column"
           >
             <Box>
               <Link
                 as={NavLink}
                 justifyContent="center"
                 to={routes.browse}
-                style={{ textDecoration: "none", display: "flex" }}
-                _focus={{ boxShadow: "none" }}
+                style={{ textDecoration: 'none', display: 'flex' }}
+                _focus={{ boxShadow: 'none' }}
               >
                 <Button
                   background="brand.900"
@@ -172,7 +170,7 @@ const Dashboard = () => {
                     <Text fontSize="lg">
                       {data.upcomingGoal.name
                         ? `"${data.upcomingGoal.name}"`
-                        : "-"}
+                        : '-'}
                     </Text>
                     <Text fontSize="sm">
                       {formatDateDisplay(data.upcomingGoal.dueDate)}
@@ -203,8 +201,8 @@ const Dashboard = () => {
             <Link
               justifyContent="center"
               href={routes.goals}
-              style={{ textDecoration: "none", display: "flex" }}
-              _focus={{ boxShadow: "none" }}
+              style={{ textDecoration: 'none', display: 'flex' }}
+              _focus={{ boxShadow: 'none' }}
             >
               <Button
                 background="brand.900"
@@ -220,6 +218,6 @@ const Dashboard = () => {
       </GridItem>
     </Grid>
   );
-};
+}
 
 export default Dashboard;

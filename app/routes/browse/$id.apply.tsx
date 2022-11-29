@@ -13,25 +13,29 @@ import {
   Textarea,
   UnorderedList,
   useColorModeValue,
-} from "@chakra-ui/react";
-import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Application, Mentor, PrismaClient, Profile } from "@prisma/client";
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
+} from '@chakra-ui/react';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type {
+  Application, Mentor, Profile} from '@prisma/client';
+import { PrismaClient
+} from '@prisma/client';
+import type { ActionFunction, LoaderFunction } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import {
   Form,
   useActionData,
   useLoaderData,
   useTransition,
-} from "@remix-run/react";
-import { routes } from "~/routes";
-import { sendEmail } from "~/utils/email.server";
-import { requireUser } from "~/utils/user.session";
+} from '@remix-run/react';
+import { routes } from '~/routes';
+import { sendEmail } from '~/utils/email.server';
+import { requireUser } from '~/utils/user.session.server';
 
 interface LoaderData {
   data: {
     mentor: Mentor & {
-      profile: Omit<Profile, "password"> | null;
+      profile: Omit<Profile, 'password'> | null;
     };
   };
 }
@@ -41,15 +45,15 @@ export const action: ActionFunction = async ({ request }) => {
   const form = new URLSearchParams(requestText);
   const user = await requireUser(request);
   const values = {
-    mentorEmail: form.get("mentorEmail") ?? "",
-    mentorFirstName: form.get("mentorFirstName") ?? "",
-    mentorLastName: form.get("mentorLastName") ?? "",
-    mentorId: form.get("mentorId") ?? "",
-    desires: form.get("desires") ?? "",
-    goal: form.get("goal") ?? "",
-    progress: form.get("progress") ?? "",
-    deadline: form.get("deadline") ?? "",
-    questions: form.get("questions") ?? "",
+    mentorEmail: form.get('mentorEmail') ?? '',
+    mentorFirstName: form.get('mentorFirstName') ?? '',
+    mentorLastName: form.get('mentorLastName') ?? '',
+    mentorId: form.get('mentorId') ?? '',
+    desires: form.get('desires') ?? '',
+    goal: form.get('goal') ?? '',
+    progress: form.get('progress') ?? '',
+    deadline: form.get('deadline') ?? '',
+    questions: form.get('questions') ?? '',
   };
   const prisma = new PrismaClient();
   await prisma.$connect();
@@ -69,7 +73,7 @@ export const action: ActionFunction = async ({ request }) => {
     });
   } catch (e) {
     if (e instanceof Error) {
-      console.error("Failed to create mentee application", e);
+      console.error('Failed to create mentee application', e);
     }
     return null;
   } finally {
@@ -80,8 +84,8 @@ export const action: ActionFunction = async ({ request }) => {
       fromName: `${user.firstName} ${user.lastName} via Hoots`,
       toName: values.mentorFirstName,
       email: values.mentorEmail,
-      subject: "Hoots - New Mentee Application",
-      template: "new-mentee-application",
+      subject: 'Hoots - New Mentee Application',
+      template: 'new-mentee-application',
       variables: {
         firstName: values.mentorFirstName,
         menteeFirstName: user.firstName,
@@ -91,7 +95,7 @@ export const action: ActionFunction = async ({ request }) => {
     });
   } catch (e) {
     if (e instanceof Error) {
-      console.error("Failed to send mentee application", e);
+      console.error('Failed to send mentee application', e);
     }
     return null;
   }
@@ -102,11 +106,11 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   await requireUser(request);
   const baseUrl = new URL(request.url).origin;
   const mentor = await fetch(
-    `${baseUrl}/.netlify/functions/get-mentor?id=${params.id}`
+    `${baseUrl}/.netlify/functions/get-mentor?id=${params.id}`,
   )
     .then((mentors) => mentors.json())
     .catch(() => {
-      console.error("Failed to get mentor, please try again in a few minutes.");
+      console.error('Failed to get mentor, please try again in a few minutes.');
     });
 
   return json({
@@ -120,36 +124,43 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
 export default function Apply() {
   const { data } = useLoaderData<LoaderData>();
-  const mentor = data.mentor;
-  const mentorFirstName = mentor.name.split(" ")[0] ?? "your mentor";
+  const { mentor } = data;
+  const mentorFirstName = mentor.name.split(' ')[0] ?? 'your mentor';
   const transition = useTransition();
   const actionData = useActionData<Application | null>();
-  const isSubmitted = transition.state !== "idle" || !!actionData?.id;
+  const isSubmitted = transition.state !== 'idle' || !!actionData?.id;
   return (
     <div>
-      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+      <Stack spacing={8} mx="auto" maxW="lg" py={12} px={6}>
         <Heading>Mentorship Application</Heading>
         <Flex>
           <Avatar src={mentor.img ?? undefined} />
           <Text
-            fontSize={"lg"}
-            color={useColorModeValue("gray.600", "gray.200")}
-            alignSelf={"center"}
+            fontSize="lg"
+            color={useColorModeValue('gray.600', 'gray.200')}
+            alignSelf="center"
             ml={3}
           >
             {mentor.name}
           </Text>
         </Flex>
-        <Box bgColor={useColorModeValue("gray.200", "gray.800")} p={5}>
+        <Box bgColor={useColorModeValue('gray.200', 'gray.800')} p={5}>
           <Text>Details</Text>
           <UnorderedList>
             <ListItem>
-              Your application will be sent to {mentorFirstName} for review.
+              Your application will be sent to
+              {' '}
+              {mentorFirstName}
+              {' '}
+              for review.
               Make sure to include as much detail as possible.
             </ListItem>
             <ListItem>
               You will receive an email after your application has been reviewed
-              by {mentorFirstName}.
+              by
+              {' '}
+              {mentorFirstName}
+              .
             </ListItem>
             <ListItem>
               Pricing and meeting details will be discussed upon approval.
@@ -172,7 +183,7 @@ export default function Apply() {
           <Stack spacing={3}>
             <FormControl isRequired isDisabled={isSubmitted}>
               <FormLabel>Desires</FormLabel>
-              <Text fontSize={"xs"} textColor="grey.600">
+              <Text fontSize="xs" textColor="grey.600">
                 Describe the qualities you look for in a mentor and any specific
                 help you need.
               </Text>
@@ -180,30 +191,33 @@ export default function Apply() {
             </FormControl>
             <FormControl isRequired isDisabled={isSubmitted}>
               <FormLabel>Goal</FormLabel>
-              <Text fontSize={"xs"} textColor="grey.600">
+              <Text fontSize="xs" textColor="grey.600">
                 Describe the goal of your mentorship.
               </Text>
               <Textarea name="goal" />
             </FormControl>
             <FormControl isRequired isDisabled={isSubmitted}>
               <FormLabel>Progress</FormLabel>
-              <Text fontSize={"xs"} textColor="grey.600">
-                Describe your current situation and actions you've taken to
+              <Text fontSize="xs" textColor="grey.600">
+                Describe your current situation and actions you&apos;ve taken to
                 reach your goal.
               </Text>
               <Textarea name="progress" />
             </FormControl>
             <FormControl isRequired isDisabled={isSubmitted}>
               <FormLabel>Deadline</FormLabel>
-              <Text fontSize={"xs"} textColor="grey.600">
+              <Text fontSize="xs" textColor="grey.600">
                 Do you have a target date for your goal?
               </Text>
               <Input name="deadline" />
             </FormControl>
             <FormControl isDisabled={isSubmitted}>
               <FormLabel>Questions</FormLabel>
-              <Text fontSize={"xs"} textColor="grey.600">
-                Do you have any questions for {mentorFirstName}?
+              <Text fontSize="xs" textColor="grey.600">
+                Do you have any questions for
+                {' '}
+                {mentorFirstName}
+                ?
               </Text>
               <Textarea name="questions" />
             </FormControl>
@@ -217,16 +231,17 @@ export default function Apply() {
             hidden={isSubmitted}
           >
             <Button
-              backgroundColor={"brand.500"}
-              _hover={{ bg: "brand.200" }}
-              style={{ color: "white" }}
+              backgroundColor="brand.500"
+              _hover={{ bg: 'brand.200' }}
+              style={{ color: 'white' }}
               float="right"
               type="submit"
             >
-              Apply{" "}
+              Apply
+              {' '}
               <FontAwesomeIcon
                 icon={faPaperPlane}
-                style={{ marginLeft: "0.5em" }}
+                style={{ marginLeft: '0.5em' }}
               />
             </Button>
           </Stack>
@@ -237,7 +252,12 @@ export default function Apply() {
             pt="5"
             hidden={!isSubmitted}
           >
-            <Text>Submitted! We sent {mentorFirstName} your application.</Text>
+            <Text>
+              Submitted! We sent
+              {mentorFirstName}
+              {' '}
+              your application.
+            </Text>
           </Stack>
         </Form>
       </Stack>

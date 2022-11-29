@@ -1,8 +1,6 @@
 import {
   Box,
   Button,
-  Grid,
-  GridItem,
   Link,
   Progress,
   Table,
@@ -19,45 +17,26 @@ import {
   MenuList,
   Avatar,
   useColorModeValue,
-  useToast,
 } from "@chakra-ui/react";
 import {
   AddIcon,
   EditIcon,
   DeleteIcon,
-  ChevronRightIcon,
   ChevronDownIcon,
 } from "@chakra-ui/icons";
 import * as React from "react";
-import { GoalsDialog } from "../../components/goalsDialog";
-import { routes } from "../../routes";
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import {
-  Form,
-  Link as NavLink,
-  useActionData,
-  useFetcher,
-  useLoaderData,
-  useNavigate,
-  useTransition,
-} from "@remix-run/react";
-import { getUser, requireUser } from "~/utils/user.session";
-import {
-  Goal,
-  GoalMilestone,
-  Mentor,
-  PrismaClient,
-  Profile,
-} from "@prisma/client";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { Form, Link as NavLink, useLoaderData } from "@remix-run/react";
+import type { Goal, Mentor, Profile } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { requireUser } from "~/utils/user.session.server";
 import { formatDateDisplay } from "~/utils/dates";
 import { calculateGoalProgress } from "~/utils/calculateGoalProgress";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUpFromBracket, faEye } from "@fortawesome/free-solid-svg-icons";
-
-type Route = {
-  data: { goals: Goal[] };
-  params: { id: string };
-};
+import { routes } from "../../routes";
+import { GoalsDialog } from "../../components/goalsDialog";
 
 export const loader: LoaderFunction = async ({ request, context }) => {
   const baseUrl = new URL(request.url).origin;
@@ -65,7 +44,7 @@ export const loader: LoaderFunction = async ({ request, context }) => {
   const goals = await fetch(
     `${baseUrl}/.netlify/functions/get-goals?userId=${user?.id}`
   )
-    .then((goals) => goals.json())
+    .then((response) => response.json())
     .catch(() => {
       console.error("Failed to get goals, please try again in a few minutes.");
     });
@@ -79,7 +58,6 @@ export const loader: LoaderFunction = async ({ request, context }) => {
   let usersWithSharedGoals;
   let freshUser;
   if (user) {
-    const prisma = new PrismaClient();
     prisma
       .$connect()
       .catch((err) => console.error("Failed to connect to db", err));
@@ -144,7 +122,7 @@ export const action: ActionFunction = async ({ request }) => {
   const baseUrl = new URL(request.url).origin;
   console.log("method", request.method);
   if (values.method === "delete") {
-    const response = await fetch(
+    await fetch(
       `${baseUrl}/.netlify/functions/put-goal${
         values.goalId ? `?id=${values.goalId}` : ""
       }`,
@@ -213,18 +191,16 @@ export const action: ActionFunction = async ({ request }) => {
   return null;
 };
 
-const GoalsPage = () => {
+function GoalsPage() {
   const { goals, userMentors, usersWithSharedGoals } = useLoaderData();
   return (
-    <>
-      <GoalsContainer
-        userGoals={goals}
-        userMentors={userMentors}
-        usersWithSharedGoals={usersWithSharedGoals}
-      />
-    </>
+    <GoalsContainer
+      userGoals={goals}
+      userMentors={userMentors}
+      usersWithSharedGoals={usersWithSharedGoals}
+    />
   );
-};
+}
 
 export interface IGoalsContainerProps {
   userGoals: Goal[];
@@ -232,12 +208,12 @@ export interface IGoalsContainerProps {
   usersWithSharedGoals?: Profile[];
   isReadOnly?: boolean;
 }
-export const GoalsContainer = ({
+export function GoalsContainer({
   userGoals,
   userMentors,
   usersWithSharedGoals,
   isReadOnly,
-}: IGoalsContainerProps) => {
+}: IGoalsContainerProps) {
   const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
   const [editingIndex, setEditingIndex] = React.useState<string>("");
   const openDialog = (param: string) => {
@@ -251,12 +227,12 @@ export const GoalsContainer = ({
       <Box
         display="flex"
         flexWrap="wrap-reverse"
-        justifyContent={"space-between"}
+        justifyContent="space-between"
       >
         {!isReadOnly && usersWithSharedGoals?.length ? (
           <Menu>
             <MenuButton
-              variant={"solid"}
+              variant="solid"
               style={{ margin: "1rem" }}
               rightIcon={<ChevronDownIcon />}
               as={Button}
@@ -268,9 +244,7 @@ export const GoalsContainer = ({
               {usersWithSharedGoals?.map((user) => (
                 <NavLink to={`shared/${user.id}`}>
                   <MenuItem
-                    icon={
-                      <Avatar src={user.img ?? undefined} size={"xs"}></Avatar>
-                    }
+                    icon={<Avatar src={user.img ?? undefined} size="xs" />}
                     as={Button}
                     type="submit"
                   >
@@ -285,7 +259,7 @@ export const GoalsContainer = ({
         )}
         {!isReadOnly && (
           <Button
-            backgroundColor={"brand.500"}
+            backgroundColor="brand.500"
             _hover={{ bg: "brand.200" }}
             style={{ color: "white", margin: "1rem" }}
             onClick={() => openDialog("")}
@@ -333,32 +307,31 @@ export const GoalsContainer = ({
                       textAlign: "center",
                     }}
                     display={{ md: "revert", base: "none" }}
-                  ></Th>
+                  />
                 )}
               </Tr>
             </Thead>
             <Tbody>
-              {userGoals.map((item, index) => {
-                return (
-                  <GoalsItem
-                    key={`goal-${index}`}
-                    name={item.name ?? ""}
-                    dueDate={item.dueDate ?? ""}
-                    progress={calculateGoalProgress(item.milestones) ?? 0}
-                    id={item.id}
-                    openDialog={openDialog}
-                    onDelete={onDelete}
-                    userMentors={userMentors}
-                    sharedWithMentorIDs={item.sharedWithMentorIDs}
-                    isReadOnly={isReadOnly}
-                  />
-                );
-              })}
+              {userGoals.map((item, index) => (
+                <GoalsItem
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`goal-${index}`}
+                  name={item.name ?? ""}
+                  dueDate={item.dueDate ?? ""}
+                  progress={calculateGoalProgress(item.milestones) ?? 0}
+                  id={item.id}
+                  openDialog={openDialog}
+                  onDelete={onDelete}
+                  userMentors={userMentors}
+                  sharedWithMentorIDs={item.sharedWithMentorIDs}
+                  isReadOnly={isReadOnly}
+                />
+              ))}
             </Tbody>
           </Table>
         </TableContainer>
       ) : (
-        <Text fontSize="md" textAlign={"center"}>
+        <Text fontSize="md" textAlign="center">
           No goals found. 😢 Add one now!
         </Text>
       )}
@@ -370,7 +343,7 @@ export const GoalsContainer = ({
       />
     </Box>
   );
-};
+}
 
 export const gridItemStyle: React.CSSProperties = {
   padding: "1rem",
@@ -391,7 +364,7 @@ export interface GoalsItemProps {
   isReadOnly?: boolean;
 }
 
-export const GoalsItem = ({
+export function GoalsItem({
   name,
   dueDate,
   progress,
@@ -401,7 +374,7 @@ export const GoalsItem = ({
   userMentors,
   sharedWithMentorIDs,
   isReadOnly,
-}: GoalsItemProps) => {
+}: GoalsItemProps) {
   const utcDate = formatDateDisplay(dueDate);
   return (
     <Tr
@@ -425,8 +398,8 @@ export const GoalsItem = ({
           base: "column",
         }}
       >
-        <Link as={NavLink} to={`${routes.goals}/${id}`} color={"brand.900"}>
-          <Text fontWeight={"bold"}>{name}</Text>
+        <Link as={NavLink} to={`${routes.goals}/${id}`} color="brand.900">
+          <Text fontWeight="bold">{name}</Text>
         </Link>
       </Td>
       <Td>{utcDate}</Td>
@@ -477,16 +450,16 @@ export const GoalsItem = ({
                     mentorOption.id
                   );
                   return (
-                    <Form method="post" name="share">
+                    <Form method="post" name="share" key={mentorOption.id}>
                       <input hidden name="goalId" value={id} />
                       <input hidden name="mentorId" value={mentorOption.id} />
-                      <input hidden name="method" value={"share"} />
+                      <input hidden name="method" value="share" />
                       <MenuItem
                         icon={
                           <Avatar
                             src={mentorOption.img ?? undefined}
-                            size={"xs"}
-                          ></Avatar>
+                            size="xs"
+                          />
                         }
                         isDisabled={isAlreadyShared}
                         as={Button}
@@ -495,7 +468,8 @@ export const GoalsItem = ({
                         {mentorOption.name}
                         {isAlreadyShared && (
                           <Text
-                            fontSize={"xs"}
+                            fontSize="xs"
+                            // eslint-disable-next-line react-hooks/rules-of-hooks
                             color={useColorModeValue(
                               "grey.200",
                               "whiteAlpha.700"
@@ -524,7 +498,7 @@ export const GoalsItem = ({
           </Button>
           <Form method="delete">
             <input hidden name="goalId" value={id} />
-            <input hidden name="method" value={"delete"} />
+            <input hidden name="method" value="delete" />
             <Button
               colorScheme="red"
               type="submit"
@@ -539,6 +513,6 @@ export const GoalsItem = ({
       )}
     </Tr>
   );
-};
+}
 
 export default GoalsPage;
