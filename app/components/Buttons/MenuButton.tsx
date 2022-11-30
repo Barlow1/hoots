@@ -18,7 +18,7 @@ export default function MenuButton({
     <Menu as="div" className="relative inline-block text-left">
       {({ open }) => (
         <>
-          <Menu.Button as={IconButton} icon={icon}>
+          <Menu.Button as={IconButton} leftIcon={icon}>
             <span className="sr-only">Share</span>
           </Menu.Button>
 

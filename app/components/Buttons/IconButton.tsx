@@ -1,34 +1,37 @@
-import clsx from 'clsx';
+import clsx from "clsx";
 
 const buttonStyles = {
-  primary: 'bg-brand-700 text-white hover:bg-brand-800',
+  primary: "bg-brand-700 text-white hover:bg-brand-800",
   secondary:
-    'bg-brand-100 dark:bg-zinc-700 text-brand-700 dark:text-white hover:bg-brand-200 dark:hover:bg-zinc-600 ',
+    "bg-brand-100 dark:bg-zinc-700 text-brand-700 dark:text-white hover:bg-brand-200 dark:hover:bg-zinc-600 ",
 };
 export default function IconButton({
-  icon,
+  leftIcon,
+  rightIcon,
   children,
   className,
-  variant = 'secondary',
+  variant = "secondary",
   ...rest
 }: React.PropsWithChildren<
   {
-    icon: JSX.Element;
-    variant?: 'primary' | 'secondary';
-  } & React.HTMLAttributes<HTMLButtonElement>
+    leftIcon?: JSX.Element;
+    rightIcon?: JSX.Element;
+    variant?: "primary" | "secondary";
+  } & React.HTMLAttributes<HTMLButtonElement> &  React.ButtonHTMLAttributes<HTMLButtonElement>
 >) {
   return (
     <button
       type="button"
       className={clsx(
-        'inline-flex items-center rounded-md border border-transparent  px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:ring-offset-zinc-900',
+        "inline-flex items-center rounded-md border border-transparent px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:ring-offset-zinc-900",
         buttonStyles[variant],
-        className,
+        className
       )}
       {...rest}
     >
-      {icon}
+      {leftIcon}
       {children}
+      {rightIcon}
     </button>
   );
 }

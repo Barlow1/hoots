@@ -58,7 +58,7 @@ export function MentorPage() {
     <div className="justify-center" key={mentor?.id}>
       <div className="flex justify-between mb-5">
         <IconButton
-          icon={
+          leftIcon={
             <ArrowLeftIcon
               className="-ml-0.5 mr-2 h-4 w-4"
               aria-hidden="true"
@@ -104,6 +104,7 @@ export function MentorPage() {
             <Avatar
               src={mentor?.img ?? undefined}
               alt={`${mentor?.name} profile picture`}
+              size="lg"
             />
           </div>
           <H2 className="font-bold">{mentor?.name}</H2>

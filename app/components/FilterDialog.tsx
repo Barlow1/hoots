@@ -77,7 +77,7 @@ function FilterDialog({ onSave, minCost, maxCost }: FilterDialogProps) {
       <Tooltip>
         <TooltipTrigger>
           <IconButton
-            icon={<FontAwesomeIcon icon={faFilter} />}
+            leftIcon={<FontAwesomeIcon icon={faFilter} />}
             aria-label="Edit Filters"
             onClick={() => setIsOpen(true)}
           />

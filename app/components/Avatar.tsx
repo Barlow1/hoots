@@ -1,20 +1,30 @@
+const sizes = {
+  sm: "h-16 w-16",
+  lg: "h-32 w-32",
+};
 
 function Avatar({
   src,
   alt,
+  size = "sm",
   ...rest
-}: { src?: string } & React.ImgHTMLAttributes<HTMLImageElement>) {
+}: {
+  src?: string;
+  size?: "sm" | "lg";
+} & React.ImgHTMLAttributes<HTMLImageElement>) {
   return (
     <>
       {src ? (
         <img
-          className="inline-block h-32 w-32 rounded-full object-cover"
+          className={`inline-block ${sizes[size]} h- rounded-full object-cover`}
           src={src}
           alt={alt}
           {...rest}
         />
       ) : (
-        <span className="inline-block h-32 w-32 overflow-hidden rounded-full bg-gray-100">
+        <span
+          className={`inline-block ${sizes[size]} overflow-hidden rounded-full bg-gray-100`}
+        >
           <svg
             className="h-full w-full text-gray-300"
             fill="currentColor"
