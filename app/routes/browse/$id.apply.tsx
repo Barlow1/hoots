@@ -11,7 +11,7 @@ import {
   useTransition,
 } from "@remix-run/react";
 import Avatar from "~/components/Avatar";
-import IconButton from "~/components/Buttons/IconButton";
+import Button from "~/components/Buttons/IconButton";
 import Field from "~/components/FormElements/Field";
 import { H3, Paragraph } from "~/components/Typography";
 import { routes } from "~/routes";
@@ -197,7 +197,7 @@ export default function Apply() {
             />
           </div>
           <div className={`pt-5 ${isSubmitted ? "hidden" : ""}`}>
-            <IconButton
+            <Button
               rightIcon={
                 <FontAwesomeIcon
                   icon={faPaperPlane}
@@ -209,7 +209,7 @@ export default function Apply() {
               type="submit"
             >
               Apply
-            </IconButton>
+            </Button>
           </div>
           <div className={`pt-5 ${!isSubmitted ? "hidden" : ""}`}>
             <Paragraph>

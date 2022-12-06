@@ -10,7 +10,7 @@ import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { ArrowLeftIcon } from "@heroicons/react/20/solid";
-import IconButton from "~/components/Buttons/IconButton";
+import Button from "~/components/Buttons/IconButton";
 import { getFacebookHref } from "~/utils/facebook";
 import { getLinkedInHref } from "~/utils/linkedIn";
 import { getSocialMetas } from "~/utils/seo";
@@ -57,7 +57,7 @@ export function MentorPage() {
   return (
     <div className="justify-center" key={mentor?.id}>
       <div className="flex justify-between mb-5">
-        <IconButton
+        <Button
           leftIcon={
             <ArrowLeftIcon
               className="-ml-0.5 mr-2 h-4 w-4"
@@ -69,9 +69,8 @@ export function MentorPage() {
           }}
         >
           Back
-        </IconButton>
+        </Button>
         <MenuButton
-          icon={<FontAwesomeIcon icon={faEllipsis} />}
           options={[
             {
               title: "Share on Twitter",
@@ -96,7 +95,10 @@ export function MentorPage() {
               icon: <FontAwesomeIcon icon={faFacebook} />,
             },
           ]}
-        />
+          label="Share Mentor Profile"
+        >
+          <FontAwesomeIcon icon={faEllipsis} />
+        </MenuButton>
       </div>
       <div className="flex justify-center max-w-xl mx-auto">
         <div className="flex flex-col">

@@ -1,40 +1,21 @@
-import {
-  Box,
-  Button,
-  Link,
-  Progress,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Text,
-  MenuButton,
-  Menu,
-  MenuItem,
-  MenuList,
-  Avatar,
-  useColorModeValue,
-} from "@chakra-ui/react";
-import {
-  AddIcon,
-  EditIcon,
-  DeleteIcon,
-  ChevronDownIcon,
-} from "@chakra-ui/icons";
 import * as React from "react";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Form, Link as NavLink, useLoaderData } from "@remix-run/react";
+import { Link as NavLink, useLoaderData } from "@remix-run/react";
 import type { Goal, Mentor, Profile } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUpFromBracket } from "@fortawesome/free-solid-svg-icons";
+import {
+  faAdd,
+  /* faArrowUpFromBracket, */ faChevronDown,
+} from "@fortawesome/free-solid-svg-icons";
 import { requireUser } from "~/utils/user.session.server";
 import { formatDateDisplay } from "~/utils/dates";
 import { calculateGoalProgress } from "~/utils/calculateGoalProgress";
+import MenuButton from "~/components/Buttons/MenuButton";
+import Avatar from "~/components/Avatar";
+import Button from "~/components/Buttons/IconButton";
+import { Paragraph } from "~/components/Typography";
 import { routes } from "../../routes";
 import { GoalsDialog } from "../../components/goalsDialog";
 
@@ -220,128 +201,59 @@ export function GoalsContainer({
     setEditingIndex(param);
     setIsDialogOpen(true);
   };
-  const onDelete = (param: number) => {};
+  // const onDelete = (param: number) => {};
 
   return (
-    <Box style={{ width: "90%", height: "100%", margin: "auto" }}>
-      <Box
-        display="flex"
-        flexWrap="wrap-reverse"
-        justifyContent="space-between"
-      >
+    <div style={{ width: "90%", height: "100%", margin: "auto" }}>
+      <div className="flex flex-wrap-reverse justify-between pb-5">
         {!isReadOnly && usersWithSharedGoals?.length ? (
-          <Menu>
-            <MenuButton
-              variant="solid"
-              style={{ margin: "1rem" }}
-              rightIcon={<ChevronDownIcon />}
-              as={Button}
-              width={{ base: "100%", md: "auto" }}
-            >
-              Shared with me
-            </MenuButton>
-            <MenuList>
-              {usersWithSharedGoals?.map((user) => (
-                <NavLink to={`shared/${user.id}`}>
-                  <MenuItem
-                    icon={<Avatar src={user.img ?? undefined} size="xs" />}
-                    as={Button}
-                    type="submit"
-                  >
-                    {user.firstName} {user.lastName}
-                  </MenuItem>
-                </NavLink>
-              ))}
-            </MenuList>
-          </Menu>
+          <MenuButton
+            rightIcon={
+              <FontAwesomeIcon icon={faChevronDown} className="ml-2" />
+            }
+            options={usersWithSharedGoals?.map((user) => ({
+              title: `${user.firstName} ${user.lastName}`,
+              href: { to: `shared/${user.id}` },
+              icon: <Avatar size="xs" src={user.img ?? undefined} />,
+            }))}
+            label="Goals Shared Menu"
+            className="w-full mx-0 md:w-auto"
+            menuClassName="w-full md:w-auto"
+          >
+            Shared with me
+          </MenuButton>
         ) : (
           <div />
         )}
         {!isReadOnly && (
           <Button
-            backgroundColor="brand.500"
-            _hover={{ bg: "brand.200" }}
-            style={{ color: "white", margin: "1rem" }}
             onClick={() => openDialog("")}
-            width={{ base: "100%", md: "auto" }}
+            rightIcon={<FontAwesomeIcon icon={faAdd} className="ml-2" />}
+            variant="primary"
+            className="w-full md:w-auto mx-0"
           >
-            Add Goal <AddIcon style={{ marginLeft: "0.5em" }} />
+            Add Goal
           </Button>
         )}
-      </Box>
-      {userGoals.length > 0 ? (
-        <TableContainer whiteSpace={{ md: "nowrap", base: "unset" }}>
-          <Table
-            style={{
-              borderWidth: "2px",
-              borderStyle: "solid",
-              borderRadius: "10px",
-              padding: "1rem",
-              minWidth: "20%",
-            }}
-          >
-            <Thead>
-              <Tr>
-                <Th style={{ padding: "1rem", fontWeight: "bold" }}>Goal</Th>
-                <Th
-                  style={{ padding: "1rem", fontWeight: "bold" }}
-                  display={{ md: "revert", base: "none" }}
-                >
-                  Due
-                </Th>
-                <Th
-                  style={{
-                    padding: "1rem",
-                    textAlign: "right",
-                    fontWeight: "bold",
-                  }}
-                  display={{ md: "revert", base: "none" }}
-                >
-                  Progress
-                </Th>
-                {!isReadOnly && (
-                  <Th
-                    style={{
-                      padding: "1rem",
-                      fontWeight: "bold",
-                      textAlign: "center",
-                    }}
-                    display={{ md: "revert", base: "none" }}
-                  />
-                )}
-              </Tr>
-            </Thead>
-            <Tbody>
-              {userGoals.map((item, index) => (
-                <GoalsItem
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={`goal-${index}`}
-                  name={item.name ?? ""}
-                  dueDate={item.dueDate ?? ""}
-                  progress={calculateGoalProgress(item.milestones) ?? 0}
-                  id={item.id}
-                  openDialog={openDialog}
-                  onDelete={onDelete}
-                  userMentors={userMentors}
-                  sharedWithMentorIDs={item.sharedWithMentorIDs}
-                  isReadOnly={isReadOnly}
-                />
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      ) : (
-        <Text fontSize="md" textAlign="center">
-          No goals found. 😢 Add one now!
-        </Text>
-      )}
+      </div>
+      <div className="overflow-hidden bg-white dark:bg-zinc-900 shadow sm:rounded-md dark:shadow-zinc-600">
+        <ul className="divide-y divide-gray-200 dark:divide-zinc-600">
+          {userGoals.length > 0 ? (
+            userGoals.map((goal) => <NewGoalItem key={goal.id} goal={goal} />)
+          ) : (
+            <Paragraph className="text-center">
+              No goals found. 😢 Add one now!
+            </Paragraph>
+          )}
+        </ul>
+      </div>
       <GoalsDialog
         userGoals={userGoals}
         isDialogOpen={isDialogOpen}
         setIsDialogOpen={setIsDialogOpen}
         id={editingIndex}
       />
-    </Box>
+    </div>
   );
 }
 
@@ -364,154 +276,196 @@ export interface GoalsItemProps {
   isReadOnly?: boolean;
 }
 
-export function GoalsItem({
-  name,
-  dueDate,
-  progress,
-  id,
-  openDialog,
-  onDelete,
-  userMentors,
-  sharedWithMentorIDs,
-  isReadOnly,
-}: GoalsItemProps) {
-  const utcDate = formatDateDisplay(dueDate);
+// export function GoalsItem({
+//   name,
+//   dueDate,
+//   progress,
+//   id,
+//   openDialog,
+//   onDelete,
+//   userMentors,
+//   sharedWithMentorIDs,
+//   isReadOnly,
+// }: GoalsItemProps) {
+//   const utcDate = formatDateDisplay(dueDate);
+//   return (
+//     <Tr
+//       _focus={{ bgColor: "blackAlpha.50", cursor: "pointer" }}
+//       display={{
+//         md: "revert",
+//         base: "flex",
+//       }}
+//       flexDirection={{
+//         md: "unset",
+//         base: "column",
+//       }}
+//     >
+//       <Td
+//         display={{
+//           md: "revert",
+//           base: "flex",
+//         }}
+//         flexDirection={{
+//           md: "unset",
+//           base: "column",
+//         }}
+//       >
+//         <Link as={NavLink} to={`${routes.goals}/${id}`} color="brand.900">
+//           <Text fontWeight="bold">{name}</Text>
+//         </Link>
+//       </Td>
+//       <Td>{utcDate}</Td>
+//       <Td>
+//         {progress < 100 && (
+//           <>
+//             <Progress
+//               colorScheme="green"
+//               size="sm"
+//               style={{ borderRadius: "500px" }}
+//               value={progress}
+//             />
+//             {progress}%
+//           </>
+//         )}
+//         {progress === 100 && "Complete 🎉"}
+//       </Td>
+//       {!isReadOnly && (
+//         <Td
+//           style={{
+//             display: "flex",
+//             padding: "1rem",
+//             justifyContent: "space-evenly",
+//             alignContent: "center",
+//           }}
+//           borderBottom={{
+//             md: "0",
+//             base: "2px solid #E2E8F0",
+//           }}
+//         >
+//           <Menu>
+//             <MenuButton
+//               name="shareGoal"
+//               as={Button}
+//               colorScheme="blue"
+//               variant="ghost"
+//               aria-label="Share with mentor"
+//             >
+//               <FontAwesomeIcon
+//                 icon={faArrowUpFromBracket}
+//                 style={{ color: "grey" }}
+//               />
+//             </MenuButton>
+//             <MenuList>
+//               {userMentors?.length ? (
+//                 userMentors.map((mentorOption) => {
+//                   const isAlreadyShared = sharedWithMentorIDs?.includes(
+//                     mentorOption.id
+//                   );
+//                   return (
+//                     <Form method="post" name="share" key={mentorOption.id}>
+//                       <input hidden name="goalId" value={id} />
+//                       <input hidden name="mentorId" value={mentorOption.id} />
+//                       <input hidden name="method" value="share" />
+//                       <MenuItem
+//                         icon={
+//                           <Avatar
+//                             src={mentorOption.img ?? undefined}
+//                             size="xs"
+//                           />
+//                         }
+//                         isDisabled={isAlreadyShared}
+//                         as={Button}
+//                         type="submit"
+//                       >
+//                         {mentorOption.name}
+//                         {isAlreadyShared && (
+//                           <Text
+//                             fontSize="xs"
+//                             // eslint-disable-next-line react-hooks/rules-of-hooks
+//                             color={useColorModeValue(
+//                               "grey.200",
+//                               "whiteAlpha.700"
+//                             )}
+//                           >
+//                             Shared
+//                           </Text>
+//                         )}
+//                       </MenuItem>
+//                     </Form>
+//                   );
+//                 })
+//               ) : (
+//                 <Text marginLeft={5}>No mentors found</Text>
+//               )}
+//             </MenuList>
+//           </Menu>
+//           <Button
+//             colorScheme="blue"
+//             name="editGoal"
+//             onClick={() => openDialog(id)}
+//             variant="ghost"
+//             aria-label="Edit Goal"
+//           >
+//             <EditIcon style={{ color: "grey" }} />
+//           </Button>
+//           <Form method="delete">
+//             <input hidden name="goalId" value={id} />
+//             <input hidden name="method" value="delete" />
+//             <Button
+//               colorScheme="red"
+//               type="submit"
+//               name="deleteGoal"
+//               variant="ghost"
+//               aria-label="Delete Goal"
+//             >
+//               <DeleteIcon style={{ color: "grey" }} />
+//             </Button>
+//           </Form>
+//         </Td>
+//       )}
+//     </Tr>
+//   );
+// }
+
+function NewGoalItem({ goal }: { goal: Goal }) {
+  const utcDate = formatDateDisplay(goal.dueDate);
+  const progress = calculateGoalProgress(goal.milestones) ?? 0;
   return (
-    <Tr
-      _focus={{ bgColor: "blackAlpha.50", cursor: "pointer" }}
-      display={{
-        md: "revert",
-        base: "flex",
-      }}
-      flexDirection={{
-        md: "unset",
-        base: "column",
-      }}
-    >
-      <Td
-        display={{
-          md: "revert",
-          base: "flex",
-        }}
-        flexDirection={{
-          md: "unset",
-          base: "column",
-        }}
+    <li key={goal.id}>
+      <NavLink
+        to={`${routes.goals}/${goal.id}`}
+        className="block hover:bg-gray-50 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
       >
-        <Link as={NavLink} to={`${routes.goals}/${id}`} color="brand.900">
-          <Text fontWeight="bold">{name}</Text>
-        </Link>
-      </Td>
-      <Td>{utcDate}</Td>
-      <Td>
-        {progress < 100 && (
-          <>
-            <Progress
-              colorScheme="green"
-              size="sm"
-              style={{ borderRadius: "500px" }}
-              value={progress}
-            />
-            {progress}%
-          </>
-        )}
-        {progress === 100 && "Complete 🎉"}
-      </Td>
-      {!isReadOnly && (
-        <Td
-          style={{
-            display: "flex",
-            padding: "1rem",
-            justifyContent: "space-evenly",
-            alignContent: "center",
-          }}
-          borderBottom={{
-            md: "0",
-            base: "2px solid #E2E8F0",
-          }}
-        >
-          <Menu>
-            <MenuButton
-              name="shareGoal"
-              as={Button}
-              colorScheme="blue"
-              variant="ghost"
-              aria-label="Share with mentor"
-            >
-              <FontAwesomeIcon
-                icon={faArrowUpFromBracket}
-                style={{ color: "grey" }}
-              />
-            </MenuButton>
-            <MenuList>
-              {userMentors?.length ? (
-                userMentors.map((mentorOption) => {
-                  const isAlreadyShared = sharedWithMentorIDs?.includes(
-                    mentorOption.id
-                  );
-                  return (
-                    <Form method="post" name="share" key={mentorOption.id}>
-                      <input hidden name="goalId" value={id} />
-                      <input hidden name="mentorId" value={mentorOption.id} />
-                      <input hidden name="method" value="share" />
-                      <MenuItem
-                        icon={
-                          <Avatar
-                            src={mentorOption.img ?? undefined}
-                            size="xs"
-                          />
-                        }
-                        isDisabled={isAlreadyShared}
-                        as={Button}
-                        type="submit"
-                      >
-                        {mentorOption.name}
-                        {isAlreadyShared && (
-                          <Text
-                            fontSize="xs"
-                            // eslint-disable-next-line react-hooks/rules-of-hooks
-                            color={useColorModeValue(
-                              "grey.200",
-                              "whiteAlpha.700"
-                            )}
-                          >
-                            Shared
-                          </Text>
-                        )}
-                      </MenuItem>
-                    </Form>
-                  );
-                })
-              ) : (
-                <Text marginLeft={5}>No mentors found</Text>
+        <div className="px-4 py-4 sm:px-6">
+          <div className="flex items-center justify-between">
+            <p className="truncate text-sm font-medium text-brand-600">
+              {goal.name}
+            </p>
+          </div>
+          <div className="mt-2 sm:flex sm:justify-between">
+            <div className="sm:flex">
+              {progress < 100 && (
+                <div className="sm:w-32 w-full">
+                  <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1 dark:bg-gray-700">
+                    <div
+                      className="bg-green-600 h-1.5 rounded-full dark:bg-green-500"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  {progress}%
+                </div>
               )}
-            </MenuList>
-          </Menu>
-          <Button
-            colorScheme="blue"
-            name="editGoal"
-            onClick={() => openDialog(id)}
-            variant="ghost"
-            aria-label="Edit Goal"
-          >
-            <EditIcon style={{ color: "grey" }} />
-          </Button>
-          <Form method="delete">
-            <input hidden name="goalId" value={id} />
-            <input hidden name="method" value="delete" />
-            <Button
-              colorScheme="red"
-              type="submit"
-              name="deleteGoal"
-              variant="ghost"
-              aria-label="Delete Goal"
-            >
-              <DeleteIcon style={{ color: "grey" }} />
-            </Button>
-          </Form>
-        </Td>
-      )}
-    </Tr>
+              {progress === 100 && "Complete 🎉"}
+            </div>
+            <div className="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-300 sm:mt-0">
+              <p>
+                Due by <time dateTime={goal.dueDate}>{utcDate}</time>
+              </p>
+            </div>
+          </div>
+        </div>
+      </NavLink>
+    </li>
   );
 }
 

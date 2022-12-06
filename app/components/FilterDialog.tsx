@@ -4,7 +4,7 @@ import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import ReactSlider from "react-slider";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import IconButton from "./Buttons/IconButton";
+import Button from "./Buttons/IconButton";
 import Logo from "../assets/Logo.svg";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./Tooltip";
 
@@ -76,7 +76,7 @@ function FilterDialog({ onSave, minCost, maxCost }: FilterDialogProps) {
     <>
       <Tooltip>
         <TooltipTrigger>
-          <IconButton
+          <Button
             leftIcon={<FontAwesomeIcon icon={faFilter} />}
             aria-label="Edit Filters"
             onClick={() => setIsOpen(true)}
@@ -173,46 +173,6 @@ function FilterDialog({ onSave, minCost, maxCost }: FilterDialogProps) {
                             onChange={onCostSliderChange}
                           />
                         </div>
-                        {/* <RangeSlider
-                          name="mentorCost"
-                          aria-label={[
-                            "Cost Range Minimum",
-                            "Cost Range Maximum",
-                          ]}
-                          onChange={onCostSliderChange}
-                          onMouseEnter={() => setShowTooltip(true)}
-                          onMouseLeave={() => setShowTooltip(false)}
-                          value={[minCostValue, maxCostValue]}
-                          max={MAX_MENTOR_COST}
-                        >
-                          <RangeSliderTrack bg="brand.200">
-                            <RangeSliderFilledTrack bg="brand.900" />
-                          </RangeSliderTrack>
-                          <Tooltip
-                            hasArrow
-                            bg="brand.200"
-                            color="white"
-                            placement="top"
-                            isOpen={showTooltip}
-                            label={minSliderTooltip}
-                          >
-                            <RangeSliderThumb boxSize={6} index={0}>
-                              <img src={Logo} alt="Hoots Logo" />
-                            </RangeSliderThumb>
-                          </Tooltip>
-                          <Tooltip
-                            hasArrow
-                            bg="brand.200"
-                            color="white"
-                            placement="top"
-                            isOpen={showTooltip}
-                            label={maxSliderTooltip}
-                          >
-                            <RangeSliderThumb boxSize={6} index={1}>
-                              <img src={Logo} alt="Hoots Logo" />
-                            </RangeSliderThumb>
-                          </Tooltip>
-                        </RangeSlider> */}
                         <div className="flex gap-2">
                           <div>
                             <label
@@ -263,98 +223,6 @@ function FilterDialog({ onSave, minCost, maxCost }: FilterDialogProps) {
               </Transition.Child>
             </div>
           </div>
-
-          {/* <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Edit Filters</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <FormControl>
-                <FormLabel>Monthly Cost ($)</FormLabel>
-                <RangeSlider
-                  name="mentorCost"
-                  aria-label={["Cost Range Minimum", "Cost Range Maximum"]}
-                  onChange={onCostSliderChange}
-                  onMouseEnter={() => setShowTooltip(true)}
-                  onMouseLeave={() => setShowTooltip(false)}
-                  value={[minCostValue, maxCostValue]}
-                  max={MAX_MENTOR_COST}
-                >
-                  <RangeSliderTrack bg="brand.200">
-                    <RangeSliderFilledTrack bg="brand.900" />
-                  </RangeSliderTrack>
-                  <Tooltip
-                    hasArrow
-                    bg="brand.200"
-                    color="white"
-                    placement="top"
-                    isOpen={showTooltip}
-                    label={minSliderTooltip}
-                  >
-                    <RangeSliderThumb boxSize={6} index={0}>
-                      <img src={Logo} alt="Hoots Logo" />
-                    </RangeSliderThumb>
-                  </Tooltip>
-                  <Tooltip
-                    hasArrow
-                    bg="brand.200"
-                    color="white"
-                    placement="top"
-                    isOpen={showTooltip}
-                    label={maxSliderTooltip}
-                  >
-                    <RangeSliderThumb boxSize={6} index={1}>
-                      <img src={Logo} alt="Hoots Logo" />
-                    </RangeSliderThumb>
-                  </Tooltip>
-                </RangeSlider>
-              </FormControl>
-              <Flex gap="2">
-                <FormControl>
-                  <FormLabel fontSize={"xs"}>Minimum</FormLabel>
-                  <NumberInput
-                    min={0}
-                    value={minCostValue}
-                    onChange={onMinCostValueChange}
-                  >
-                    <NumberInputField placeholder="Minimum" />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </FormControl>
-                <FormControl>
-                  <FormLabel fontSize={"xs"}>Maximum</FormLabel>
-                  <NumberInput
-                    min={0}
-                    value={maxCostValue}
-                    onChange={onMaxCostValueChange}
-                  >
-                    <NumberInputField placeholder="Maximum" />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                </FormControl>
-              </Flex>
-            </ModalBody>
-
-            <ModalFooter>
-              <Button
-                background="brand.500"
-                textColor="white"
-                type="submit"
-                _hover={{ backgroundColor: "brand.200" }}
-                mr={3}
-                onClick={handleSave}
-              >
-                Save
-              </Button>
-            </ModalFooter>
-          </ModalContent> */}
         </Dialog>
       </Transition.Root>
     </>

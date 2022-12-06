@@ -17,7 +17,7 @@ import { getSocialMetas } from "~/utils/seo";
 import { getDisplayUrl } from "~/utils/url";
 import { H3, Paragraph } from "~/components/Typography";
 import Tag from "~/components/Tag";
-import IconButton from "~/components/Buttons/IconButton";
+import Button from "~/components/Buttons/IconButton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/Tooltip";
 import { routes } from "../../routes";
 
@@ -142,7 +142,7 @@ function Browse() {
                 />
                 <Tooltip>
                   <TooltipTrigger>
-                    <IconButton
+                    <Button
                       aria-label="Search"
                       onClick={updateQueryAndNavigate}
                       leftIcon={<FontAwesomeIcon icon={faMagnifyingGlass} />}
