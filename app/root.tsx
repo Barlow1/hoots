@@ -33,6 +33,7 @@ import App from "./_app";
 import { getSocialMetas } from "./utils/seo";
 import { getDisplayUrl } from "./utils/url";
 import tailwindStyleUrls from "./styles/tailwind.css";
+import globalStyleUrl from "./styles/global.css";
 
 export const meta: MetaFunction = ({ data }) => {
   let requestInfo;
@@ -140,6 +141,7 @@ export const links: LinksFunction = () => [
     rel: "stylesheet",
   },
   { rel: "stylesheet", href: tailwindStyleUrls },
+  { rel: "stylesheet", href: globalStyleUrl },
 ];
 
 function Document({
