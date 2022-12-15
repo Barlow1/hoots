@@ -66,7 +66,7 @@ function Dashboard() {
   const currentMentors = data?.mentors;
   return (
     <div className="grid gap-6">
-      <div className="shadow-md dark:shadow-zinc-600 col-span-12 w-full rounded-md">
+      <div className="shadow-md dark:bg-zinc-800 col-span-12 w-full rounded-md">
         <div className="p-5">
           <div className="grid gap-6">
             <div className="col-span-12">
@@ -101,7 +101,7 @@ function Dashboard() {
           </div>
         </div>
       </div>
-      <div className="shadow-md dark:shadow-zinc-600 col-span-12 lg:col-span-6 h-full w-full rounded-md">
+      <div className="shadow-md dark:bg-zinc-800 col-span-12 lg:col-span-6 h-full w-full rounded-md">
         <div className="p-5 gap-4 h-full grid">
           <div className="col-span-12">
             <H4 className="font-bold">Find a mentor</H4>
@@ -131,7 +131,7 @@ function Dashboard() {
           </div>
         </div>
       </div>
-      <div className="shadow-md dark:shadow-zinc-600 col-span-12 lg:col-span-6 h-full w-full rounded-md">
+      <div className="shadow-md dark:bg-zinc-800 col-span-12 lg:col-span-6 h-full w-full rounded-md">
         <div className="p-5 gap-4 h-full grid">
           <div className="col-span-12">
             <H4 className="font-bold"> Upcoming Goal Progress</H4>

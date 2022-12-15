@@ -239,7 +239,7 @@ function MilestonePage() {
       </div>
       <div className="mx-auto mt-8 grid max-w-3xl grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-3">
         <div className="lg:col-span-1">
-          <div className="shadow dark:shadow-zinc-600 bg-gray-50 dark:bg-zinc-700 p-5 rounded-md">
+          <div className="shadow bg-gray-50 dark:bg-zinc-700 p-5 rounded-md">
             <div className="sm:flex">
               {progress < 100 && (
                 <div className="w-full flex space-x-2">
@@ -260,7 +260,7 @@ function MilestonePage() {
             <Paragraph>{data.goal?.notes ?? "-"}</Paragraph>
           </div>
         </div>
-        <div className="overflow-hidden bg-white dark:bg-zinc-900 shadow sm:rounded-md dark:shadow-zinc-600 lg:col-span-2 lg:col-start-2">
+        <div className="overflow-hidden bg-white dark:bg-zinc-800 shadow sm:rounded-md lg:col-span-2 lg:col-start-2">
           <ul className="divide-y divide-gray-200 dark:divide-zinc-600">
             {transition.submission &&
               pendingSubmissionFormType === FormType.NEW && (

@@ -201,7 +201,7 @@ export function GoalsContainer({
   // const onDelete = (param: number) => {};
 
   return (
-    <div style={{ width: "90%", height: "100%", margin: "auto" }}>
+    <div className="m-auto w-full max-w-screen-lg">
       <div className="flex flex-wrap-reverse justify-between pb-5">
         {!isReadOnly && usersWithSharedGoals?.length ? (
           <MenuButton
@@ -233,7 +233,7 @@ export function GoalsContainer({
           </Button>
         )}
       </div>
-      <div className="overflow-hidden bg-white dark:bg-zinc-900 shadow sm:rounded-md dark:shadow-zinc-600">
+      <div className="overflow-hidden bg-white dark:bg-zinc-800 shadow sm:rounded-md ">
         <ul className="divide-y divide-gray-200 dark:divide-zinc-600">
           {userGoals.length > 0 ? (
             userGoals.map((goal) => <NewGoalItem key={goal.id} goal={goal} />)
