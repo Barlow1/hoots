@@ -1,9 +1,10 @@
 import clsx from "clsx";
 
 const buttonStyles = {
-  primary: "bg-brand-700 text-white hover:bg-brand-800",
+  primary: "bg-brand-700 text-white hover:bg-brand-600",
   secondary:
     "bg-brand-100 dark:bg-zinc-700 text-brand-700 dark:text-white hover:bg-brand-200 dark:hover:bg-zinc-600 ",
+  danger: "bg-red-600 dark:bg-red-700 text-white hover:bg-red-500 dark:hover:bg-red-600"
 };
 export default function Button({
   leftIcon,
@@ -16,7 +17,7 @@ export default function Button({
   {
     leftIcon?: JSX.Element;
     rightIcon?: JSX.Element;
-    variant?: "primary" | "secondary";
+    variant?: "primary" | "secondary" | "danger";
   } & React.HTMLAttributes<HTMLButtonElement> &  React.ButtonHTMLAttributes<HTMLButtonElement>
 >) {
   return (

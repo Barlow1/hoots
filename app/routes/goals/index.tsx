@@ -5,10 +5,7 @@ import { Link as NavLink, useLoaderData } from "@remix-run/react";
 import type { Goal, Mentor, Profile } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAdd,
-  /* faArrowUpFromBracket, */ faChevronDown,
-} from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { requireUser } from "~/utils/user.session.server";
 import { formatDateDisplay } from "~/utils/dates";
 import { calculateGoalProgress } from "~/utils/calculateGoalProgress";
@@ -276,165 +273,15 @@ export interface GoalsItemProps {
   isReadOnly?: boolean;
 }
 
-// export function GoalsItem({
-//   name,
-//   dueDate,
-//   progress,
-//   id,
-//   openDialog,
-//   onDelete,
-//   userMentors,
-//   sharedWithMentorIDs,
-//   isReadOnly,
-// }: GoalsItemProps) {
-//   const utcDate = formatDateDisplay(dueDate);
-//   return (
-//     <Tr
-//       _focus={{ bgColor: "blackAlpha.50", cursor: "pointer" }}
-//       display={{
-//         md: "revert",
-//         base: "flex",
-//       }}
-//       flexDirection={{
-//         md: "unset",
-//         base: "column",
-//       }}
-//     >
-//       <Td
-//         display={{
-//           md: "revert",
-//           base: "flex",
-//         }}
-//         flexDirection={{
-//           md: "unset",
-//           base: "column",
-//         }}
-//       >
-//         <Link as={NavLink} to={`${routes.goals}/${id}`} color="brand.900">
-//           <Text fontWeight="bold">{name}</Text>
-//         </Link>
-//       </Td>
-//       <Td>{utcDate}</Td>
-//       <Td>
-//         {progress < 100 && (
-//           <>
-//             <Progress
-//               colorScheme="green"
-//               size="sm"
-//               style={{ borderRadius: "500px" }}
-//               value={progress}
-//             />
-//             {progress}%
-//           </>
-//         )}
-//         {progress === 100 && "Complete 🎉"}
-//       </Td>
-//       {!isReadOnly && (
-//         <Td
-//           style={{
-//             display: "flex",
-//             padding: "1rem",
-//             justifyContent: "space-evenly",
-//             alignContent: "center",
-//           }}
-//           borderBottom={{
-//             md: "0",
-//             base: "2px solid #E2E8F0",
-//           }}
-//         >
-//           <Menu>
-//             <MenuButton
-//               name="shareGoal"
-//               as={Button}
-//               colorScheme="blue"
-//               variant="ghost"
-//               aria-label="Share with mentor"
-//             >
-//               <FontAwesomeIcon
-//                 icon={faArrowUpFromBracket}
-//                 style={{ color: "grey" }}
-//               />
-//             </MenuButton>
-//             <MenuList>
-//               {userMentors?.length ? (
-//                 userMentors.map((mentorOption) => {
-//                   const isAlreadyShared = sharedWithMentorIDs?.includes(
-//                     mentorOption.id
-//                   );
-//                   return (
-//                     <Form method="post" name="share" key={mentorOption.id}>
-//                       <input hidden name="goalId" value={id} />
-//                       <input hidden name="mentorId" value={mentorOption.id} />
-//                       <input hidden name="method" value="share" />
-//                       <MenuItem
-//                         icon={
-//                           <Avatar
-//                             src={mentorOption.img ?? undefined}
-//                             size="xs"
-//                           />
-//                         }
-//                         isDisabled={isAlreadyShared}
-//                         as={Button}
-//                         type="submit"
-//                       >
-//                         {mentorOption.name}
-//                         {isAlreadyShared && (
-//                           <Text
-//                             fontSize="xs"
-//                             // eslint-disable-next-line react-hooks/rules-of-hooks
-//                             color={useColorModeValue(
-//                               "grey.200",
-//                               "whiteAlpha.700"
-//                             )}
-//                           >
-//                             Shared
-//                           </Text>
-//                         )}
-//                       </MenuItem>
-//                     </Form>
-//                   );
-//                 })
-//               ) : (
-//                 <Text marginLeft={5}>No mentors found</Text>
-//               )}
-//             </MenuList>
-//           </Menu>
-//           <Button
-//             colorScheme="blue"
-//             name="editGoal"
-//             onClick={() => openDialog(id)}
-//             variant="ghost"
-//             aria-label="Edit Goal"
-//           >
-//             <EditIcon style={{ color: "grey" }} />
-//           </Button>
-//           <Form method="delete">
-//             <input hidden name="goalId" value={id} />
-//             <input hidden name="method" value="delete" />
-//             <Button
-//               colorScheme="red"
-//               type="submit"
-//               name="deleteGoal"
-//               variant="ghost"
-//               aria-label="Delete Goal"
-//             >
-//               <DeleteIcon style={{ color: "grey" }} />
-//             </Button>
-//           </Form>
-//         </Td>
-//       )}
-//     </Tr>
-//   );
-// }
-
 function NewGoalItem({ goal }: { goal: Goal }) {
   const utcDate = formatDateDisplay(goal.dueDate);
   const progress = calculateGoalProgress(goal.milestones) ?? 0;
+
   return (
     <li key={goal.id}>
       <NavLink
         to={`${routes.goals}/${goal.id}`}
-        className="block hover:bg-gray-50 dark:hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
+        className="block hover:bg-gray-50 dark:hover:bg-zinc-700 focus:outline-brand-500"
       >
         <div className="px-4 py-4 sm:px-6">
           <div className="flex items-center justify-between">
