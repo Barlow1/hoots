@@ -2,23 +2,21 @@ import {
   Avatar,
   Box,
   Flex,
-  FormLabel,
   Grid,
   GridItem,
   Heading,
   HStack,
-  Input,
   Tag,
   Text,
-} from "@chakra-ui/react";
-import { Mentor } from "@prisma/client";
-import { useEffect, useMemo, useState } from "react";
-import debounce from "lodash.debounce";
-import { routes } from "../routes";
-import { useUser } from "~/utils/useRootData";
-import { json, LoaderFunction } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
-import { requireUser } from "~/utils/user.session";
+} from '@chakra-ui/react';
+import type { Mentor } from '@prisma/client';
+import { useMemo } from 'react';
+import type { LoaderFunction } from '@remix-run/node';
+import { json } from '@remix-run/node';
+import { Link, useLoaderData } from '@remix-run/react';
+import { useUser } from '~/utils/useRootData';
+import { requireUser } from '~/utils/user.session.server';
+import { routes } from '../routes';
 
 type Route = {
   data: { mentors: Mentor[] };
@@ -29,17 +27,17 @@ export const loader: LoaderFunction = async ({ request }) => {
   await requireUser(request);
   const baseUrl = new URL(request.url).origin;
   const mentors = await fetch(`${baseUrl}/.netlify/functions/get-mentors`)
-    .then((mentors) => mentors.json())
+    .then((response) => response.json())
     .catch(() => {
       console.error(
-        "Failed to get mentors, please try again in a few minutes."
+        'Failed to get mentors, please try again in a few minutes.',
       );
     });
 
   return json({ data: { mentors: mentors as Mentor[] } });
 };
 
-const Recommendations = () => {
+function Recommendations() {
   const { data } = useLoaderData<Route>();
   const user = useUser();
   const desiredCost = user?.mentorPreferences?.cost ?? 0;
@@ -56,14 +54,14 @@ const Recommendations = () => {
       const optionCost = option.cost ?? 0;
 
       if (
-        (optionCost <= desiredCostHigh && optionCost >= desiredCostLow) ||
-        (desiredCost >= 100 && optionCost >= 100)
+        (optionCost <= desiredCostHigh && optionCost >= desiredCostLow)
+        || (desiredCost >= 100 && optionCost >= 100)
       ) {
         costMatch = true;
       }
       if (
-        desiredExperienceLow <= option.experience &&
-        option.experience <= desiredExperienceHigh
+        desiredExperienceLow <= option.experience
+        && option.experience <= desiredExperienceHigh
       ) {
         experienceMatch = true;
       }
@@ -82,51 +80,61 @@ const Recommendations = () => {
 
       {mentors && (
         <Grid
-          templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
+          templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }}
           gap={5}
           pt="5"
         >
-          {mentors?.map((mentor) => {
-            return (
-              <GridItem key={mentor.id}>
-                <Link to={`${routes.browse}/${mentor.id}`}>
-                  <Box
-                    maxW={{ base: "full", md: "md" }}
-                    borderWidth="1px"
-                    borderRadius="lg"
-                    overflow="hidden"
-                    key={mentor.id}
-                    p="5"
-                    h="100%"
-                    _hover={{ backgroundColor: "gray.100" }}
-                  >
-                    <Flex justifyContent={"center"}>
-                      <Avatar size="md" src={mentor.img} />
-                    </Flex>
+          {mentors?.map((mentor) => (
+            <GridItem key={mentor.id}>
+              <Link to={`${routes.browse}/${mentor.id}`}>
+                <Box
+                  maxW={{ base: 'full', md: 'md' }}
+                  borderWidth="1px"
+                  borderRadius="lg"
+                  overflow="hidden"
+                  key={mentor.id}
+                  p="5"
+                  h="100%"
+                  _hover={{ backgroundColor: 'gray.100' }}
+                >
+                  <Flex justifyContent="center">
+                    <Avatar size="md" src={mentor.img ?? undefined} />
+                  </Flex>
 
-                    <Heading as="h2" size="lg" noOfLines={1}>
-                      {mentor.name}
-                    </Heading>
-                    <Text>⭐️ Top Match</Text>
-                    <Text>💼 {mentor.occupation}</Text>
-                    <Text>🏢 {mentor.company}</Text>
-                    <Text>🕒 {mentor.experience} years</Text>
-                    <Text>💲 {mentor.cost || "FREE"}</Text>
-                    <HStack spacing={2}>
-                      {mentor.tags.map((tag) => {
-                        return (
-                          <Tag key={tag} background="brand.500" color="white">
-                            {tag}
-                          </Tag>
-                        );
-                      })}
-                    </HStack>
-                    <Text noOfLines={3}>{mentor.bio}</Text>
-                  </Box>
-                </Link>
-              </GridItem>
-            );
-          })}
+                  <Heading as="h2" size="lg" noOfLines={1}>
+                    {mentor.name}
+                  </Heading>
+                  <Text>⭐️ Top Match</Text>
+                  <Text>
+                    💼
+                    {mentor.occupation}
+                  </Text>
+                  <Text>
+                    🏢
+                    {mentor.company}
+                  </Text>
+                  <Text>
+                    🕒
+                    {mentor.experience}
+                    {' '}
+                    years
+                  </Text>
+                  <Text>
+                    💲
+                    {mentor.cost || 'FREE'}
+                  </Text>
+                  <HStack spacing={2}>
+                    {mentor.tags.map((tag) => (
+                      <Tag key={tag} background="brand.500" color="white">
+                        {tag}
+                      </Tag>
+                    ))}
+                  </HStack>
+                  <Text noOfLines={3}>{mentor.bio}</Text>
+                </Box>
+              </Link>
+            </GridItem>
+          ))}
         </Grid>
       )}
       {!mentors?.length && (
@@ -136,6 +144,6 @@ const Recommendations = () => {
       )}
     </div>
   );
-};
+}
 
 export default Recommendations;

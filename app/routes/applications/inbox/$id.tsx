@@ -12,18 +12,15 @@ import {
 } from "@chakra-ui/react";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Application,
-  Mentor,
-  prisma,
-  PrismaClient,
-  Profile,
-} from "@prisma/client";
-import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
+import type { Application, Mentor, Profile } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { Form, useLoaderData, useTransition } from "@remix-run/react";
 import { routes } from "~/routes";
 import { sendEmail } from "~/utils/email.server";
-import { getUserSession, requireUser } from "~/utils/user.session";
+import { getUserSession, requireUser } from "~/utils/user.session.server";
+
 interface LoaderData {
   data: {
     application: Application | null;
@@ -31,7 +28,8 @@ interface LoaderData {
   };
 }
 
-enum ApplicationStatus {
+// eslint-disable-next-line no-shadow
+export enum ApplicationStatuses {
   UNREAD = "UNREAD",
   DENIED = "DENIED",
   APPROVED = "APPROVED",
@@ -72,7 +70,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
       }
     );
   }
-  const mentee = await fetch(
+  const response = await fetch(
     `${baseUrl}/.netlify/functions/get-user?id=${application?.menteeId}`
   )
     .then((mentee) => mentee.json())
@@ -83,7 +81,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   return {
     data: {
       application,
-      mentee,
+      mentee: response,
     },
   };
 };
@@ -101,7 +99,7 @@ export const action: ActionFunction = async ({ request }) => {
     menteeEmail: form.get("menteeEmail") ?? "",
   };
   let application: Application | null = null;
-  if (values.actionType === ApplicationStatus.APPROVED) {
+  if (values.actionType === ApplicationStatuses.APPROVED) {
     try {
       const prisma = new PrismaClient();
       await prisma.$connect();
@@ -111,7 +109,7 @@ export const action: ActionFunction = async ({ request }) => {
             id: values.applicationId,
           },
           data: {
-            status: ApplicationStatus.APPROVED,
+            status: ApplicationStatuses.APPROVED,
           },
         })
         .finally(() => {
@@ -153,7 +151,7 @@ export const action: ActionFunction = async ({ request }) => {
         console.error("Failed to assign mentor", e);
       }
     }
-  } else if (values.actionType === ApplicationStatus.DENIED) {
+  } else if (values.actionType === ApplicationStatuses.DENIED) {
     try {
       const prisma = new PrismaClient();
       await prisma.$connect();
@@ -163,7 +161,7 @@ export const action: ActionFunction = async ({ request }) => {
             id: values.applicationId,
           },
           data: {
-            status: ApplicationStatus.DENIED,
+            status: ApplicationStatuses.DENIED,
           },
         })
         .finally(() => {
@@ -191,19 +189,19 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function ApplicationInboxRequest() {
   const { data } = useLoaderData<LoaderData>();
-  const mentee = data.mentee;
-  const application = data.application;
+  const { mentee } = data;
+  const { application } = data;
   const transition = useTransition();
   return (
     <div>
-      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
+      <Stack spacing={8} mx="auto" maxW="lg" py={12} px={6}>
         <Heading>Mentorship Request</Heading>
         <Flex>
           <Avatar src={mentee?.img ?? undefined} />
           <Text
-            fontSize={"md"}
+            fontSize="md"
             color={useColorModeValue("gray.600", "gray.200")}
-            alignSelf={"center"}
+            alignSelf="center"
             ml={3}
           >
             Submitted by {mentee?.firstName} {mentee?.lastName}{" "}
@@ -214,7 +212,7 @@ export default function ApplicationInboxRequest() {
           <Text>Details</Text>
           <UnorderedList>
             <ListItem>
-              We'll send {mentee?.firstName ?? "the applicant"} an email letting
+              We&apos;ll send {mentee?.firstName ?? "the applicant"} an email letting
               them know their application status.
             </ListItem>
             <ListItem>
@@ -226,13 +224,13 @@ export default function ApplicationInboxRequest() {
         </Box>
         <Stack spacing={3}>
           <Box>
-            <Text fontSize={"sm"} textColor="grey.400" fontWeight={"bold"}>
+            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
               Industry
             </Text>
             <Text>{mentee?.industry ?? "-"}</Text>
           </Box>
           <Box>
-            <Text fontSize={"sm"} textColor="grey.400" fontWeight={"bold"}>
+            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
               Experience
             </Text>
             <Text>
@@ -240,37 +238,37 @@ export default function ApplicationInboxRequest() {
             </Text>
           </Box>
           <Box>
-            <Text fontSize={"sm"} textColor="grey.400" fontWeight={"bold"}>
+            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
               Bio
             </Text>
             <Text>{mentee?.bio ?? "-"}</Text>
           </Box>
           <Box>
-            <Text fontSize={"sm"} textColor="grey.400" fontWeight={"bold"}>
+            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
               Desires
             </Text>
             <Text>{application?.desires}</Text>
           </Box>
           <Box>
-            <Text fontSize={"sm"} textColor="grey.400" fontWeight={"bold"}>
+            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
               Goal
             </Text>
             <Text>{application?.goal}</Text>
           </Box>
           <Box>
-            <Text fontSize={"sm"} textColor="grey.400" fontWeight={"bold"}>
+            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
               Progress
             </Text>
             <Text>{application?.progress}</Text>
           </Box>
           <Box>
-            <Text fontSize={"sm"} textColor="grey.400" fontWeight={"bold"}>
+            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
               Deadline
             </Text>
             <Text>{application?.deadline}</Text>
           </Box>
           <Box>
-            <Text fontSize={"sm"} textColor="grey.400" fontWeight={"bold"}>
+            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
               Questions
             </Text>
             <Text>{application?.questions}</Text>
@@ -283,18 +281,22 @@ export default function ApplicationInboxRequest() {
           justifyContent="space-between"
           pt="5"
           hidden={
-            application?.status !== ApplicationStatus.UNREAD ||
+            application?.status !== ApplicationStatuses.UNREAD ||
             transition.state !== "idle"
           }
         >
           <Form method="post">
-            <input hidden name="actionType" value={ApplicationStatus.DENIED} />
+            <input
+              hidden
+              name="actionType"
+              value={ApplicationStatuses.DENIED}
+            />
             <input hidden name="applicationId" value={application?.id} />
             <input hidden name="menteeFirstName" value={mentee?.firstName} />
             <input hidden name="menteeLastName" value={mentee?.lastName} />
             <input hidden name="menteeEmail" value={mentee?.email} />
             <Button
-              backgroundColor={"red.500"}
+              backgroundColor="red.500"
               _hover={{ bg: "red.800" }}
               style={{ color: "white" }}
               float="right"
@@ -308,14 +310,14 @@ export default function ApplicationInboxRequest() {
             <input
               hidden
               name="actionType"
-              value={ApplicationStatus.APPROVED}
+              value={ApplicationStatuses.APPROVED}
             />
             <input hidden name="applicationId" value={application?.id} />
             <input hidden name="menteeFirstName" value={mentee?.firstName} />
             <input hidden name="menteeLastName" value={mentee?.lastName} />
             <input hidden name="menteeEmail" value={mentee?.email} />
             <Button
-              backgroundColor={"brand.500"}
+              backgroundColor="brand.500"
               _hover={{ bg: "brand.200" }}
               style={{ color: "white" }}
               float="right"
@@ -328,23 +330,23 @@ export default function ApplicationInboxRequest() {
         </Stack>
         <Stack
           hidden={
-            application?.status !== ApplicationStatus.APPROVED &&
+            application?.status !== ApplicationStatuses.APPROVED &&
             transition.submission?.formData.get("actionType") !==
-              ApplicationStatus.APPROVED
+              ApplicationStatuses.APPROVED
           }
         >
-          <Text color={"green.500"}>
+          <Text color="green.500">
             Approved <FontAwesomeIcon icon={faCheck} />
           </Text>
         </Stack>
         <Stack
           hidden={
-            application?.status !== ApplicationStatus.DENIED &&
+            application?.status !== ApplicationStatuses.DENIED &&
             transition.submission?.formData.get("actionType") !==
-              ApplicationStatus.DENIED
+              ApplicationStatuses.DENIED
           }
         >
-          <Text color={"red.500"}>
+          <Text color="red.500">
             Denied <FontAwesomeIcon icon={faXmark} />
           </Text>
         </Stack>

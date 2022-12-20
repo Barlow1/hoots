@@ -30,3 +30,4 @@ dist-ssr
 
 build
 .cache
+app/styles/*

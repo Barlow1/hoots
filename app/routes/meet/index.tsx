@@ -1,8 +1,6 @@
-import * as React from "react";
-import { CSSProperties } from "react";
-import MeetDeets from "./MeetDeets";
-import MeetTable from "./MeetTable";
-import { AddIcon } from "@chakra-ui/icons";
+/* eslint-disable react/destructuring-assignment */
+import * as React from 'react';
+import { AddIcon } from '@chakra-ui/icons';
 import {
   Modal,
   ModalOverlay,
@@ -22,59 +20,58 @@ import {
   Heading,
   Textarea,
   Input,
-} from "@chakra-ui/react";
-import { Meeting } from "@prisma/client";
-import { json, LoaderFunction } from "@remix-run/node";
-import { requireAdminUser } from "~/utils/user.session";
+} from '@chakra-ui/react';
+import type { Meeting } from '@prisma/client';
+import type { LoaderFunction } from '@remix-run/node';
+import { json } from '@remix-run/node';
+import { requireAdminUser } from '~/utils/user.session.server';
+// eslint-disable-next-line import/no-named-as-default
+import MeetTable from './MeetTable';
+import MeetDeets from './MeetDeets';
 
 const mockData: IMeetingData[] = [
   {
-    id: "12345",
-    name: "Matt Dodds",
-    date: "August 1st, 2022",
-    time: "5:30 PM",
+    id: '12345',
+    name: 'Matt Dodds',
+    date: 'August 1st, 2022',
+    time: '5:30 PM',
   },
   {
-    id: "12345",
-    name: "Matt Dodds",
-    date: "September 1st, 2022",
-    time: "5:20 PM",
+    id: '12345',
+    name: 'Matt Dodds',
+    date: 'September 1st, 2022',
+    time: '5:20 PM',
   },
   {
-    id: "23456",
-    name: "Jim Patel",
-    date: "January 1st, 2023",
-    time: "5:15 PM",
+    id: '23456',
+    name: 'Jim Patel',
+    date: 'January 1st, 2023',
+    time: '5:15 PM',
   },
   {
-    id: "23456",
-    name: "Jim Patel",
-    date: "January 2nd, 2023",
-    time: "5:15 PM",
+    id: '23456',
+    name: 'Jim Patel',
+    date: 'January 2nd, 2023',
+    time: '5:15 PM',
   },
   {
-    id: "23456",
-    name: "Jim Patel",
-    date: "January 3rd, 2023",
-    time: "5:15 PM",
+    id: '23456',
+    name: 'Jim Patel',
+    date: 'January 3rd, 2023',
+    time: '5:15 PM',
   },
 ];
-
-type Route = {
-  LoaderData: { meetings: Meeting[] };
-  Params: { id: string };
-};
 
 export const loader: LoaderFunction = async ({ request }) => {
   await requireAdminUser(request);
   const baseUrl = new URL(request.url).origin;
   const meetings: Meeting[] = await fetch(
-    `${baseUrl}/.netlify/functions/get-meetings`
+    `${baseUrl}/.netlify/functions/get-meetings`,
   )
     .then((meeting) => meeting.json())
     .catch(() => {
       console.error(
-        "Failed to get meetings, please try again in a few minutes."
+        'Failed to get meetings, please try again in a few minutes.',
       );
     });
 
@@ -92,9 +89,9 @@ export interface IMeetHomeProps {
   meetingData: IMeetingData[];
 }
 
-export const MeetHome = (props: IMeetHomeProps) => {
+export function MeetHome(props: IMeetHomeProps) {
   const [allMeetingData, setAllMeetingData] = React.useState(
-    props.meetingData || mockData
+    props.meetingData || mockData,
   );
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -103,11 +100,6 @@ export const MeetHome = (props: IMeetHomeProps) => {
       setAllMeetingData(props.meetingData);
     }
   }, []);
-
-  const handleClick = (e: any) => {
-    console.log(e);
-  };
-
   return (
     <Box>
       <MeetDeets
@@ -116,11 +108,11 @@ export const MeetHome = (props: IMeetHomeProps) => {
         upcomingMeetingDate={allMeetingData[0].date}
         upcomingMeetingTime={allMeetingData[0].time}
       />
-      <Flex justify={"end"}>
-        <Box paddingRight={"32px"}>
+      <Flex justify="end">
+        <Box paddingRight="32px">
           <Spacer />
-          <Button color="white" bg={"brand.200"} size={"lg"} onClick={onOpen}>
-            <Text style={{ paddingRight: "10px" }}>New Meeting</Text>
+          <Button color="white" bg="brand.200" size="lg" onClick={onOpen}>
+            <Text style={{ paddingRight: '10px' }}>New Meeting</Text>
             <AddIcon />
           </Button>
         </Box>
@@ -154,7 +146,7 @@ export const MeetHome = (props: IMeetHomeProps) => {
 
           <ModalFooter>
             <Button
-              backgroundColor={"brand.200"}
+              backgroundColor="brand.200"
               color="white"
               size="lg"
               mr={3}
@@ -163,7 +155,7 @@ export const MeetHome = (props: IMeetHomeProps) => {
               Save
             </Button>
             <Button
-              backgroundColor={"buttons.fail"}
+              backgroundColor="buttons.fail"
               color="white"
               size="lg"
               onClick={onClose}
@@ -175,6 +167,6 @@ export const MeetHome = (props: IMeetHomeProps) => {
       </Modal>
     </Box>
   );
-};
+}
 
 export default MeetHome;

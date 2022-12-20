@@ -29,15 +29,14 @@ import {
 } from "@chakra-ui/react";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { json, LoaderFunction } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { Field, Form, Formik } from "formik";
-import { useEffect, useRef, useState } from "react";
-import { requireAdminUser } from "~/utils/user.session";
-import {
-  NewAgendaDialog,
-  NewAgendaItem,
-} from "../../components/newAgendaDialog";
+import { useState } from "react";
+import { requireAdminUser } from "~/utils/user.session.server";
+import { NewAgendaDialog } from "~/components/newAgendaDialog";
+import type { NewAgendaItem } from "../../components/newAgendaDialog";
 import getRoomCode, { generateToken } from "../../utils/telnyx";
 
 type Route = {
@@ -63,45 +62,45 @@ const handleJoinButtonClick = async () => {
     );
   }
 };
-export const RoomPage = () => {
-  function EditableControls() {
-    const {
-      isEditing,
-      getSubmitButtonProps,
-      getCancelButtonProps,
-      getEditButtonProps,
-    } = useEditableControls();
+function EditableControls() {
+  const {
+    isEditing,
+    getSubmitButtonProps,
+    getCancelButtonProps,
+    getEditButtonProps,
+  } = useEditableControls();
 
-    return isEditing ? (
-      <ButtonGroup padding="2" size="sm">
-        <IconButton
-          aria-label="submit"
-          bgColor="brand.500"
-          color="white"
-          icon={<CheckIcon />}
-          {...getSubmitButtonProps()}
-        />
-        <IconButton
-          aria-label="cancel"
-          bgColor="brand.500"
-          color="white"
-          icon={<CloseIcon />}
-          {...getCancelButtonProps()}
-        />
-      </ButtonGroup>
-    ) : (
-      <Flex padding="2">
-        <IconButton
-          aria-label="edit"
-          bgColor="brand.500"
-          color="white"
-          size="sm"
-          icon={<EditIcon />}
-          {...getEditButtonProps()}
-        />
-      </Flex>
-    );
-  }
+  return isEditing ? (
+    <ButtonGroup padding="2" size="sm">
+      <IconButton
+        aria-label="submit"
+        bgColor="brand.500"
+        color="white"
+        icon={<CheckIcon />}
+        {...getSubmitButtonProps()}
+      />
+      <IconButton
+        aria-label="cancel"
+        bgColor="brand.500"
+        color="white"
+        icon={<CloseIcon />}
+        {...getCancelButtonProps()}
+      />
+    </ButtonGroup>
+  ) : (
+    <Flex padding="2">
+      <IconButton
+        aria-label="edit"
+        bgColor="brand.500"
+        color="white"
+        size="sm"
+        icon={<EditIcon />}
+        {...getEditButtonProps()}
+      />
+    </Flex>
+  );
+}
+export function RoomPage() {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const openDialog = () => {
     setIsDialogOpen(true);
@@ -149,10 +148,7 @@ export const RoomPage = () => {
   const [agendaItemList, setAgendaItem] = useState<NewAgendaItem[]>(
     mockUserData.agendaItems
   );
-  const previousInputValue = useRef<NewAgendaItem[]>(mockUserData.agendaItems);
-  const [tableEntries, setTableEntries] = useState<NewAgendaItem[]>(
-    mockUserData.agendaItems
-  );
+  const [tableEntries] = useState<NewAgendaItem[]>(mockUserData.agendaItems);
 
   // useEffect(() => {
   //   previousInputValue.current = agendaItemList;
@@ -257,10 +253,8 @@ export const RoomPage = () => {
                     </Text>
                     <Box pt="2" display="flex">
                       <Avatar
-                        size={"sm"}
-                        src={
-                          "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                        }
+                        size="sm"
+                        src="https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
                       />
                       <Text
                         justifyContent="center"
@@ -316,18 +310,16 @@ export const RoomPage = () => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {tableEntries.map((row) => {
-                      return (
-                        <CheckboxGroup defaultValue={["Redux Reducers"]}>
-                          <Tr mt="5">
-                            <Td alignItems="center" display="flex" pl="2">
-                              <Checkbox value={`${row.name}`} padding="2" />{" "}
-                              {row.name}
-                            </Td>
-                          </Tr>
-                        </CheckboxGroup>
-                      );
-                    })}
+                    {tableEntries.map((row) => (
+                      <CheckboxGroup defaultValue={["Redux Reducers"]}>
+                        <Tr mt="5">
+                          <Td alignItems="center" display="flex" pl="2">
+                            <Checkbox value={`${row.name}`} padding="2" />{" "}
+                            {row.name}
+                          </Td>
+                        </Tr>
+                      </CheckboxGroup>
+                    ))}
                     {/* {tableEntries} */}
                     {/* <Tr>
               <Checkbox/> test
@@ -340,7 +332,7 @@ export const RoomPage = () => {
               <Box p={pad}>
                 <ButtonGroup gap="2">
                   <Button
-                    backgroundColor={"brand.200"}
+                    backgroundColor="brand.200"
                     color="white"
                     size="lg"
                     variant="solid"
@@ -350,7 +342,7 @@ export const RoomPage = () => {
                     <PhoneIcon />
                   </Button>
                   <Button
-                    backgroundColor={"buttons.fail"}
+                    backgroundColor="buttons.fail"
                     color="white"
                     size="lg"
                     variant="solid"
@@ -376,6 +368,6 @@ export const RoomPage = () => {
     //   <h1>Room pls {data.id}</h1>
     // </div>
   );
-};
+}
 
 export default RoomPage;

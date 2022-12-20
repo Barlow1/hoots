@@ -1,5 +1,5 @@
-export const TWITTER_INTENT_URL = "https://twitter.com/intent/tweet";
-const TWITTER_HANDLE = "inhoots";
+export const TWITTER_INTENT_URL = 'https://twitter.com/intent/tweet';
+const TWITTER_HANDLE = 'inhoots';
 
 export const getTwitterHref = ({
   url,
@@ -14,7 +14,7 @@ export const getTwitterHref = ({
   const search = new URLSearchParams({
     url,
     text: title,
-    hashtags: tags?.length ? tags.join(",") : "",
+    hashtags: tags?.length ? tags.join(',') : '',
     via: TWITTER_HANDLE,
   }).toString();
 

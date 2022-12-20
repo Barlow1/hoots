@@ -1,11 +1,7 @@
-import { useCheckbox, UseCheckboxProps } from "@chakra-ui/checkbox";
-import {
-  Box,
-  Flex,
-  useColorModeValue,
-  Text,
-  FormLabel,
-} from "@chakra-ui/react";
+import type { UseCheckboxProps } from "@chakra-ui/checkbox";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { useCheckbox } from "@chakra-ui/checkbox";
+import { Flex, useColorModeValue, Text, FormLabel } from "@chakra-ui/react";
 import { faCheckCircle, faCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -14,14 +10,15 @@ interface LargeCheckBoxProps {
   icon?: React.ReactNode;
 }
 
-const LargeCheckBox = (props: UseCheckboxProps & LargeCheckBoxProps) => {
-  const { state, getCheckboxProps, getInputProps, getLabelProps, htmlProps } =
+function LargeCheckBox(props: UseCheckboxProps & LargeCheckBoxProps) {
+  const { icon, name, label } = props;
+  const { state, getCheckboxProps, getInputProps, htmlProps } =
     useCheckbox(props);
   return (
     <FormLabel
-      rounded={"lg"}
+      rounded="lg"
       bg={useColorModeValue("white", "gray.700")}
-      boxShadow={"lg"}
+      boxShadow="lg"
       p={2}
       maxW={{ base: "full", md: "md" }}
       borderWidth="1px"
@@ -29,23 +26,23 @@ const LargeCheckBox = (props: UseCheckboxProps & LargeCheckBoxProps) => {
       _hover={{ backgroundColor: "gray.100" }}
       cursor="pointer"
       display="flex"
-      flexDirection={"column"}
+      flexDirection="column"
       h="100%"
       justifyContent="space-between"
       {...htmlProps}
     >
-      <Flex justifyContent={"center"} p="2">
-        {props.icon}
+      <Flex justifyContent="center" p="2">
+        {icon}
       </Flex>
       <input
         {...getInputProps()}
-        name={props.name}
+        name={name}
         checked={state.isChecked}
         hidden
       />
       <Flex>
-        <Text size="sm" fontWeight={"bold"}>
-          {props.label}
+        <Text size="sm" fontWeight="bold">
+          {label}
         </Text>
       </Flex>
       <Flex {...getCheckboxProps()} justifyContent="end">
@@ -57,6 +54,6 @@ const LargeCheckBox = (props: UseCheckboxProps & LargeCheckBoxProps) => {
       </Flex>
     </FormLabel>
   );
-};
+}
 
 export default LargeCheckBox;
