@@ -2,7 +2,7 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
   content: ["./app/**/*.{ts,tsx}"],
-  darkMode: ["class", '[class="chakra-ui-dark"]'], // or 'media' or 'class'
+  darkMode: ["class", '[class="dark"]'], // or 'media' or 'class'
   theme: {
     extend: {
       fontFamily: {

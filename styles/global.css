@@ -7,6 +7,6 @@ circle.inner-progress {
 }
 
 circle.background-progress {
-    fill: transparent;
-    stroke: #edebe9;
+  fill: transparent;
+  stroke: #edebe9;
 }

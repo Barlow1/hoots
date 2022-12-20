@@ -14,7 +14,10 @@ export interface FieldProps {
   defaultValue?: string;
 }
 
-const Field = React.forwardRef<HTMLInputElement | HTMLTextAreaElement | HTMLDataElement | null, FieldProps>(
+const Field = React.forwardRef<
+  HTMLInputElement | HTMLTextAreaElement | HTMLDataElement | null,
+  FieldProps
+>(
   (
     {
       name,
@@ -35,7 +38,7 @@ const Field = React.forwardRef<HTMLInputElement | HTMLTextAreaElement | HTMLData
         case "textarea":
           return (
             <textarea
-              className="block w-full rounded-md border border-gray-300 dark:border-gray-300/20 shadow-sm outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 bg-transparent dark:ring-offset-zinc-900 sm:text-sm px-4 py-2 leading-normal"
+              className="block w-full rounded-md border border-gray-300 dark:text-white dark:border-gray-300/20 shadow-sm outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 bg-transparent dark:ring-offset-zinc-900 sm:text-sm px-4 py-2 leading-normal"
               rows={3}
               disabled={disabled}
               name={name}
@@ -50,7 +53,7 @@ const Field = React.forwardRef<HTMLInputElement | HTMLTextAreaElement | HTMLData
         default:
           return (
             <input
-              className="block w-full border rounded-md border-gray-300 dark:border-gray-300/20 shadow-sm outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 bg-transparent dark:ring-offset-zinc-900 sm:text-sm px-4 py-2 leading-normal"
+              className="block w-full border rounded-md border-gray-300 dark:text-white dark:border-gray-300/20 shadow-sm outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 bg-transparent dark:ring-offset-zinc-900 sm:text-sm px-4 py-2 leading-normal"
               disabled={disabled}
               name={name}
               type={inputType}

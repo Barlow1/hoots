@@ -1,66 +1,110 @@
-import { PassThrough } from 'stream';
+import { PassThrough } from "stream";
 
-import type { EntryContext } from '@remix-run/node';
-import { Response } from '@remix-run/node';
-import { RemixServer } from '@remix-run/react';
-import isbot from 'isbot';
-import { renderToPipeableStream } from 'react-dom/server';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import createEmotionCache from '@emotion/cache';
-import { CacheProvider as EmotionCacheProvider } from '@emotion/react';
-import createEmotionServer from '@emotion/server/create-instance';
+import type { EntryContext } from "@remix-run/node";
+import { Response } from "@remix-run/node";
+import { RemixServer } from "@remix-run/react";
+import isbot from "isbot";
+import { renderToPipeableStream } from "react-dom/server";
 
 const ABORT_DELAY = 5000;
 
-export default function handleRequest(
+const handleRequest = (
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
-  remixContext: EntryContext,
-) {
-  const callbackMethod = isbot(request.headers.get('user-agent'))
-    ? 'onAllReady'
-    : 'onShellReady';
+  remixContext: EntryContext
+) =>
+  isbot(request.headers.get("user-agent"))
+    ? handleBotRequest(
+        request,
+        responseStatusCode,
+        responseHeaders,
+        remixContext
+      )
+    : handleBrowserRequest(
+        request,
+        responseStatusCode,
+        responseHeaders,
+        remixContext
+      );
+export default handleRequest;
 
-  return new Promise((resolve, reject) => {
+const handleBotRequest = (
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext
+) =>
+  new Promise((resolve, reject) => {
     let didError = false;
 
-    const emotionCache = createEmotionCache({ key: 'css' });
-
     const { pipe, abort } = renderToPipeableStream(
-      <EmotionCacheProvider value={emotionCache}>
-        <RemixServer context={remixContext} url={request.url} />
-      </EmotionCacheProvider>,
+      <RemixServer context={remixContext} url={request.url} />,
       {
-        [callbackMethod]() {
-          const reactBody = new PassThrough();
-          const emotionServer = createEmotionServer(emotionCache);
+        onAllReady: () => {
+          const body = new PassThrough();
 
-          const bodyWithStyles = emotionServer.renderStylesToNodeStream();
-          reactBody.pipe(bodyWithStyles);
-
-          responseHeaders.set('Content-Type', 'text/html');
+          responseHeaders.set("Content-Type", "text/html");
 
           resolve(
-            new Response(bodyWithStyles, {
+            new Response(body, {
               headers: responseHeaders,
               status: didError ? 500 : responseStatusCode,
-            }),
+            })
           );
 
-          pipe(reactBody);
+          pipe(body);
         },
-        onShellError(err: unknown) {
-          reject(err);
+        onShellError: (error: unknown) => {
+          reject(error);
         },
-        onError(error: unknown) {
+        onError: (error: unknown) => {
           didError = true;
 
           console.error(error);
         },
-      },
+      }
     );
 
     setTimeout(abort, ABORT_DELAY);
   });
-}
+
+const handleBrowserRequest = (
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext
+) =>
+  new Promise((resolve, reject) => {
+    let didError = false;
+
+    const { pipe, abort } = renderToPipeableStream(
+      <RemixServer context={remixContext} url={request.url} />,
+      {
+        onShellReady: () => {
+          const body = new PassThrough();
+
+          responseHeaders.set("Content-Type", "text/html");
+
+          resolve(
+            new Response(body, {
+              headers: responseHeaders,
+              status: didError ? 500 : responseStatusCode,
+            })
+          );
+
+          pipe(body);
+        },
+        onShellError: (error: unknown) => {
+          reject(error);
+        },
+        onError: (error: unknown) => {
+          didError = true;
+
+          console.error(error);
+        },
+      }
+    );
+
+    setTimeout(abort, ABORT_DELAY);
+  });

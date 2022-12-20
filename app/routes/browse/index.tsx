@@ -118,22 +118,12 @@ function Browse() {
   return (
     <div>
       <div className="grid">
-        <div className="rounded-sm shadow">
-          <div className="p-5">
-            <div className="flex justify-between">
-              <H3 as="h1" className="font-bold">
-                Browse
-              </H3>
-              <FilterDialog
-                onSave={onFilterSave}
-                minCost={searchParams.get("min_cost") ?? undefined}
-                maxCost={searchParams.get("max_cost") ?? undefined}
-              />
-            </div>
-            <div className="pt-5">
+        <div className="rounded-sm shadow dark:bg-zinc-800">
+          <div className="flex justify-between p-5">
+            <div>
               <div className="flex">
                 <input
-                  className="w-52 mr-2 block rounded-md border-gray-300 dark:border-gray-300/20 border shadow-sm focus-visible:outline-0 focus:ring-2 focus:ring-brand-500 sm:text-sm indent-2 dark:bg-zinc-900 focus:ring-offset-2 dark:ring-offset-zinc-900"
+                  className="w-52 mr-2 h-[40px] dark:text-white mt-auto mb-auto block rounded-md border-gray-300 dark:border-gray-300/20 border shadow-sm focus-visible:outline-0 focus:ring-2 focus:ring-brand-500 sm:text-sm indent-2 dark:bg-zinc-900 focus:ring-offset-2 dark:ring-offset-zinc-900"
                   name="search"
                   onChange={onSearchChange}
                   placeholder="Search..."
@@ -152,10 +142,18 @@ function Browse() {
                   </TooltipTrigger>
                 </Tooltip>
               </div>
-              <label className="text-gray-500 text-sm ml-1" htmlFor="search">
+              <label
+                className="text-gray-500 dark:text-gray-200 text-sm ml-1"
+                htmlFor="search"
+              >
                 Hint: try searching for "React"
               </label>
             </div>
+            <FilterDialog
+              onSave={onFilterSave}
+              minCost={searchParams.get("min_cost") ?? undefined}
+              maxCost={searchParams.get("max_cost") ?? undefined}
+            />
           </div>
         </div>
       </div>

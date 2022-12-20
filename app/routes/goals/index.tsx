@@ -290,7 +290,7 @@ function NewGoalItem({ goal }: { goal: Goal }) {
             </p>
           </div>
           <div className="mt-2 sm:flex sm:justify-between">
-            <div className="sm:flex">
+            <div className="sm:flex dark:text-white">
               {progress < 100 && (
                 <div className="sm:w-32 w-full">
                   <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1 dark:bg-gray-700">

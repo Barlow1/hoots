@@ -67,6 +67,7 @@ export function CircularProgressLabel({
         position: "absolute",
         transform: "translate(-50%, -50%)",
       }}
+      className="dark:text-white"
     >
       {children}
     </div>

@@ -240,7 +240,7 @@ function MilestonePage() {
       <div className="mx-auto mt-8 grid max-w-3xl grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-3">
         <div className="lg:col-span-1">
           <div className="shadow bg-gray-50 dark:bg-zinc-700 p-5 rounded-md">
-            <div className="sm:flex">
+            <div className="sm:flex dark:text-white">
               {progress < 100 && (
                 <div className="w-full flex space-x-2">
                   <div className="w-full bg-gray-200 rounded-full h-1.5 dark:bg-zinc-900 my-auto">

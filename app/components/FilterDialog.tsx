@@ -182,7 +182,7 @@ function FilterDialog({ onSave, minCost, maxCost }: FilterDialogProps) {
                               Minimum
                             </label>
                             <input
-                              className="block w-full rounded-md dark:bg-zinc-700 h-8 border-gray-300 dark:border-gray-300/10 pl-7 pr-12 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:ring-offset-zinc-900 sm:text-sm"
+                              className="block w-full rounded-md dark:text-white dark:bg-zinc-700 h-8 border-gray-300 dark:border-gray-300/10 pl-7 pr-12 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:ring-offset-zinc-900 sm:text-sm"
                               type="number"
                               id="minimum"
                               value={minCostValue}
@@ -198,7 +198,7 @@ function FilterDialog({ onSave, minCost, maxCost }: FilterDialogProps) {
                               Maximum
                             </label>
                             <input
-                              className="block w-full rounded-md dark:bg-zinc-700 h-8 border-gray-300 dark:border-gray-300/10 pl-7 pr-12 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:ring-offset-zinc-900 sm:text-sm"
+                              className="block w-full rounded-md dark:text-white dark:bg-zinc-700 h-8 border-gray-300 dark:border-gray-300/10 pl-7 pr-12 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:ring-offset-zinc-900 sm:text-sm"
                               type="number"
                               name="maximum"
                               value={maxCostValue}
