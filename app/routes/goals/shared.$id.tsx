@@ -1,11 +1,10 @@
-import {
-  Stack, Heading, Flex, Avatar, useColorModeValue, Text,
-} from '@chakra-ui/react';
+import { Avatar } from '@chakra-ui/react';
 import type { Goal } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 import type { LoaderFunction} from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import { H4, Paragraph } from '~/components/Typography';
 import { requireUser } from '~/utils/user.session.server';
 import { GoalsContainer } from '.';
 
@@ -55,22 +54,19 @@ export default function SharedGoals() {
 
   return (
     <>
-      <Stack maxW="lg" px={6} py={6}>
-        <Heading size="md">Shared by</Heading>
-        <Flex>
+      <div className=' max-w-lg p-6'>
+        <H4>Shared by</H4>
+        <div className='flex'>
           <Avatar src={user.img ?? undefined} size="sm" />
-          <Text
-            fontSize="lg"
-            color={useColorModeValue('gray.600', 'gray.200')}
-            alignSelf="center"
-            ml={3}
+          <Paragraph
+          className=' self-center ml-3'
           >
             {user.firstName}
             {' '}
             {user.lastName}
-          </Text>
-        </Flex>
-      </Stack>
+          </Paragraph>
+        </div>
+      </div>
       <GoalsContainer userGoals={goals} isReadOnly />
     </>
   );
