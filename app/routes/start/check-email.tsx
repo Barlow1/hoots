@@ -1,25 +1,13 @@
-import {
-  Flex,
-  Heading,
-  Link,
-  Stack,
-  Text,
-  Image,
-  useColorModeValue,
-} from '@chakra-ui/react';
-import { Form, useActionData, useTransition } from '@remix-run/react';
-import type {
-  ActionFunction,
-  LoaderFunction} from '@remix-run/server-runtime';
+import { Form, useActionData, useTransition } from "@remix-run/react";
+import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {
-  redirect,
-} from '@remix-run/server-runtime';
-import { routes } from '~/routes';
-import { createVerificationLink } from '~/utils/email-verification.server';
-import { sendEmail } from '~/utils/email.server';
-import { getUser } from '~/utils/user.session.server';
-import Logo from '../../assets/Logo.svg';
+import { redirect } from "@remix-run/server-runtime";
+import { H1, Paragraph } from "~/components/Typography";
+import { routes } from "~/routes";
+import { createVerificationLink } from "~/utils/email-verification.server";
+import { sendEmail } from "~/utils/email.server";
+import { getUser } from "~/utils/user.session.server";
+import Logo from "../../assets/Logo.svg";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
@@ -38,14 +26,14 @@ export const action: ActionFunction = async ({ request }) => {
   });
   await sendEmail({
     toName: `${user.firstName} ${user.lastName}`,
-    fromName: 'Hoots',
+    fromName: "Hoots",
     email: user.email,
-    subject: 'Email Verification',
+    subject: "Email Verification",
     variables: {
       firstName: user.firstName,
       verificationLink,
     },
-    template: 'email-verification',
+    template: "email-verification",
   });
   return true;
 };
@@ -53,43 +41,34 @@ function CheckEmail() {
   const transition = useTransition();
   const newEmailSent = useActionData();
   return (
-    <Flex
-      minH="100vh"
-      align="center"
-      justify="center"
-      bg={useColorModeValue('gray.50', 'gray.800')}
-    >
-      <Stack spacing={8} mx="auto" maxW="lg" py={12} px={6}>
-        <Stack align="center">
-          <Image src={Logo} />
-          <Heading fontSize="4xl">Email Verification</Heading>
-          <Text fontSize="lg" color="gray.600">
-            Check your email for a verification link.
-          </Text>
+    <div className="min-h-screen content-center items-center flex">
+      <div className="space-y-8 mx-auto max-w-lg py-12 px-6">
+        <div className="flex items-center flex-col space-y-8 ">
+          <img className="mx-auto h-12 w-auto" src={Logo} alt="Hoots" />
+          <H1>Email Verification</H1>
+          <Paragraph>Check your email for a verification link.</Paragraph>
           <Form method="post">
-            {transition.state === 'idle' && !newEmailSent && (
-              <Text fontSize="sm" color="gray.600">
-                Don't see it?
-                {' '}
-                <Link as="button" type="submit" color="brand.900">
+            {transition.state === "idle" && !newEmailSent && (
+              <Paragraph className="text-sm">
+                Don't see it?{" "}
+                <button
+                  type="submit"
+                  className="font-medium text-brand-600 hover:text-brand-500 ml-2"
+                >
                   Send it again
-                </Link>
-              </Text>
+                </button>
+              </Paragraph>
             )}
-            {transition.state === 'idle' && newEmailSent && (
-              <Text fontSize="sm" color="gray.600">
-                Sent
-              </Text>
+            {transition.state === "idle" && newEmailSent && (
+              <Paragraph className="text-sm">Sent</Paragraph>
             )}
-            {transition.state !== 'idle' && (
-              <Text fontSize="sm" color="gray.600">
-                Sending...
-              </Text>
+            {transition.state !== "idle" && (
+              <Paragraph className="text-sm">Sending...</Paragraph>
             )}
           </Form>
-        </Stack>
-      </Stack>
-    </Flex>
+        </div>
+      </div>
+    </div>
   );
 }
 

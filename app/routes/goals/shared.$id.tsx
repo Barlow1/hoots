@@ -1,12 +1,12 @@
-import { Avatar } from '@chakra-ui/react';
-import type { Goal } from '@prisma/client';
-import { PrismaClient } from '@prisma/client';
-import type { LoaderFunction} from '@remix-run/node';
-import { json } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
-import { H4, Paragraph } from '~/components/Typography';
-import { requireUser } from '~/utils/user.session.server';
-import { GoalsContainer } from '.';
+import type { Goal } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import Avatar from "~/components/Avatar";
+import { H4, Paragraph } from "~/components/Typography";
+import { requireUser } from "~/utils/user.session.server";
+import { GoalsContainer } from ".";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const user = await requireUser(request);
@@ -16,7 +16,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     const prisma = new PrismaClient();
     prisma
       .$connect()
-      .catch((err) => console.error('Failed to connect to db', err));
+      .catch((err) => console.error("Failed to connect to db", err));
     mentorProfile = await prisma.mentor.findUnique({
       where: {
         profileId: user.id,
@@ -54,16 +54,12 @@ export default function SharedGoals() {
 
   return (
     <>
-      <div className=' max-w-lg p-6'>
+      <div className=" max-w-lg p-6">
         <H4>Shared by</H4>
-        <div className='flex'>
-          <Avatar src={user.img ?? undefined} size="sm" />
-          <Paragraph
-          className=' self-center ml-3'
-          >
-            {user.firstName}
-            {' '}
-            {user.lastName}
+        <div className="flex pt-2">
+          <Avatar src={user.img ?? undefined} size="xs" />
+          <Paragraph className=" self-center ml-3">
+            {user.firstName} {user.lastName}
           </Paragraph>
         </div>
       </div>

@@ -1,6 +1,9 @@
 import * as React from "react";
 import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
-import { faFloppyDisk, faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faFloppyDisk,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import {
@@ -10,7 +13,8 @@ import {
   useSubmit,
   useTransition,
 } from "@remix-run/react";
-import type { Goal, GoalMilestone } from "@prisma/client";
+import type { Goal, GoalMilestone, Mentor } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { formatDateDisplay } from "~/utils/dates";
 import { requireUser } from "~/utils/user.session.server";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,19 +22,26 @@ import { H1, H3, Paragraph } from "~/components/Typography";
 import Button from "~/components/Buttons/IconButton";
 import { calculateGoalProgress } from "~/utils/calculateGoalProgress";
 import { GoalsDialog } from "~/components/goalsDialog";
-import { Dialog, Transition } from "@headlessui/react";
+import { Dialog, Menu, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import XMarkIcon from "@heroicons/react/24/outline/XMarkIcon";
 import Field from "~/components/FormElements/Field";
+import Avatar from "~/components/Avatar";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 type Route = {
-  data: { goal: Goal };
+  data: { goal: Goal; userMentors: Mentor[] };
   params: { id: string };
 };
 
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
 export const loader: LoaderFunction = async ({ params, request }) => {
-  await requireUser(request);
+  const user = await requireUser(request);
   const baseUrl = new URL(request.url).origin;
+  const prisma = new PrismaClient();
   const goal = await fetch(
     `${baseUrl}/.netlify/functions/get-goals?id=${params.id}`
   )
@@ -38,8 +49,39 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     .catch(() => {
       console.error("Failed to get goal, please try again in a few minutes.");
     });
-
-  return json({ data: { goal: goal as Goal } });
+  let freshUser;
+  let mentorProfile = null;
+  if (user) {
+    prisma
+      .$connect()
+      .catch((err) => console.error("Failed to connect to db", err));
+    mentorProfile = await prisma.mentor.findUnique({
+      where: {
+        profileId: user.id,
+      },
+    });
+    freshUser = await prisma.profile.findUnique({
+      where: {
+        id: user.id,
+      },
+    });
+    const userMentors = await prisma.mentor
+      .findMany({
+        where: {
+          id: {
+            in: freshUser ? freshUser.mentorIDs : user.mentorIDs,
+          },
+        },
+      })
+      .catch((e) => {
+        console.error("Failed to fetch mentors", e);
+      })
+      .finally(() => {
+        prisma.$disconnect();
+      });
+    return json({ data: { goal: goal as Goal, userMentors, mentorProfile } });
+  }
+  return null;
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -134,8 +176,7 @@ const convertFormToMilestone = (form: FormData): GoalMilestone => {
     notes: String(milestone.notes),
   };
 };
-
-function MilestonePage() {
+export default function MilestonePage() {
   const { data } = useLoaderData<Route>();
   const [isDrawerOpen, setIsDrawerOpen] = React.useState<boolean>(false);
   const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
@@ -156,6 +197,7 @@ function MilestonePage() {
 
   const submit = useSubmit();
   const transition = useTransition();
+  const shareGoalFetcher = useFetcher();
   const pendingSubmissionFormType = transition.submission
     ? transition.submission.formData.get("formType")
     : undefined;
@@ -212,6 +254,90 @@ function MilestonePage() {
           >
             Edit
           </Button>
+          <Menu
+            as="div"
+            className="relative inline-block text-left w-full md:w-auto"
+          >
+            {({ open }) => (
+              <>
+                <Menu.Button
+                  as={Button}
+                  className="w-full mx-0 md:w-auto"
+                  rightIcon={<ChevronDownIcon className="h-4 w-4 ml-2" />}
+                >
+                  <span className="sr-only">Share with mentor</span>
+                  Share
+                </Menu.Button>
+
+                <Transition
+                  show={open}
+                  as={Fragment}
+                  leave="transition ease-in duration-200"
+                  enter="transition ease-in duration-200"
+                  enterFrom="opacity-0"
+                  enterTo="opacity-100"
+                  leaveFrom="opacity-100"
+                  leaveTo="opacity-0"
+                >
+                  <Menu.Items className="absolute right-0 -mt-2 w-56 origin-top-right divide-y divide-gray-100 dark:divide-gray-800 rounded-md bg-white dark:bg-zinc-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    {data.userMentors?.length ? (
+                      data.userMentors?.map((option) => {
+                        const { sharedWithMentorIDs } = data.goal;
+                        const isAlreadyShared = sharedWithMentorIDs?.includes(
+                          option.id
+                        );
+                        return (
+                          <shareGoalFetcher.Form
+                            key={option.id}
+                            method="post"
+                            name="share"
+                            action="/actions/goals"
+                          >
+                            <input hidden name="goalId" value={data.goal.id} />
+                            <input hidden name="mentorId" value={option.id} />
+                            <input hidden name="method" value="share" />
+                            <Menu.Item disabled={isAlreadyShared}>
+                              {({ active }) => (
+                                <button
+                                  type="submit"
+                                  disabled={isAlreadyShared}
+                                  className="w-full disabled:cursor-not-allowed cursor-pointer"
+                                >
+                                  <span
+                                    className={classNames(
+                                      active
+                                        ? "text-gray-900 bg-gray-400 dark:text-white dark:bg-zinc-900"
+                                        : "text-gray-900 dark:text-white",
+                                      " select-none p-4 text-sm group flex w-full items-center rounded-md px-2 py-2"
+                                    )}
+                                  >
+                                    <span className="p-2">
+                                      <Avatar
+                                        src={option.img ?? undefined}
+                                        size="xs"
+                                      />
+                                    </span>
+                                    {option.name}
+                                    {isAlreadyShared && (
+                                      <Paragraph className="text-xs ml-2">
+                                        Shared
+                                      </Paragraph>
+                                    )}
+                                  </span>
+                                </button>
+                              )}
+                            </Menu.Item>
+                          </shareGoalFetcher.Form>
+                        );
+                      })
+                    ) : (
+                      <Paragraph className="p-5">No mentors found</Paragraph>
+                    )}
+                  </Menu.Items>
+                </Transition>
+              </>
+            )}
+          </Menu>
           <deleteFetcher.Form
             method="delete"
             className="block md:inline-block"
@@ -557,4 +683,3 @@ export function MilestoneDrawer({
     </Transition.Root>
   );
 }
-export default MilestonePage;

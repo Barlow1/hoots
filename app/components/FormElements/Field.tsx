@@ -4,7 +4,7 @@ import InputError from "./InputError";
 
 export interface FieldProps {
   name: string;
-  type: "textarea" | "input" | "date";
+  type: "textarea" | "input" | "date" | "email" | "password";
   label: string;
   error?: string | null;
   isDisabled?: boolean;
@@ -12,6 +12,7 @@ export interface FieldProps {
   isRequired?: boolean;
   placeholder?: string;
   defaultValue?: string;
+  inputRightElement?: React.ReactNode;
 }
 
 const Field = React.forwardRef<
@@ -29,6 +30,7 @@ const Field = React.forwardRef<
       isRequired,
       placeholder,
       defaultValue,
+      inputRightElement,
     },
     ref
   ) => {
@@ -52,16 +54,23 @@ const Field = React.forwardRef<
         case "date":
         default:
           return (
-            <input
-              className="block w-full border rounded-md border-gray-300 dark:text-white dark:border-gray-300/20 shadow-sm outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 bg-transparent dark:ring-offset-zinc-900 sm:text-sm px-4 py-2 leading-normal"
-              disabled={disabled}
-              name={name}
-              type={inputType}
-              required={isRequired}
-              placeholder={placeholder}
-              defaultValue={defaultValue}
-              ref={ref as React.MutableRefObject<HTMLInputElement>}
-            />
+            <div className="relative">
+              <input
+                className="block w-full border rounded-md border-gray-300 dark:text-white dark:border-gray-300/20 shadow-sm outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 bg-transparent dark:ring-offset-zinc-900 sm:text-sm px-4 py-2 leading-normal"
+                disabled={disabled}
+                name={name}
+                type={inputType}
+                required={isRequired}
+                placeholder={placeholder}
+                defaultValue={defaultValue}
+                ref={ref as React.MutableRefObject<HTMLInputElement>}
+              />
+              {inputRightElement ? (
+                <div className="absolute flex right-0 top-0 items-center content-center h-full w-10">
+                  {inputRightElement}
+                </div>
+              ) : null}
+            </div>
           );
       }
     };
