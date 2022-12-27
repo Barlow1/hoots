@@ -119,11 +119,11 @@ function Browse() {
     <div>
       <div className="grid">
         <div className="rounded-sm shadow dark:bg-zinc-800">
-          <div className="flex justify-between p-5">
+          <div className="flex flex-wrap-reverse justify-between p-5">
             <div>
               <div className="flex">
                 <input
-                  className="w-52 mr-2 h-[40px] dark:text-white mt-auto mb-auto block rounded-md border-gray-300 dark:border-gray-300/20 border shadow-sm focus-visible:outline-0 focus:ring-2 focus:ring-brand-500 sm:text-sm indent-2 dark:bg-zinc-900 focus:ring-offset-2 dark:ring-offset-zinc-900"
+                  className="w-52 h-[40px] dark:text-white mt-auto mb-auto block rounded-md border-gray-300 dark:border-gray-300/20 border shadow-sm focus-visible:outline-0 focus:ring-2 focus:ring-brand-500 sm:text-sm indent-2 dark:bg-zinc-900 focus:ring-offset-2 dark:ring-offset-zinc-900"
                   name="search"
                   onChange={onSearchChange}
                   placeholder="Search..."
