@@ -86,7 +86,7 @@ export function NonFlashOfWrongThemeEls({ ssrTheme }: { ssrTheme: boolean }) {
       */}
       <meta
         name="color-scheme"
-        content={theme === "light" ? "light dark" : "dark light"}
+        content={theme === "light" ? "light" : "dark"}
       />
       {/*
         If we know what the theme is from the server then we don't need

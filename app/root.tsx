@@ -26,7 +26,9 @@ import { getSocialMetas } from "./utils/seo";
 import { getDisplayUrl } from "./utils/url";
 import tailwindStyleUrls from "./styles/tailwind.css";
 import globalStyleUrl from "./styles/global.css";
-import ThemeProvider from "./components/ThemeProvider";
+import ThemeProvider, {
+  NonFlashOfWrongThemeEls,
+} from "./components/ThemeProvider";
 import getThemeSession from "./utils/theme.session.server";
 import { H3, Paragraph } from "./components/Typography";
 
@@ -160,6 +162,7 @@ function Document({
               `,
           }}
         />
+        <NonFlashOfWrongThemeEls ssrTheme={Boolean(theme)} />
       </head>
       <body className="bg-white dark:bg-zinc-900">
         {children}

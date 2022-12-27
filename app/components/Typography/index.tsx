@@ -83,7 +83,7 @@ function Paragraph({
   className,
   prose = true,
   as = "p",
-  textColorClassName = "dark:text-white",
+  textColorClassName = "text-black dark:text-white",
   ...rest
 }: ParagraphProps) {
   return React.createElement(as, {

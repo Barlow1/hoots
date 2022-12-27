@@ -419,7 +419,7 @@ export default function MilestonePage() {
               })}
             {!data.goal?.milestones ||
               (data.goal?.milestones.length === 0 && !transition.submission && (
-                <Paragraph className="text-center pt-5">
+                <Paragraph className="text-center p-5">
                   No milestones found 😢 Add one now!
                 </Paragraph>
               ))}

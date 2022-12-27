@@ -238,7 +238,7 @@ export function GoalsContainer({
           {userGoals.length > 0 ? (
             userGoals.map((goal) => <NewGoalItem key={goal.id} goal={goal} />)
           ) : (
-            <Paragraph className="text-center">
+            <Paragraph className="text-center p-5">
               No goals found. 😢 Add one now!
             </Paragraph>
           )}

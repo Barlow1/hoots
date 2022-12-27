@@ -11,7 +11,7 @@ export interface FieldProps {
   subLabel?: string;
   isRequired?: boolean;
   placeholder?: string;
-  defaultValue?: string | number;
+  defaultValue?: string | number | string[];
   inputRightElement?: React.ReactNode;
   min?: string | number;
   max?: string | number;
