@@ -127,7 +127,7 @@ export default function Apply() {
         </div>
         <div className="bg-gray-200 dark:bg-gray-800 p-5">
           <Paragraph>Details</Paragraph>
-          <ul className="list-disc pl-5">
+          <ul className="list-disc pl-5 dark:text-white">
             <li>
               Your application will be sent to {mentorFirstName} for review.
               Make sure to include as much detail as possible.
