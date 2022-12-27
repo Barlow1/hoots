@@ -1,6 +1,7 @@
 const sizes = {
   xs: "h-8 w-8",
-  sm: "h-16 w-16",
+  sm: "h-10 w-10",
+  md: "h-16 w-16",
   lg: "h-32 w-32",
 };
 
@@ -11,7 +12,7 @@ function Avatar({
   ...rest
 }: {
   src?: string;
-  size?: "sm" | "lg" | "xs";
+  size?: "sm" | "md" | "lg" | "xs" ;
 } & React.ImgHTMLAttributes<HTMLImageElement>) {
   return (
     <>
