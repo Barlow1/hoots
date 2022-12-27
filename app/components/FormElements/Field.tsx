@@ -4,15 +4,17 @@ import InputError from "./InputError";
 
 export interface FieldProps {
   name: string;
-  type: "textarea" | "input" | "date" | "email" | "password";
+  type: "textarea" | "input" | "date" | "email" | "password" | "number";
   label: string;
   error?: string | null;
   isDisabled?: boolean;
   subLabel?: string;
   isRequired?: boolean;
   placeholder?: string;
-  defaultValue?: string;
+  defaultValue?: string | number;
   inputRightElement?: React.ReactNode;
+  min?: string | number;
+  max?: string | number;
 }
 
 const Field = React.forwardRef<
@@ -31,6 +33,8 @@ const Field = React.forwardRef<
       placeholder,
       defaultValue,
       inputRightElement,
+      min,
+      max,
     },
     ref
   ) => {
@@ -48,6 +52,22 @@ const Field = React.forwardRef<
               placeholder={placeholder}
               defaultValue={defaultValue}
               ref={ref as React.MutableRefObject<HTMLTextAreaElement>}
+            />
+          );
+          break;
+        case "number":
+          return (
+            <input
+              className="block bg-transparent w-full rounded-md dark:text-white h-8 border-gray-300 dark:border-gray-300/10 pl-2 pr-4 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:ring-offset-zinc-900 sm:text-sm"
+              disabled={disabled}
+              name={name}
+              type={inputType}
+              required={isRequired}
+              placeholder={placeholder}
+              defaultValue={defaultValue}
+              min={min}
+              max={max}
+              ref={ref as React.MutableRefObject<HTMLInputElement>}
             />
           );
           break;

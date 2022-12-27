@@ -14,14 +14,14 @@ export default function Button({
   children,
   className,
   variant = "secondary",
-  loading = false,
+  isLoading = false,
   ...rest
 }: React.PropsWithChildren<
   {
     leftIcon?: JSX.Element;
     rightIcon?: JSX.Element;
     variant?: "primary" | "secondary" | "danger";
-    loading?: boolean;
+    isLoading?: boolean;
   } & React.HTMLAttributes<HTMLButtonElement> &
     React.ButtonHTMLAttributes<HTMLButtonElement>
 >) {
@@ -35,7 +35,7 @@ export default function Button({
       )}
       {...rest}
     >
-      {loading && <LoadingSpinner />}
+      {isLoading && <LoadingSpinner />}
       {leftIcon}
       {children}
       {rightIcon}

@@ -145,7 +145,7 @@ function Start() {
                 type="submit"
                 disabled={!value.length}
                 variant="primary"
-                loading={transition.state === "submitting"}
+                isLoading={transition.state === "submitting"}
               >
                 Next
               </Button>
