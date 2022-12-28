@@ -1,35 +1,25 @@
-import {
-  Avatar,
-  Box,
-  Flex,
-  FormLabel,
-  Grid,
-  GridItem,
-  Heading,
-  HStack,
-  IconButton,
-  Input,
-  Tag,
-  Text,
-  Tooltip,
-  useColorModeValue,
-} from "@chakra-ui/react";
-import { Mentor } from "@prisma/client";
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
-import { routes } from "../../routes";
-import debounce from "lodash.debounce";
-import { json, LoaderFunction, MetaFunction } from "@remix-run/node";
+import type { Mentor } from "@prisma/client";
+import type { ChangeEvent } from "react";
+import { useState } from "react";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   Link,
   useLoaderData,
   useLocation,
   useNavigate,
 } from "@remix-run/react";
-import { faFilter, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import FilterDialog, { FilterValues } from "~/components/FilterDialog";
+import type { FilterValues } from "~/components/FilterDialog";
+import FilterDialog from "~/components/FilterDialog";
 import { getSocialMetas } from "~/utils/seo";
 import { getDisplayUrl } from "~/utils/url";
+import { H3, Paragraph } from "~/components/Typography";
+import Tag from "~/components/Tag";
+import Button from "~/components/Buttons/IconButton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/Tooltip";
+import { routes } from "../../routes";
 
 type Route = {
   data: { mentors: Mentor[] };
@@ -47,9 +37,9 @@ const buildMentorFetchUrl = (
 
   if (query || minCost || maxCost) {
     const params = new URLSearchParams({
-      query: query ? query : "",
-      min_cost: minCost ? minCost : "",
-      max_cost: maxCost ? maxCost : "",
+      query: query || "",
+      min_cost: minCost || "",
+      max_cost: maxCost || "",
     });
     getMentorsUrl += `?${params}`;
   }
@@ -60,8 +50,8 @@ export const meta: MetaFunction = ({ parentsData }) => {
   const { requestInfo } = parentsData.root;
   return getSocialMetas({
     url: getDisplayUrl(requestInfo),
-    title: `Find a mentor`,
-    description: `Find a mentor who gives a hoot!`,
+    title: "Find a mentor",
+    description: "Find a mentor who gives a hoot!",
   });
 };
 
@@ -75,14 +65,13 @@ export const loader: LoaderFunction = async ({ request }) => {
   const mentors = await fetch(
     buildMentorFetchUrl(baseUrl, query, minCost, maxCost)
   )
-    .then((mentors) => mentors.json())
-    .then((mentors) =>
-      mentors.map((mentor: any) => {
+    .then((reponse) => reponse.json())
+    .then((mentorList) =>
+      mentorList.map((mentor: any) => {
         if (mentor._id) {
           return { ...mentor, id: mentor._id.$oid };
-        } else {
-          return mentor;
         }
+        return mentor;
       })
     )
     .catch(() => {
@@ -93,7 +82,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json({ data: { mentors: mentors as Mentor[] } });
 };
 
-const Browse = () => {
+function Browse() {
   const [query, setQuery] = useState<string>("");
   const { data } = useLoaderData<Route>();
 
@@ -120,124 +109,109 @@ const Browse = () => {
   };
 
   const onFilterSave = (filterValues: FilterValues) => {
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.set("min_cost", filterValues.min_cost.toString());
-    searchParams.set("max_cost", filterValues.max_cost.toString());
-    navigate(`${location.pathname}?${searchParams}`);
+    const filterParams = new URLSearchParams(location.search);
+    filterParams.set("min_cost", filterValues.min_cost.toString());
+    filterParams.set("max_cost", filterValues.max_cost.toString());
+    navigate(`${location.pathname}?${filterParams}`);
   };
 
   return (
     <div>
-      <Grid>
-        <GridItem boxShadow="md" colSpan={12} w="100%" borderRadius="5">
-          <Box padding="5">
-            <Flex justifyContent={"space-between"}>
-              <Heading as="h1" size="xl">
-                Browse
-              </Heading>
-              <FilterDialog
-                onSave={onFilterSave}
-                minCost={searchParams.get("min_cost") ?? undefined}
-                maxCost={searchParams.get("max_cost") ?? undefined}
-              />
-            </Flex>
-            <Box pt="5">
-              <Flex>
-                <Input
+      <div className="grid">
+        <div className="rounded-sm shadow dark:bg-zinc-800">
+          <div className="flex flex-wrap-reverse justify-between p-5">
+            <div>
+              <div className="flex">
+                <input
+                  className="w-52 h-[40px] dark:text-white mt-auto mb-auto block rounded-md border-gray-300 dark:border-gray-300/20 border shadow-sm focus-visible:outline-0 focus:ring-2 focus:ring-brand-500 sm:text-sm indent-2 dark:bg-zinc-900 focus:ring-offset-2 dark:ring-offset-zinc-900"
                   name="search"
                   onChange={onSearchChange}
                   placeholder="Search..."
-                  maxW="200"
                   onKeyUp={onSearchKeyUp}
-                  mr="2"
                   defaultValue={searchParams.get("query") ?? undefined}
-                ></Input>
-                <IconButton
-                  aria-label="Search"
-                  background="brand.500"
-                  textColor="white"
-                  onClick={updateQueryAndNavigate}
-                  _hover={{ backgroundColor: "brand.200" }}
-                  icon={<FontAwesomeIcon icon={faMagnifyingGlass} />}
                 />
-              </Flex>
-              <FormLabel
-                color="gray.500"
-                fontSize={"xs"}
-                ml="1"
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Button
+                      aria-label="Search"
+                      onClick={updateQueryAndNavigate}
+                      leftIcon={<FontAwesomeIcon icon={faMagnifyingGlass} />}
+                      variant="primary"
+                    />
+                    <TooltipContent>Search</TooltipContent>
+                  </TooltipTrigger>
+                </Tooltip>
+              </div>
+              <label
+                className="text-gray-500 dark:text-gray-200 text-sm ml-1"
                 htmlFor="search"
               >
                 Hint: try searching for "React"
-              </FormLabel>
-            </Box>
-          </Box>
-        </GridItem>
-      </Grid>
+              </label>
+            </div>
+            <FilterDialog
+              onSave={onFilterSave}
+              minCost={searchParams.get("min_cost") ?? undefined}
+              maxCost={searchParams.get("max_cost") ?? undefined}
+            />
+          </div>
+        </div>
+      </div>
 
       {data.mentors && (
-        <Grid
-          templateColumns={{ base: "repeat(1, 1fr)", md: "repeat(3, 1fr)" }}
-          gap={5}
-          pt="5"
-          display={{ md: "grid", base: "flex" }}
-          flexDir={{ md: "unset", base: "column" }}
-        >
-          {data.mentors?.map((mentor) => {
-            return (
-              <GridItem key={mentor.id}>
-                <Link to={`${routes.browse}/${mentor.id}`}>
-                  <Box
-                    maxW={{ base: "full", md: "md" }}
-                    borderWidth="1px"
-                    borderRadius="lg"
-                    overflow="hidden"
-                    key={mentor.id}
-                    p="5"
-                    h="100%"
-                    _hover={useColorModeValue(
-                      { backgroundColor: "gray.100" },
-                      { backgroundColor: "gray.800" }
-                    )}
-                  >
-                    <Flex justifyContent={"center"}>
-                      <Avatar size="md" src={mentor?.img ?? undefined} />
-                    </Flex>
-
-                    <Heading as="h2" size="lg" noOfLines={1}>
-                      {mentor.name}
-                    </Heading>
-                    <Text>💼 {mentor.occupation}</Text>
-                    <Text>🏢 {mentor.company}</Text>
-                    <Text>🕒 {mentor.experience} years</Text>
-                    <Text>💲 {mentor.cost || "FREE"}</Text>
-                    <Flex wrap={"wrap"}>
-                      {mentor.tags.slice(0, TAG_LIMIT).map((tag) => {
-                        return (
-                          <Tag
-                            key={tag}
-                            background="brand.500"
-                            color="white"
-                            mr={1}
-                            mb={1}
-                          >
-                            {tag}
-                          </Tag>
-                        );
-                      })}
-                    </Flex>
-                    <Text noOfLines={3}>{mentor.bio}</Text>
-                  </Box>
-                </Link>
-              </GridItem>
-            );
-          })}
-        </Grid>
+        <div className="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-8 pt-5">
+          {data.mentors?.map((mentor) => (
+            <div
+              key={mentor.id}
+              className="group relative flex flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-white hover:bg-gray-100 dark:bg-zinc-900 dark:hover:bg-zinc-800 focus-within:ring-brand-500 focus-within:ring-2 focus-within:ring-offset-2 dark:ring-offset-zinc-900	"
+            >
+              <Link
+                className="w-full h-full"
+                to={`${routes.browse}/${mentor.id}`}
+              >
+                <div className="aspect-w-3 aspect-h-4 bg-gray-200 group-hover:opacity-75 sm:aspect-none sm:h-96">
+                  {mentor.img ? (
+                    <img
+                      src={mentor.img ?? undefined}
+                      className="h-full w-full object-cover object-center sm:h-full sm:w-full"
+                    />
+                  ) : (
+                    <svg
+                      className="h-full w-full text-gray-300 p-5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  )}
+                </div>
+                <div className="flex flex-1 flex-col space-y-2 p-4">
+                  <H3 className="font-bold">{mentor.name}</H3>
+                  <Paragraph>💼 {mentor.occupation}</Paragraph>
+                  <Paragraph>🏢 {mentor.company}</Paragraph>
+                  <Paragraph>🕒 {mentor.experience} years</Paragraph>
+                  <Paragraph>💲 {mentor.cost || "FREE"}</Paragraph>
+                  <div className="flex flex-wrap">
+                    {mentor.tags.slice(0, TAG_LIMIT).map((tag) => (
+                      <Tag key={tag}>{tag}</Tag>
+                    ))}
+                  </div>
+                  <Paragraph className="line-clamp-3 text-ellipsis">
+                    {mentor.bio || "-"}
+                  </Paragraph>
+                </div>
+              </Link>
+            </div>
+          ))}
+        </div>
       )}
       {!data.mentors?.length && (
-        <Text>No results found. Please update your search and try again.</Text>
+        <Paragraph>
+          No results found. Please update your search and try again.
+        </Paragraph>
       )}
     </div>
   );
-};
+}
 
 export default Browse;

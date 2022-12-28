@@ -1,63 +1,20 @@
-import {
-  Box,
-  Button,
-  Grid,
-  GridItem,
-  Link,
-  Progress,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  Text,
-  MenuButton,
-  Menu,
-  MenuItem,
-  MenuList,
-  Avatar,
-  useColorModeValue,
-  useToast,
-} from "@chakra-ui/react";
-import {
-  AddIcon,
-  EditIcon,
-  DeleteIcon,
-  ChevronRightIcon,
-  ChevronDownIcon,
-} from "@chakra-ui/icons";
 import * as React from "react";
-import { GoalsDialog } from "../../components/goalsDialog";
-import { routes } from "../../routes";
-import { ActionFunction, json, LoaderFunction } from "@remix-run/node";
-import {
-  Form,
-  Link as NavLink,
-  useActionData,
-  useFetcher,
-  useLoaderData,
-  useNavigate,
-  useTransition,
-} from "@remix-run/react";
-import { getUser, requireUser } from "~/utils/user.session";
-import {
-  Goal,
-  GoalMilestone,
-  Mentor,
-  PrismaClient,
-  Profile,
-} from "@prisma/client";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { Link as NavLink, useLoaderData } from "@remix-run/react";
+import type { Goal, Mentor, Profile } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAdd, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { requireUser } from "~/utils/user.session.server";
 import { formatDateDisplay } from "~/utils/dates";
 import { calculateGoalProgress } from "~/utils/calculateGoalProgress";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowUpFromBracket, faEye } from "@fortawesome/free-solid-svg-icons";
-
-type Route = {
-  data: { goals: Goal[] };
-  params: { id: string };
-};
+import MenuButton from "~/components/Buttons/MenuButton";
+import Avatar from "~/components/Avatar";
+import Button from "~/components/Buttons/IconButton";
+import { Paragraph } from "~/components/Typography";
+import { routes } from "../../routes";
+import { GoalsDialog } from "../../components/goalsDialog";
 
 export const loader: LoaderFunction = async ({ request, context }) => {
   const baseUrl = new URL(request.url).origin;
@@ -65,7 +22,7 @@ export const loader: LoaderFunction = async ({ request, context }) => {
   const goals = await fetch(
     `${baseUrl}/.netlify/functions/get-goals?userId=${user?.id}`
   )
-    .then((goals) => goals.json())
+    .then((response) => response.json())
     .catch(() => {
       console.error("Failed to get goals, please try again in a few minutes.");
     });
@@ -79,7 +36,6 @@ export const loader: LoaderFunction = async ({ request, context }) => {
   let usersWithSharedGoals;
   let freshUser;
   if (user) {
-    const prisma = new PrismaClient();
     prisma
       .$connect()
       .catch((err) => console.error("Failed to connect to db", err));
@@ -144,7 +100,7 @@ export const action: ActionFunction = async ({ request }) => {
   const baseUrl = new URL(request.url).origin;
   console.log("method", request.method);
   if (values.method === "delete") {
-    const response = await fetch(
+    await fetch(
       `${baseUrl}/.netlify/functions/put-goal${
         values.goalId ? `?id=${values.goalId}` : ""
       }`,
@@ -213,18 +169,16 @@ export const action: ActionFunction = async ({ request }) => {
   return null;
 };
 
-const GoalsPage = () => {
+function GoalsPage() {
   const { goals, userMentors, usersWithSharedGoals } = useLoaderData();
   return (
-    <>
-      <GoalsContainer
-        userGoals={goals}
-        userMentors={userMentors}
-        usersWithSharedGoals={usersWithSharedGoals}
-      />
-    </>
+    <GoalsContainer
+      userGoals={goals}
+      userMentors={userMentors}
+      usersWithSharedGoals={usersWithSharedGoals}
+    />
   );
-};
+}
 
 export interface IGoalsContainerProps {
   userGoals: Goal[];
@@ -232,145 +186,73 @@ export interface IGoalsContainerProps {
   usersWithSharedGoals?: Profile[];
   isReadOnly?: boolean;
 }
-export const GoalsContainer = ({
+export function GoalsContainer({
   userGoals,
   userMentors,
   usersWithSharedGoals,
   isReadOnly,
-}: IGoalsContainerProps) => {
+}: IGoalsContainerProps) {
   const [isDialogOpen, setIsDialogOpen] = React.useState<boolean>(false);
   const [editingIndex, setEditingIndex] = React.useState<string>("");
   const openDialog = (param: string) => {
     setEditingIndex(param);
     setIsDialogOpen(true);
   };
-  const onDelete = (param: number) => {};
+  // const onDelete = (param: number) => {};
 
   return (
-    <Box style={{ width: "90%", height: "100%", margin: "auto" }}>
-      <Box
-        display="flex"
-        flexWrap="wrap-reverse"
-        justifyContent={"space-between"}
-      >
+    <div className="m-auto w-full max-w-screen-lg">
+      <div className="flex flex-wrap-reverse justify-between pb-5">
         {!isReadOnly && usersWithSharedGoals?.length ? (
-          <Menu>
-            <MenuButton
-              variant={"solid"}
-              style={{ margin: "1rem" }}
-              rightIcon={<ChevronDownIcon />}
-              as={Button}
-              width={{ base: "100%", md: "auto" }}
-            >
-              Shared with me
-            </MenuButton>
-            <MenuList>
-              {usersWithSharedGoals?.map((user) => (
-                <NavLink to={`shared/${user.id}`}>
-                  <MenuItem
-                    icon={
-                      <Avatar src={user.img ?? undefined} size={"xs"}></Avatar>
-                    }
-                    as={Button}
-                    type="submit"
-                  >
-                    {user.firstName} {user.lastName}
-                  </MenuItem>
-                </NavLink>
-              ))}
-            </MenuList>
-          </Menu>
+          <MenuButton
+            rightIcon={
+              <FontAwesomeIcon icon={faChevronDown} className="ml-2" />
+            }
+            options={usersWithSharedGoals?.map((user) => ({
+              title: `${user.firstName} ${user.lastName}`,
+              href: { to: `shared/${user.id}` },
+              icon: <Avatar size="xs" src={user.img ?? undefined} />,
+            }))}
+            label="Goals Shared Menu"
+            className="w-full mx-0 md:w-auto"
+            menuClassName="w-full md:w-auto"
+          >
+            Shared with me
+          </MenuButton>
         ) : (
           <div />
         )}
         {!isReadOnly && (
           <Button
-            backgroundColor={"brand.500"}
-            _hover={{ bg: "brand.200" }}
-            style={{ color: "white", margin: "1rem" }}
             onClick={() => openDialog("")}
-            width={{ base: "100%", md: "auto" }}
+            rightIcon={<FontAwesomeIcon icon={faAdd} className="ml-2" />}
+            variant="primary"
+            className="w-full md:w-auto mx-0"
           >
-            Add Goal <AddIcon style={{ marginLeft: "0.5em" }} />
+            Add Goal
           </Button>
         )}
-      </Box>
-      {userGoals.length > 0 ? (
-        <TableContainer whiteSpace={{ md: "nowrap", base: "unset" }}>
-          <Table
-            style={{
-              borderWidth: "2px",
-              borderStyle: "solid",
-              borderRadius: "10px",
-              padding: "1rem",
-              minWidth: "20%",
-            }}
-          >
-            <Thead>
-              <Tr>
-                <Th style={{ padding: "1rem", fontWeight: "bold" }}>Goal</Th>
-                <Th
-                  style={{ padding: "1rem", fontWeight: "bold" }}
-                  display={{ md: "revert", base: "none" }}
-                >
-                  Due
-                </Th>
-                <Th
-                  style={{
-                    padding: "1rem",
-                    textAlign: "right",
-                    fontWeight: "bold",
-                  }}
-                  display={{ md: "revert", base: "none" }}
-                >
-                  Progress
-                </Th>
-                {!isReadOnly && (
-                  <Th
-                    style={{
-                      padding: "1rem",
-                      fontWeight: "bold",
-                      textAlign: "center",
-                    }}
-                    display={{ md: "revert", base: "none" }}
-                  ></Th>
-                )}
-              </Tr>
-            </Thead>
-            <Tbody>
-              {userGoals.map((item, index) => {
-                return (
-                  <GoalsItem
-                    key={`goal-${index}`}
-                    name={item.name ?? ""}
-                    dueDate={item.dueDate ?? ""}
-                    progress={calculateGoalProgress(item.milestones) ?? 0}
-                    id={item.id}
-                    openDialog={openDialog}
-                    onDelete={onDelete}
-                    userMentors={userMentors}
-                    sharedWithMentorIDs={item.sharedWithMentorIDs}
-                    isReadOnly={isReadOnly}
-                  />
-                );
-              })}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      ) : (
-        <Text fontSize="md" textAlign={"center"}>
-          No goals found. 😢 Add one now!
-        </Text>
-      )}
+      </div>
+      <div className="overflow-hidden bg-white dark:bg-zinc-800 shadow sm:rounded-md ">
+        <ul className="divide-y divide-gray-200 dark:divide-zinc-600">
+          {userGoals.length > 0 ? (
+            userGoals.map((goal) => <NewGoalItem key={goal.id} goal={goal} />)
+          ) : (
+            <Paragraph className="text-center p-5">
+              No goals found. 😢 Add one now!
+            </Paragraph>
+          )}
+        </ul>
+      </div>
       <GoalsDialog
         userGoals={userGoals}
         isDialogOpen={isDialogOpen}
         setIsDialogOpen={setIsDialogOpen}
         id={editingIndex}
       />
-    </Box>
+    </div>
   );
-};
+}
 
 export const gridItemStyle: React.CSSProperties = {
   padding: "1rem",
@@ -391,154 +273,47 @@ export interface GoalsItemProps {
   isReadOnly?: boolean;
 }
 
-export const GoalsItem = ({
-  name,
-  dueDate,
-  progress,
-  id,
-  openDialog,
-  onDelete,
-  userMentors,
-  sharedWithMentorIDs,
-  isReadOnly,
-}: GoalsItemProps) => {
-  const utcDate = formatDateDisplay(dueDate);
+function NewGoalItem({ goal }: { goal: Goal }) {
+  const utcDate = formatDateDisplay(goal.dueDate);
+  const progress = calculateGoalProgress(goal.milestones) ?? 0;
+
   return (
-    <Tr
-      _focus={{ bgColor: "blackAlpha.50", cursor: "pointer" }}
-      display={{
-        md: "revert",
-        base: "flex",
-      }}
-      flexDirection={{
-        md: "unset",
-        base: "column",
-      }}
-    >
-      <Td
-        display={{
-          md: "revert",
-          base: "flex",
-        }}
-        flexDirection={{
-          md: "unset",
-          base: "column",
-        }}
+    <li key={goal.id}>
+      <NavLink
+        to={`${routes.goals}/${goal.id}`}
+        className="block hover:bg-gray-50 dark:hover:bg-zinc-700 focus:outline-brand-500"
       >
-        <Link as={NavLink} to={`${routes.goals}/${id}`} color={"brand.900"}>
-          <Text fontWeight={"bold"}>{name}</Text>
-        </Link>
-      </Td>
-      <Td>{utcDate}</Td>
-      <Td>
-        {progress < 100 && (
-          <>
-            <Progress
-              colorScheme="green"
-              size="sm"
-              style={{ borderRadius: "500px" }}
-              value={progress}
-            />
-            {progress}%
-          </>
-        )}
-        {progress === 100 && "Complete 🎉"}
-      </Td>
-      {!isReadOnly && (
-        <Td
-          style={{
-            display: "flex",
-            padding: "1rem",
-            justifyContent: "space-evenly",
-            alignContent: "center",
-          }}
-          borderBottom={{
-            md: "0",
-            base: "2px solid #E2E8F0",
-          }}
-        >
-          <Menu>
-            <MenuButton
-              name="shareGoal"
-              as={Button}
-              colorScheme="blue"
-              variant="ghost"
-              aria-label="Share with mentor"
-            >
-              <FontAwesomeIcon
-                icon={faArrowUpFromBracket}
-                style={{ color: "grey" }}
-              />
-            </MenuButton>
-            <MenuList>
-              {userMentors?.length ? (
-                userMentors.map((mentorOption) => {
-                  const isAlreadyShared = sharedWithMentorIDs?.includes(
-                    mentorOption.id
-                  );
-                  return (
-                    <Form method="post" name="share">
-                      <input hidden name="goalId" value={id} />
-                      <input hidden name="mentorId" value={mentorOption.id} />
-                      <input hidden name="method" value={"share"} />
-                      <MenuItem
-                        icon={
-                          <Avatar
-                            src={mentorOption.img ?? undefined}
-                            size={"xs"}
-                          ></Avatar>
-                        }
-                        isDisabled={isAlreadyShared}
-                        as={Button}
-                        type="submit"
-                      >
-                        {mentorOption.name}
-                        {isAlreadyShared && (
-                          <Text
-                            fontSize={"xs"}
-                            color={useColorModeValue(
-                              "grey.200",
-                              "whiteAlpha.700"
-                            )}
-                          >
-                            Shared
-                          </Text>
-                        )}
-                      </MenuItem>
-                    </Form>
-                  );
-                })
-              ) : (
-                <Text marginLeft={5}>No mentors found</Text>
+        <div className="px-4 py-4 sm:px-6">
+          <div className="flex items-center justify-between">
+            <p className="truncate text-sm font-medium text-brand-600">
+              {goal.name}
+            </p>
+          </div>
+          <div className="mt-2 sm:flex sm:justify-between">
+            <div className="sm:flex dark:text-white">
+              {progress < 100 && (
+                <div className="sm:w-32 w-full">
+                  <div className="w-full bg-gray-200 rounded-full h-1.5 mb-1 dark:bg-gray-700">
+                    <div
+                      className="bg-green-600 h-1.5 rounded-full dark:bg-green-500"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  {progress}%
+                </div>
               )}
-            </MenuList>
-          </Menu>
-          <Button
-            colorScheme="blue"
-            name="editGoal"
-            onClick={() => openDialog(id)}
-            variant="ghost"
-            aria-label="Edit Goal"
-          >
-            <EditIcon style={{ color: "grey" }} />
-          </Button>
-          <Form method="delete">
-            <input hidden name="goalId" value={id} />
-            <input hidden name="method" value={"delete"} />
-            <Button
-              colorScheme="red"
-              type="submit"
-              name="deleteGoal"
-              variant="ghost"
-              aria-label="Delete Goal"
-            >
-              <DeleteIcon style={{ color: "grey" }} />
-            </Button>
-          </Form>
-        </Td>
-      )}
-    </Tr>
+              {progress === 100 && "Complete 🎉"}
+            </div>
+            <div className="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-300 sm:mt-0">
+              <p>
+                Due by <time dateTime={goal.dueDate}>{utcDate}</time>
+              </p>
+            </div>
+          </div>
+        </div>
+      </NavLink>
+    </li>
   );
-};
+}
 
 export default GoalsPage;

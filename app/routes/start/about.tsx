@@ -1,55 +1,37 @@
-import {
-  FormControl,
-  FormLabel,
-  Input,
-  Box,
-  Text,
-  Button,
-  Select,
-  NumberInput,
-  NumberInputStepper,
-  NumberInputField,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
-  Stack,
-  Textarea,
-  Link,
-  Flex,
-  useColorModeValue,
-  Checkbox,
-  Avatar,
-  Heading,
-  Image,
-} from "@chakra-ui/react";
+/* eslint-disable camelcase */
 import {
   Form,
+  Link,
   useActionData,
   useLoaderData,
-  useNavigate,
   useTransition,
 } from "@remix-run/react";
-import { ChangeEvent, useCallback, useState } from "react";
-import Logo from "../../assets/Logo.svg";
-import { routes } from "../../routes";
-import { getUserSession, requireUser } from "~/utils/user.session";
-import {
-  ActionFunction,
-  json,
-  LoaderFunction,
-  redirect,
-} from "@remix-run/server-runtime";
-import { useUser } from "~/utils/useRootData";
+import type { ChangeEvent } from "react";
+import { useState } from "react";
+import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { json, redirect } from "@remix-run/server-runtime";
 import {
   unstable_composeUploadHandlers,
   unstable_createMemoryUploadHandler,
   unstable_parseMultipartFormData,
 } from "@remix-run/node";
+import { getUserSession, requireUser } from "~/utils/user.session.server";
+import { useUser } from "~/utils/useRootData";
 import { uploadImageToCloudinary } from "~/utils/images.server";
+import { H2, Paragraph } from "~/components/Typography";
+import Avatar from "~/components/Avatar";
+import Field from "~/components/FormElements/Field";
+import Button from "~/components/Buttons/IconButton";
+import Select from "~/components/FormElements/Select";
+import { routes } from "../../routes";
+import Logo from "../../assets/Logo.svg";
 
 export const action: ActionFunction = async ({
   request,
 }: {
   request: Request;
+  // eslint-disable-next-line consistent-return
 }) => {
   const user = await requireUser(request);
   const uploadHandler = unstable_composeUploadHandlers(
@@ -63,11 +45,9 @@ export const action: ActionFunction = async ({
           data,
           `profile/${user.id}`
         );
-        console.log("img_url", uploadedImage.secure_url);
         return uploadedImage.secure_url;
-      } else {
-        return undefined;
       }
+      return undefined;
     },
     // fallback to memory for everything else
     unstable_createMemoryUploadHandler()
@@ -91,8 +71,8 @@ export const action: ActionFunction = async ({
           ? form.get("profilePhoto")
           : undefined,
     };
-    let error: string | undefined = undefined;
-    let data: { status: string } | undefined = undefined;
+    let error: string | undefined;
+    let data: { status: string } | undefined;
     const baseUrl = new URL(request.url).origin;
     console.log("required user", user);
     const response = await fetch(
@@ -101,23 +81,22 @@ export const action: ActionFunction = async ({
         method: "PUT",
         body: JSON.stringify(values),
       }
-    ).then((user) => user.json());
+    ).then((resp) => resp.json());
     if (response.error) {
       error = response.error;
     } else if (response.user) {
-      const user = response.user;
+      const { user: userResp } = response;
       const userSession = await getUserSession(request);
-      userSession.setUser(user);
+      userSession.setUser(userResp);
       data = { status: "success" };
       if (shouldCreateMentorProfile) {
         return redirect(`${routes.newMentorProfile}${url.search}`, {
           headers: { "Set-Cookie": await userSession.commit() },
         });
-      } else {
-        return redirect(routes.browse, {
-          headers: { "Set-Cookie": await userSession.commit() },
-        });
       }
+      return redirect(routes.browse, {
+        headers: { "Set-Cookie": await userSession.commit() },
+      });
     }
 
     return json({
@@ -139,12 +118,12 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json({ shouldCreateMentorProfile, isSeekingMentor });
 };
 
-const Preferences = () => {
+function Preferences() {
   const IndustryList = [
-    "Marketing",
-    "Engineering",
-    "Product Design",
-    "Small Business",
+    { id: "0", name: "Marketing" },
+    { id: "1", name: "Engineering" },
+    { id: "2", name: "Product Design" },
+    { id: "3", name: "Small Business" },
   ];
   const user = useUser();
   const data = useActionData();
@@ -152,7 +131,7 @@ const Preferences = () => {
   const [uploadedProfilePhoto, setUploadProfilePhoto] = useState<
     File | undefined
   >();
-  const { shouldCreateMentorProfile, isSeekingMentor } = useLoaderData();
+  const { isSeekingMentor } = useLoaderData();
 
   const onProfilePhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
     setUploadProfilePhoto(event.target.files?.[0]);
@@ -161,122 +140,93 @@ const Preferences = () => {
     ? URL.createObjectURL(uploadedProfilePhoto)
     : user?.img ?? undefined;
   return (
-    <Flex
-      minH={"100vh"}
-      align={"center"}
-      justify={"center"}
-      bg={useColorModeValue("gray.50", "gray.800")}
-    >
-      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
-        <Stack align={"center"}>
-          <Image src={Logo} />
-          <Heading fontSize={"4xl"}>About Me</Heading>
-          <Text fontSize={"lg"} color={"gray.600"}>
-            A few things we recommend adding to your profile
-          </Text>
-        </Stack>
-        <Box
-          rounded={"lg"}
-          bg={useColorModeValue("white", "gray.700")}
-          boxShadow={"lg"}
-          p={8}
-        >
+    <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <img className="mx-auto h-12 w-auto" src={Logo} alt="Hoots" />
+        <H2 className="mt-6 text-center text-3xl font-bold tracking-tight">
+          About Me
+        </H2>
+        <p className="mt-2 text-center text-sm text-gray-600 dark:text-white">
+          A few things we recommend adding to your profile
+        </p>
+      </div>
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white dark:bg-zinc-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <Form
             method="post"
             style={{ padding: 5 }}
             encType="multipart/form-data"
           >
-            <Stack spacing={3}>
-              <FormControl>
-                <Stack spacing={2} mb="2">
-                  <FormLabel>Profile Photo</FormLabel>
-                  <Avatar src={profilePhotoUrl} size={"lg"} />
-                </Stack>
+            <div className="flex flex-col space-y-3">
+              <div className="flex flex-col space-y-2 mb-2">
+                <label className="block text-md font-medium text-gray-700 dark:text-gray-200">
+                  Profile Photo
+                </label>
+                <Avatar src={profilePhotoUrl} size="md" />
+              </div>
+              <label className="block">
+                <span className="sr-only">Choose profile photo</span>
                 <input
                   name="profilePhoto"
                   type="file"
                   accept="image/png, image/gif, image/jpeg"
                   onChange={onProfilePhotoChange}
-                  style={{maxWidth: '70vw'}}
-                ></input>
-              </FormControl>
-              <FormControl>
-                <FormLabel>Industry</FormLabel>
-                <Select
-                  name="industry"
-                  defaultValue={user?.industry ?? undefined}
-                  placeholder="Select Industry"
-                  required
-                >
-                  {IndustryList.map((industry) => {
-                    return <option>{industry}</option>;
-                  })}
-                </Select>
-              </FormControl>
-              <FormControl>
-                <FormLabel>Experience (Years)</FormLabel>
-                <NumberInput
-                  min={0}
-                  defaultValue={user?.experience ?? undefined}
-                  name="experience"
-                >
-                  <NumberInputField
-                    placeholder="Years of Experience"
-                    required
-                  />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-              </FormControl>
-              <FormControl>
-                <FormLabel>Tell us about yourself</FormLabel>
-                <Textarea
-                  size="sm"
-                  name="bio"
-                  defaultValue={user?.bio ?? undefined}
-                  placeholder="I work at...💼&#10;I am currently learning...📚&#10;I'm looking for a mentor with skills in...🧑🏽‍🏫"
-                  required
+                  className="block w-full text-sm text-slate-500
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-violet-50 file:text-brand-700
+                  cursor-pointer file:cursor-pointer
+                  hover:file:bg-brand-100"
                 />
-              </FormControl>
-              <Stack
-                spacing={4}
-                direction="row"
-                align="center"
-                justifyContent="end"
-                pt="5"
-              >
-                <Text color={"red.500"}>{data?.error}</Text>
+              </label>
+
+              <Select
+                name="industry"
+                defaultValue={user?.industry ?? undefined}
+                placeholder="Select Industry"
+                isRequired
+                label="Industry"
+                options={IndustryList}
+              />
+              <Field
+                type="number"
+                min={0}
+                defaultValue={user?.experience ?? undefined}
+                name="experience"
+                placeholder="Years of Experience"
+                label="Experience (Years)"
+                isRequired
+              />
+              <Field
+                name="bio"
+                type="textarea"
+                label="Tell us about yourself"
+                defaultValue={user?.bio ?? undefined}
+                placeholder="I work at...💼&#10;I am currently learning...📚&#10;I'm looking for a mentor with skills in...🧑🏽‍🏫"
+                isRequired
+              />
+              <div className="flex space-x-4 flex-row items-center justify-end pt-5">
+                <Paragraph textColorClassName="text-red-500">
+                  {data?.error}
+                </Paragraph>
                 <Button
-                  background="brand.500"
-                  textColor="white"
-                  isLoading={transition.state === "submitting"}
                   type="submit"
-                  _hover={{ backgroundColor: "brand.200" }}
+                  variant="primary"
+                  isLoading={transition.state === "submitting"}
                 >
                   Next
                 </Button>
-                <Link
-                  href={isSeekingMentor ? routes.browse : routes.home}
-                  style={{ textDecoration: "none", display: "flex" }}
-                  _focus={{ boxShadow: "none" }}
-                >
-                  <Button
-                    background="gray.500"
-                    textColor={"white"}
-                    _hover={{ backgroundColor: "gray.300" }}
-                  >
-                    Skip
-                  </Button>
+                <Link to={isSeekingMentor ? routes.browse : routes.home}>
+                  <Button>Skip</Button>
                 </Link>
-              </Stack>
-            </Stack>
+              </div>
+            </div>
           </Form>
-        </Box>
-      </Stack>
-    </Flex>
+        </div>
+      </div>
+    </div>
   );
-};
+}
 
 export default Preferences;

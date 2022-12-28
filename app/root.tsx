@@ -1,23 +1,13 @@
-import {
-  Box,
-  ChakraProvider,
-  ColorModeScript,
-  cookieStorageManagerSSR,
-  extendTheme,
-  Heading,
-  Link,
-  Text,
-} from "@chakra-ui/react";
-import { Mentor, prisma, PrismaClient, Profile } from "@prisma/client";
-import {
-  json,
+import type { Mentor, Profile } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import type {
   LinksFunction,
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
@@ -26,13 +16,21 @@ import {
   useLoaderData,
   useLocation,
 } from "@remix-run/react";
-import React, { useContext, useEffect } from "react";
-import { ClientStyleContext, ServerStyleContext } from "./context";
-import { getSession, getUser } from "./utils/user.session";
-import App from "./_app";
+import React, { useEffect } from "react";
 import * as gtag from "~/utils/gtags.client";
+import { useTheme } from "hooks/useTheme";
+import { getUser } from "./utils/user.session.server";
+// eslint-disable-next-line import/no-cycle
+import App from "./_app";
 import { getSocialMetas } from "./utils/seo";
 import { getDisplayUrl } from "./utils/url";
+import tailwindStyleUrls from "./styles/tailwind.css";
+import globalStyleUrl from "./styles/global.css";
+import ThemeProvider, {
+  NonFlashOfWrongThemeEls,
+} from "./components/ThemeProvider";
+import getThemeSession from "./utils/theme.session.server";
+import { H3, Paragraph } from "./components/Typography";
 
 export const meta: MetaFunction = ({ data }) => {
   let requestInfo;
@@ -44,24 +42,6 @@ export const meta: MetaFunction = ({ data }) => {
     viewport: "width=device-width,initial-scale=1",
     ...getSocialMetas({ url: getDisplayUrl(requestInfo) }),
   };
-};
-
-const colors = {
-  brand: {
-    900: "#6D29EF",
-    500: "#805ad5",
-    200: "#9f7aea",
-  },
-  buttons: {
-    fail: "#FC8181",
-    disabled: "#cbd5e0",
-  },
-};
-
-// 2. Add your color mode config
-const config = {
-  initialColorMode: "system",
-  useSystemColorMode: true,
 };
 
 export type LoaderData = {
@@ -77,10 +57,11 @@ export const handle: { id: string } = {
   id: "root",
 };
 
-const theme = extendTheme({ colors, config });
 export const loader: LoaderFunction = async ({ request }) => {
   const baseUrl = new URL(request.url).origin;
   const user = await getUser(request);
+  const themeSession = await getThemeSession(request);
+  const theme = themeSession.getTheme();
   let mentorProfile = null;
   if (user) {
     const prisma = new PrismaClient();
@@ -103,18 +84,16 @@ export const loader: LoaderFunction = async ({ request }) => {
     user,
     cookies,
     mentorProfile,
+    theme,
   });
 };
 
-export const Root = () => {
+export function Root() {
   const data = useLoaderData();
+  const { theme } = data;
   return (
-    <Document>
-      <ChakraProvider
-        theme={theme}
-        portalZIndex={40}
-        colorModeManager={cookieStorageManagerSSR(data.cookies)}
-      >
+    <ThemeProvider suppliedTheme={theme}>
+      <Document>
         <script
           dangerouslySetInnerHTML={{
             __html: `window.env = ${JSON.stringify(data.env)}`,
@@ -123,20 +102,25 @@ export const Root = () => {
         <App user={data.user}>
           <Outlet />
         </App>
-      </ChakraProvider>
-    </Document>
+      </Document>
+    </ThemeProvider>
   );
-};
+}
 
-export const links: LinksFunction = () => {
-  return [
-    { rel: "icon", type: "image/png", sizes: "16x16", href: "/emblem.png" },
-    {
-      href: "https://use.fontawesome.com/releases/v6.1.1/css/svg-with-js.css",
-      rel: "stylesheet",
-    },
-  ];
-};
+export const links: LinksFunction = () => [
+  {
+    rel: "icon",
+    type: "image/png",
+    sizes: "16x16",
+    href: "/emblem.png",
+  },
+  {
+    href: "https://use.fontawesome.com/releases/v6.1.1/css/svg-with-js.css",
+    rel: "stylesheet",
+  },
+  { rel: "stylesheet", href: globalStyleUrl },
+  { rel: "stylesheet", href: tailwindStyleUrls },
+];
 
 function Document({
   children,
@@ -147,13 +131,15 @@ function Document({
 }) {
   const gaTrackingId = "G-N1KVNXJ313";
   const location = useLocation();
+  const [theme] = useTheme();
+
   useEffect(() => {
     if (gaTrackingId?.length) {
       gtag.pageview(location.pathname, gaTrackingId);
     }
   }, [location]);
   return (
-    <html lang="en">
+    <html lang="en" className={`${theme}`}>
       <head>
         <Meta />
         <title>{title}</title>
@@ -161,7 +147,7 @@ function Document({
         <script
           async
           src={`https://www.googletagmanager.com/gtag/js?id=${gaTrackingId}`}
-        ></script>
+        />
         <script
           async
           id="gtag-init"
@@ -176,11 +162,13 @@ function Document({
               `,
           }}
         />
+        <NonFlashOfWrongThemeEls ssrTheme={Boolean(theme)} />
       </head>
-      <body>
+      <body className="bg-white dark:bg-zinc-900">
         {children}
         <Scripts />
         <ScrollRestoration />
+        <div id="hoots-portal" />
       </body>
     </html>
   );
@@ -190,34 +178,36 @@ export function CatchBoundary() {
   const caught = useCatch();
 
   return (
-    <Document title={`${caught.status} ${caught.statusText}`}>
-      <ChakraProvider theme={theme} portalZIndex={40}>
-        <Box>
-          <Heading as="h1">This page does not exist...</Heading>
-          <Text>
+    <ThemeProvider>
+      <Document title={`${caught.status} ${caught.statusText}`}>
+        <div>
+          <H3 as="h1">This page does not exist...</H3>
+          <Paragraph>
             If you think this is an error, please contact support{" "}
-            <Link href="mailto:help@inhoots.com">help@inhoots.com</Link>
-          </Text>
-        </Box>
-      </ChakraProvider>
-    </Document>
+            <a href="mailto:help@inhoots.com">help@inhoots.com</a>
+          </Paragraph>
+        </div>
+      </Document>
+    </ThemeProvider>
   );
 }
 
-// How ChakraProvider should be used on ErrorBoundary
 export function ErrorBoundary({ error }: { error: Error }) {
   return (
-    <Document title="Error!">
-      <ChakraProvider theme={theme} portalZIndex={40}>
-        <Box>
-          <Heading as="h1">There was an error: {error.message}</Heading>
-          <Text>
+    <ThemeProvider>
+      <Document title="Error!">
+        <div>
+          <H3 as="h1">
+            There was an error:
+            {error.message}
+          </H3>
+          <Paragraph>
             Try refreshing the page and if the issue persists, please contact
-            support <Link href="mailto:help@inhoots.com">help@inhoots.com</Link>
-          </Text>
-        </Box>
-      </ChakraProvider>
-    </Document>
+            support <a href="mailto:help@inhoots.com">help@inhoots.com</a>
+          </Paragraph>
+        </div>
+      </Document>
+    </ThemeProvider>
   );
 }
 

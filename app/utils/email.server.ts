@@ -1,5 +1,7 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import formData from "form-data";
 import Mailgun from "mailgun.js";
+
 export interface IMailgunMessage {
   toName: string;
   fromName: string;
@@ -33,7 +35,7 @@ export async function sendEmail({
   const data = {
     from: `${fromName} <hello@inhoots.com>`,
     to: `${toName} <${email}>`,
-    subject: subject,
+    subject,
     "h:X-Mailgun-Variables": JSON.stringify(variables),
     template,
     message,

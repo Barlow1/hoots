@@ -1,12 +1,14 @@
-import { Stack, Heading, Flex, Avatar, useColorModeValue, Text, HStack } from "@chakra-ui/react";
-import { PrismaClient, Goal } from "@prisma/client";
-import { LoaderFunction, json } from "@remix-run/node";
+import type { Goal } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { requireUser } from "~/utils/user.session";
+import Avatar from "~/components/Avatar";
+import { H4, Paragraph } from "~/components/Typography";
+import { requireUser } from "~/utils/user.session.server";
 import { GoalsContainer } from ".";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const baseUrl = new URL(request.url).origin;
   const user = await requireUser(request);
   let mentorProfile = null;
   let goals;
@@ -23,7 +25,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     if (mentorProfile) {
       goals = await prisma.goal.findMany({
         include: {
-            user: true
+          user: true,
         },
         where: {
           AND: [
@@ -48,24 +50,19 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
 export default function SharedGoals() {
   const { goals } = useLoaderData();
-  const user = goals[0].user;
+  const { user } = goals[0];
 
   return (
     <>
-      <Stack maxW={"lg"} px={6} py={6}>
-        <Heading size={'md'}>Shared by</Heading>
-        <Flex>
-          <Avatar src={user.img ?? undefined} size={'sm'} />
-          <Text
-            fontSize={"lg"}
-            color={useColorModeValue("gray.600", "gray.200")}
-            alignSelf={"center"}
-            ml={3}
-          >
+      <div className=" max-w-lg p-6">
+        <H4>Shared by</H4>
+        <div className="flex pt-2">
+          <Avatar src={user.img ?? undefined} size="xs" />
+          <Paragraph className=" self-center ml-3">
             {user.firstName} {user.lastName}
-          </Text>
-        </Flex>
-      </Stack>
+          </Paragraph>
+        </div>
+      </div>
       <GoalsContainer userGoals={goals} isReadOnly />
     </>
   );

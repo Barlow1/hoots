@@ -1,0 +1,12 @@
+circle.inner-progress {
+  fill: transparent;
+  @apply stroke-green-500;
+  transition-property: stroke-dasharray, stroke;
+  transition-duration: 0.6s;
+  transition-timing-function: ease;
+}
+
+circle.background-progress {
+  fill: transparent;
+  stroke: #edebe9;
+}

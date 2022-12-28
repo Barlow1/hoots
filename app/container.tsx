@@ -1,15 +1,15 @@
-import { Box, Container } from "@chakra-ui/react";
-import SideNavWithHeader from "./components/SideNavWithHeader";
+// eslint-disable-next-line import/no-cycle
+import SideNavWithHeader from './components/SideNavWithHeader';
 
 interface ContainerProps {
   children: React.ReactNode;
 }
-const MainContainer = ({ children }: ContainerProps): JSX.Element => {
+function MainContainer({ children }: ContainerProps): JSX.Element {
   return (
-    <Box>
-        <SideNavWithHeader>{children}</SideNavWithHeader>
-    </Box>
+    <div>
+      <SideNavWithHeader>{children}</SideNavWithHeader>
+    </div>
   );
-};
+}
 
 export default MainContainer;
