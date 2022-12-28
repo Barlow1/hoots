@@ -360,7 +360,7 @@ export default function SidebarWithHeader({
 
           <div className="py-10">
             <header>
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 dark:bg-zinc-800">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <H3 as="h1" className="font-bold">
                   {routeTitle ?? "Dashboard"}
                 </H3>

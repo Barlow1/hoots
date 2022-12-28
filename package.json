@@ -13,11 +13,6 @@
     "lint": "eslint app/**/*.{tsx,ts}"
   },
   "dependencies": {
-    "@chakra-ui/icons": "^2.0.12",
-    "@chakra-ui/react": "^2.4.1",
-    "@emotion/react": "^11.10.4",
-    "@emotion/server": "^11.10.0",
-    "@emotion/styled": "^11.10.4",
     "@floating-ui/react-dom-interactions": "^0.12.0",
     "@fortawesome/fontawesome-svg-core": "^6.2.0",
     "@fortawesome/free-brands-svg-icons": "^6.2.0",

@@ -1,4 +1,3 @@
-import { Box } from '@chakra-ui/react';
 // eslint-disable-next-line import/no-cycle
 import SideNavWithHeader from './components/SideNavWithHeader';
 
@@ -7,9 +6,9 @@ interface ContainerProps {
 }
 function MainContainer({ children }: ContainerProps): JSX.Element {
   return (
-    <Box>
+    <div>
       <SideNavWithHeader>{children}</SideNavWithHeader>
-    </Box>
+    </div>
   );
 }
 

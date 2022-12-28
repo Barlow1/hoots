@@ -1,7 +1,9 @@
 import * as React from "react";
-import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import {
+  faChevronDown,
   faFloppyDisk,
+  faPlus,
+  faTrash,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
@@ -27,7 +29,6 @@ import { Fragment } from "react";
 import XMarkIcon from "@heroicons/react/24/outline/XMarkIcon";
 import Field from "~/components/FormElements/Field";
 import Avatar from "~/components/Avatar";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 type Route = {
   data: { goal: Goal; userMentors: Mentor[] };
@@ -263,7 +264,12 @@ export default function MilestonePage() {
                 <Menu.Button
                   as={Button}
                   className="w-full mx-0 md:w-auto"
-                  rightIcon={<ChevronDownIcon className="h-4 w-4 ml-2" />}
+                  rightIcon={
+                    <FontAwesomeIcon
+                      icon={faChevronDown}
+                      className="h-4 w-4 ml-2"
+                    />
+                  }
                 >
                   <span className="sr-only">Share with mentor</span>
                   Share
@@ -356,7 +362,9 @@ export default function MilestonePage() {
           <Button
             variant="primary"
             onClick={() => openDrawer(undefined)}
-            rightIcon={<AddIcon style={{ marginLeft: "0.5em" }} />}
+            rightIcon={
+              <FontAwesomeIcon icon={faPlus} style={{ marginLeft: "0.5em" }} />
+            }
             className="w-full md:w-auto mx-0"
           >
             Add Milestone
@@ -666,7 +674,9 @@ export function MilestoneDrawer({
                             {deleteFetcher.state === "submitting"
                               ? "Deleting..."
                               : "Delete"}
-                            <DeleteIcon
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              className="h-4 w-4"
                               style={{ color: "white", marginLeft: "1rem" }}
                             />
                           </Button>
