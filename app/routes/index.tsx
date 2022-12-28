@@ -90,7 +90,7 @@ function Dashboard() {
                 </Paragraph>
                 {currentMentors.slice(0, 3).map((mentor) => (
                   <div className="flex flex-row space-x-3 pt-3" key={mentor.id}>
-                    <Avatar size="md" src={mentor.img ?? undefined} />
+                    <Avatar size="xs" src={mentor.img ?? undefined} />
                     <Paragraph className=" text-sm m-auto">
                       {mentor.name || "-"}
                     </Paragraph>

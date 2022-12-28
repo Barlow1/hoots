@@ -28,6 +28,7 @@ export default function SidebarWithHeader({
     { name: "Dashboard", href: routes.home },
     { name: "Browse", href: routes.browse },
     { name: "Goals", href: routes.goals },
+    { name: "Applications", href: routes.applications, hidden: true },
   ];
 
   function classNames(...classes: string[]) {
@@ -49,6 +50,10 @@ export default function SidebarWithHeader({
     }
   };
   const userNavigation = [
+    {
+      name: "About Me",
+      href: routes.startAbout,
+    },
     {
       name: mentorProfile ? "Edit Mentor Profile" : "Create Mentor Profile",
       href: routes.newMentorProfile,
@@ -87,24 +92,26 @@ export default function SidebarWithHeader({
                         />
                       </div>
                       <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
-                        {navigation.map((item) => {
-                          const current = rootPath === item.href;
-                          return (
-                            <Link
-                              key={item.name}
-                              to={item.href}
-                              className={classNames(
-                                current
-                                  ? "border-brand-500 text-gray-900 dark:text-white"
-                                  : "border-transparent text-gray-500 dark:text-gray-300  dark:hover:text-white hover:text-gray-700 hover:border-gray-300",
-                                "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                              )}
-                              aria-current={current ? "page" : undefined}
-                            >
-                              {item.name}
-                            </Link>
-                          );
-                        })}
+                        {navigation
+                          .filter((item) => !item.hidden)
+                          .map((item) => {
+                            const current = rootPath === item.href;
+                            return (
+                              <Link
+                                key={item.name}
+                                to={item.href}
+                                className={classNames(
+                                  current
+                                    ? "border-brand-500 text-gray-900 dark:text-white"
+                                    : "border-transparent text-gray-500 dark:text-gray-300  dark:hover:text-white hover:text-gray-700 hover:border-gray-300",
+                                  "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
+                                )}
+                                aria-current={current ? "page" : undefined}
+                              >
+                                {item.name}
+                              </Link>
+                            );
+                          })}
                       </div>
                     </div>
                     <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-8">
@@ -241,25 +248,27 @@ export default function SidebarWithHeader({
 
                 <Disclosure.Panel className="sm:hidden">
                   <div className="space-y-1 pt-2 pb-3">
-                    {navigation.map((item) => {
-                      const current = rootPath === item.href;
-                      return (
-                        <Disclosure.Button
-                          key={item.name}
-                          as={Link}
-                          to={item.href}
-                          className={classNames(
-                            current
-                              ? "bg-brand-50 border-brand-500 text-brand-700"
-                              : "text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-zinc-700 dark:hover:text-white",
-                            "block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-                          )}
-                          aria-current={current ? "page" : undefined}
-                        >
-                          {item.name}
-                        </Disclosure.Button>
-                      );
-                    })}
+                    {navigation
+                      .filter((item) => !item.hidden)
+                      .map((item) => {
+                        const current = rootPath === item.href;
+                        return (
+                          <Disclosure.Button
+                            key={item.name}
+                            as={Link}
+                            to={item.href}
+                            className={classNames(
+                              current
+                                ? "bg-brand-50 border-brand-500 text-brand-700"
+                                : "text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-zinc-700 dark:hover:text-white",
+                              "block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
+                            )}
+                            aria-current={current ? "page" : undefined}
+                          >
+                            {item.name}
+                          </Disclosure.Button>
+                        );
+                      })}
                   </div>
                   <div className="border-t border-gray-200 dark:border-zinc-800 pt-4 pb-3">
                     <div className="flex items-center px-4">
@@ -351,7 +360,7 @@ export default function SidebarWithHeader({
 
           <div className="py-10">
             <header>
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 dark:bg-zinc-800">
                 <H3 as="h1" className="font-bold">
                   {routeTitle ?? "Dashboard"}
                 </H3>

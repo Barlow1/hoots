@@ -12,6 +12,7 @@ export const routes = {
   startVerifyEmail: '/start/verify-email',
   newMentorProfile: '/new-mentor-profile',
   createMentor: '/mentor-profile/create',
+  applications: '/applications',
   applicationsInbox: 'applications/inbox',
 };
 

@@ -1,15 +1,3 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Flex,
-  Text,
-  Heading,
-  Stack,
-  ListItem,
-  UnorderedList,
-  useColorModeValue,
-} from "@chakra-ui/react";
 import { faCheck, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Application, Mentor, Profile } from "@prisma/client";
@@ -17,6 +5,9 @@ import { PrismaClient } from "@prisma/client";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Form, useLoaderData, useTransition } from "@remix-run/react";
+import Avatar from "~/components/Avatar";
+import Button from "~/components/Buttons/IconButton";
+import { H3, Paragraph } from "~/components/Typography";
 import { routes } from "~/routes";
 import { sendEmail } from "~/utils/email.server";
 import { getUserSession, requireUser } from "~/utils/user.session.server";
@@ -194,92 +185,74 @@ export default function ApplicationInboxRequest() {
   const transition = useTransition();
   return (
     <div>
-      <Stack spacing={8} mx="auto" maxW="lg" py={12} px={6}>
-        <Heading>Mentorship Request</Heading>
-        <Flex>
-          <Avatar src={mentee?.img ?? undefined} />
-          <Text
-            fontSize="md"
-            color={useColorModeValue("gray.600", "gray.200")}
-            alignSelf="center"
-            ml={3}
-          >
+      <div className="space-y-8 mx-auto max-w-lg py-12 px-6">
+        <H3 className="font-bold">Mentorship Request</H3>
+        <div className="flex">
+          <div>
+            <Avatar size="md" src={mentee?.img ?? undefined} />{" "}
+          </div>
+          <Paragraph className="text-lg text-gray-600 dark:text-gray-200 self-center ml-3">
             Submitted by {mentee?.firstName} {mentee?.lastName}{" "}
             {`(${mentee?.email})`}
-          </Text>
-        </Flex>
-        <Box bgColor={useColorModeValue("gray.200", "gray.800")} p={5}>
-          <Text>Details</Text>
-          <UnorderedList>
-            <ListItem>
-              We&apos;ll send {mentee?.firstName ?? "the applicant"} an email letting
-              them know their application status.
-            </ListItem>
-            <ListItem>
+          </Paragraph>
+        </div>
+        <div className="bg-gray-200 dark:bg-gray-800 p-5">
+          <Paragraph>Details</Paragraph>
+          <ul className="list-disc pl-5 dark:text-white">
+            <li>
+              We&apos;ll send {mentee?.firstName ?? "the applicant"} an email
+              letting them know their application status.
+            </li>
+            <li>
               If accepted, you should email{" "}
               {mentee?.firstName ?? "the applicant"} with next steps, pricing
               and meeting details.
-            </ListItem>
-          </UnorderedList>
-        </Box>
-        <Stack spacing={3}>
-          <Box>
-            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
-              Industry
-            </Text>
-            <Text>{mentee?.industry ?? "-"}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
-              Experience
-            </Text>
-            <Text>
-              {mentee?.experience ?? "-"} {mentee?.experience ? "years" : ""}
-            </Text>
-          </Box>
-          <Box>
-            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
-              Bio
-            </Text>
-            <Text>{mentee?.bio ?? "-"}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
-              Desires
-            </Text>
-            <Text>{application?.desires}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
-              Goal
-            </Text>
-            <Text>{application?.goal}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
-              Progress
-            </Text>
-            <Text>{application?.progress}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
-              Deadline
-            </Text>
-            <Text>{application?.deadline}</Text>
-          </Box>
-          <Box>
-            <Text fontSize="sm" textColor="grey.400" fontWeight="bold">
-              Questions
-            </Text>
-            <Text>{application?.questions}</Text>
-          </Box>
-        </Stack>
-        <Stack
-          spacing={4}
-          direction="row"
-          align="center"
-          justifyContent="space-between"
-          pt="5"
+            </li>
+          </ul>
+        </div>
+        <div className="flex flex-col">
+          <label className="block text-md font-medium text-gray-700 dark:text-gray-200">
+            Industry
+          </label>
+          <Paragraph>{mentee?.industry ?? "-"}</Paragraph>
+          <label className="block text-md font-medium text-gray-700 dark:text-gray-200">
+            Experience
+          </label>
+          <Paragraph>
+            {mentee?.experience ?? "-"} {mentee?.experience ? "years" : ""}
+          </Paragraph>
+          <label className="block text-md font-medium text-gray-700 dark:text-gray-200">
+            Bio
+          </label>
+          <Paragraph>{mentee?.bio ?? "-"}</Paragraph>
+          <label className="block text-md font-medium text-gray-700 dark:text-gray-200">
+            Desires
+          </label>
+          <Paragraph>{application?.desires}</Paragraph>
+          <label className="block text-md font-medium text-gray-700 dark:text-gray-200">
+            Goal
+          </label>
+          <Paragraph>{application?.goal}</Paragraph>
+          <label className="block text-md font-medium text-gray-700 dark:text-gray-200">
+            Progress
+          </label>
+          <Paragraph>{application?.progress}</Paragraph>
+          <label className="block text-md font-medium text-gray-700 dark:text-gray-200">
+            Deadline
+          </label>
+          <Paragraph>{application?.deadline}</Paragraph>
+          <label className="block text-md font-medium text-gray-700 dark:text-gray-200">
+            Questions
+          </label>
+          <Paragraph>{application?.questions}</Paragraph>
+        </div>
+        <div
+          className={`${"flex flex-row justify-between pt-5"} ${
+            application?.status !== ApplicationStatuses.UNREAD ||
+            transition.state !== "idle"
+              ? "hidden"
+              : null
+          }`}
           hidden={
             application?.status !== ApplicationStatuses.UNREAD ||
             transition.state !== "idle"
@@ -295,13 +268,7 @@ export default function ApplicationInboxRequest() {
             <input hidden name="menteeFirstName" value={mentee?.firstName} />
             <input hidden name="menteeLastName" value={mentee?.lastName} />
             <input hidden name="menteeEmail" value={mentee?.email} />
-            <Button
-              backgroundColor="red.500"
-              _hover={{ bg: "red.800" }}
-              style={{ color: "white" }}
-              float="right"
-              type="submit"
-            >
+            <Button className="float-right" type="submit" variant="danger">
               Deny{" "}
               <FontAwesomeIcon icon={faXmark} style={{ marginLeft: "0.5em" }} />
             </Button>
@@ -316,41 +283,35 @@ export default function ApplicationInboxRequest() {
             <input hidden name="menteeFirstName" value={mentee?.firstName} />
             <input hidden name="menteeLastName" value={mentee?.lastName} />
             <input hidden name="menteeEmail" value={mentee?.email} />
-            <Button
-              backgroundColor="brand.500"
-              _hover={{ bg: "brand.200" }}
-              style={{ color: "white" }}
-              float="right"
-              type="submit"
-            >
+            <Button className="float-right" type="submit" variant="primary">
               Approve{" "}
               <FontAwesomeIcon icon={faCheck} style={{ marginLeft: "0.5em" }} />
             </Button>
           </Form>
-        </Stack>
-        <Stack
+        </div>
+        <div
           hidden={
             application?.status !== ApplicationStatuses.APPROVED &&
             transition.submission?.formData.get("actionType") !==
               ApplicationStatuses.APPROVED
           }
         >
-          <Text color="green.500">
+          <Paragraph textColorClassName="text-green-400">
             Approved <FontAwesomeIcon icon={faCheck} />
-          </Text>
-        </Stack>
-        <Stack
+          </Paragraph>
+        </div>
+        <div
           hidden={
             application?.status !== ApplicationStatuses.DENIED &&
             transition.submission?.formData.get("actionType") !==
               ApplicationStatuses.DENIED
           }
         >
-          <Text color="red.500">
+          <Paragraph textColorClassName="text-red-500">
             Denied <FontAwesomeIcon icon={faXmark} />
-          </Text>
-        </Stack>
-      </Stack>
+          </Paragraph>
+        </div>
+      </div>
     </div>
   );
 }
