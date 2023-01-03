@@ -4,8 +4,13 @@ import { json } from "@remix-run/node";
 import type { Goal, Mentor } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAward, faListDots } from "@fortawesome/free-solid-svg-icons";
-import { useUser } from "~/utils/useRootData";
+import {
+  faAward,
+  faListDots,
+  faMoneyBillTransfer,
+  faPerson,
+} from "@fortawesome/free-solid-svg-icons";
+import { useMentorProfile, useUser } from "~/utils/useRootData";
 import { requireUser } from "~/utils/user.session.server";
 import { calculateGoalProgress } from "~/utils/calculateGoalProgress";
 import { formatDateDisplay } from "~/utils/dates";
@@ -64,6 +69,7 @@ function Dashboard() {
   const user = useUser();
   const goalProgress = calculateGoalProgress(data.upcomingGoal?.milestones);
   const currentMentors = data?.mentors;
+  const mentorProfile = useMentorProfile();
   return (
     <div className="grid gap-6">
       <div className="shadow-md dark:bg-zinc-800 col-span-12 w-full rounded-md">
@@ -104,14 +110,25 @@ function Dashboard() {
       <div className="shadow-md dark:bg-zinc-800 col-span-12 lg:col-span-6 h-full w-full rounded-md">
         <div className="p-5 gap-4 h-full grid">
           <div className="col-span-12">
-            <H4 className="font-bold">Find a mentor</H4>
+            <H4 className="font-bold">Getting Started</H4>
           </div>
-          <div className="col-span-12 flex justify-center">
-            <Paragraph className="font-sm w-[50%]">
-              Easily find the mentor or coach you've been looking for 🕵️
-            </Paragraph>
-          </div>
-          <div className="col-span-12 justify-end flex flex-col">
+          <div className="col-span-12 justify-start flex flex-col">
+            <div>
+              <NavLink
+                to={routes.startAbout}
+                className="justify-center decoration-transparent flex focus:shadow-none "
+              >
+                <Button
+                  variant="primary"
+                  className="mx-6 w-full"
+                  rightIcon={
+                    <FontAwesomeIcon className="ml-2" icon={faPerson} />
+                  }
+                >
+                  Edit Profile
+                </Button>
+              </NavLink>
+            </div>
             <div>
               <NavLink
                 to={routes.browse}
@@ -124,10 +141,31 @@ function Dashboard() {
                     <FontAwesomeIcon className="ml-2" icon={faListDots} />
                   }
                 >
-                  Browse
+                  Find a mentor
                 </Button>
               </NavLink>
             </div>
+            {mentorProfile ? (
+              <div>
+                <NavLink
+                  to={routes.mentorProfilePayment}
+                  className="justify-center decoration-transparent flex focus:shadow-none "
+                >
+                  <Button
+                    variant="primary"
+                    className="mx-6 w-full"
+                    rightIcon={
+                      <FontAwesomeIcon
+                        className="ml-2"
+                        icon={faMoneyBillTransfer}
+                      />
+                    }
+                  >
+                    Setup payment
+                  </Button>
+                </NavLink>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

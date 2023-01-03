@@ -62,6 +62,7 @@ model Mentor {
   github             String?
   profile            Profile?      @relation(fields: [profileId], references: [id], name: "MentorProfile")
   profileId          String?       @unique
+  stripeId           String?
   mentorApplications Application[] @relation("MentorApplications")
   menteeIDs          String[]      @db.ObjectId
   mentees            Profile[]     @relation(fields: [menteeIDs], references: [id], name: "MentorConnection")

@@ -56,9 +56,16 @@ export default function SidebarWithHeader({
     },
     {
       name: mentorProfile ? "Edit Mentor Profile" : "Create Mentor Profile",
-      href: routes.newMentorProfile,
+      href: routes.mentorProfile,
     },
   ];
+
+  if (mentorProfile) {
+    userNavigation.push({
+      name: "Payments",
+      href: routes.mentorProfilePayment,
+    });
+  }
 
   const defaultNavigation = [
     { name: "Sign In", href: routes.login },
