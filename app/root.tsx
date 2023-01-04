@@ -19,10 +19,7 @@ import {
 import React, { useEffect } from "react";
 import * as gtag from "~/utils/gtags.client";
 import { useTheme } from "hooks/useTheme";
-import {
-  getUser,
-  getUserSession,
-} from "./utils/user.session.server";
+import { getUser, getUserSession } from "./utils/user.session.server";
 // eslint-disable-next-line import/no-cycle
 import App from "./_app";
 import { getSocialMetas } from "./utils/seo";
@@ -77,7 +74,6 @@ export const loader: LoaderFunction = async ({ request }) => {
         profileId: user.id,
       },
     });
-
     userSession.setMentorProfile(mentorProfile);
   }
 

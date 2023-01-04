@@ -15,7 +15,7 @@ import { useMentorProfile, useUser } from "~/utils/useRootData";
 import { useTheme } from "hooks/useTheme";
 import { routes } from "../routes";
 import Logo from "../assets/Logo.svg";
-import { H3 } from "./Typography";
+import { H2 } from "./Typography";
 import { Theme } from "./ThemeProvider";
 import Avatar from "./Avatar";
 
@@ -368,9 +368,9 @@ export default function SidebarWithHeader({
           <div className="py-10">
             <header>
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <H3 as="h1" className="font-bold">
+                <H2 as="h1" className="font-bold">
                   {routeTitle ?? "Dashboard"}
-                </H3>
+                </H2>
               </div>
             </header>
             <main>

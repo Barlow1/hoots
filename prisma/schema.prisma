@@ -63,11 +63,20 @@ model Mentor {
   profile            Profile?      @relation(fields: [profileId], references: [id], name: "MentorProfile")
   profileId          String?       @unique
   stripeId           String?
+  plans              Plan[]
   mentorApplications Application[] @relation("MentorApplications")
   menteeIDs          String[]      @db.ObjectId
   mentees            Profile[]     @relation(fields: [menteeIDs], references: [id], name: "MentorConnection")
   sharedGoalIDs      String[]      @db.ObjectId
   sharedGoals        Goal[]        @relation(name: "SharedWithMentors", fields: [sharedGoalIDs], references: [id])
+}
+
+model Plan {
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  stripeProductId String
+  numCalls        Int
+  mentorProfile   Mentor @relation(fields: [mentorProfileId], references: [id])
+  mentorProfileId String @db.ObjectId
 }
 
 model Profile {
@@ -89,6 +98,7 @@ model Profile {
   mentors            Mentor[]                  @relation(fields: [mentorIDs], references: [id], name: "MentorConnection")
   goals              Goal[]                    @relation("Goals")
   goalIDs            String[]
+  stripeCustomerId   String?                   
 }
 
 model Application {
