@@ -113,7 +113,12 @@ export function MentorPage() {
           <Paragraph>💼 {mentor?.occupation}</Paragraph>
           <Paragraph>🏢 {mentor?.company}</Paragraph>
           <Paragraph>🕒 {mentor?.experience} years</Paragraph>
-          <Paragraph>💲 {mentor?.cost || "FREE"}</Paragraph>
+          <div className="flex">
+            <Paragraph>💲 {mentor.cost || "FREE"}</Paragraph>
+            <span className="ml-1 text-lg font-medium text-gray-500 dark:text-gray-400">
+              {mentor.cost ? "/ month" : null}
+            </span>
+          </div>
           <div className="py-1 flex flex-wrap">
             {mentor?.tags.map((tag: any) => (
               <Tag key={tag}>{tag}</Tag>
