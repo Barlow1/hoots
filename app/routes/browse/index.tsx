@@ -193,7 +193,7 @@ function Browse() {
                   <div className="flex">
                     <Paragraph>💲 {mentor.cost || "FREE"}</Paragraph>
                     <span className="ml-1 text-lg font-medium text-gray-500 dark:text-gray-400">
-                      {mentor.cost ? "/ month" : null}{" "}
+                      {mentor.cost ? "/ month" : null}
                     </span>
                   </div>
                   <div className="flex flex-wrap">
