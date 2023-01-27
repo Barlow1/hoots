@@ -46,7 +46,6 @@ export const meta: MetaFunction = ({ data }) => {
 
 export type LoaderData = {
   env: {
-    DATABASE_URL: string;
     API_URL: string;
   };
   user: Profile | null;
@@ -82,7 +81,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json(
     {
       env: {
-        DATABASE_URL: process.env.DATABASE_URL,
         API_URL: baseUrl,
       },
       user,

@@ -7,6 +7,7 @@ import {
   MoonIcon,
   SunIcon,
   XMarkIcon,
+  ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 
 import { Link, useFetcher, useLocation } from "@remix-run/react";
@@ -39,7 +40,7 @@ export default function SidebarWithHeader({
 
   const user = useUser();
   const mentorProfile = useMentorProfile();
-  const signOutFetcher = useFetcher();
+  const fetcher = useFetcher();
 
   const [theme, setTheme] = useTheme();
   const toggleTheme = () => {
@@ -49,7 +50,7 @@ export default function SidebarWithHeader({
       setTheme(Theme.DARK);
     }
   };
-  const userNavigation = [
+  const userNavigation: { name: string; href: string; external?: boolean }[] = [
     {
       name: "About Me",
       href: routes.startAbout,
@@ -57,6 +58,10 @@ export default function SidebarWithHeader({
     {
       name: mentorProfile ? "Edit Mentor Profile" : "Create Mentor Profile",
       href: routes.mentorProfile,
+    },
+    {
+      name: "Manage Subscriptions",
+      href: routes.manageSubscriptions,
     },
   ];
 
@@ -166,23 +171,44 @@ export default function SidebarWithHeader({
                           leaveTo="transform opacity-0 scale-95"
                         >
                           <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-zinc-700 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                            {userNavigation.map((item) => (
-                              <Menu.Item key={item.name}>
-                                {({ active }) => (
-                                  <Link
-                                    to={item.href ?? ""}
-                                    className={classNames(
-                                      active
-                                        ? "text-gray-900 bg-brand-100 dark:text-white dark:bg-zinc-500"
-                                        : "text-gray-900 dark:text-white",
-                                      "cursor-pointer select-none p-4 text-sm hover:underline group flex w-full items-center rounded-md px-2 py-2"
-                                    )}
-                                  >
-                                    {item.name}
-                                  </Link>
-                                )}
-                              </Menu.Item>
-                            ))}
+                            {userNavigation.map((item) =>
+                              item.external ? (
+                                <Menu.Item key={item.name}>
+                                  {({ active }) => (
+                                    <a
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      href={item.href ?? ""}
+                                      className={classNames(
+                                        active
+                                          ? "text-gray-900 bg-brand-100 dark:text-white dark:bg-zinc-500"
+                                          : "text-gray-900 dark:text-white",
+                                        "cursor-pointer select-none p-4 text-sm hover:underline group flex w-full items-center rounded-md px-2 py-2"
+                                      )}
+                                    >
+                                      {item.name}
+                                      <ArrowTopRightOnSquareIcon className="h-4 w-4 ml-auto mr-0" />
+                                    </a>
+                                  )}
+                                </Menu.Item>
+                              ) : (
+                                <Menu.Item key={item.name}>
+                                  {({ active }) => (
+                                    <Link
+                                      to={item.href ?? ""}
+                                      className={classNames(
+                                        active
+                                          ? "text-gray-900 bg-brand-100 dark:text-white dark:bg-zinc-500"
+                                          : "text-gray-900 dark:text-white",
+                                        "cursor-pointer select-none p-4 text-sm hover:underline group flex w-full items-center rounded-md px-2 py-2"
+                                      )}
+                                    >
+                                      {item.name}
+                                    </Link>
+                                  )}
+                                </Menu.Item>
+                              )
+                            )}
                             {user ? (
                               <>
                                 <Menu.Item>
@@ -196,7 +222,7 @@ export default function SidebarWithHeader({
                                         "cursor-pointer select-none p-4 text-sm hover:underline group flex w-full items-center rounded-md px-2 py-2"
                                       )}
                                       onClick={() =>
-                                        signOutFetcher.submit(
+                                        fetcher.submit(
                                           {},
                                           {
                                             action: "actions/logout",
@@ -317,23 +343,13 @@ export default function SidebarWithHeader({
                       </button>
                     </div>
                     <div className="mt-3 space-y-1">
-                      {userNavigation.map((item) => (
-                        <Disclosure.Button
-                          key={item.name}
-                          as={Link}
-                          to={item.href}
-                          className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-zinc-700 dark:hover:text-white"
-                        >
-                          {item.name}
-                        </Disclosure.Button>
-                      ))}
                       {user ? (
                         <>
                           <Disclosure.Button
                             as={Link}
                             to={routes.login}
                             onClick={() =>
-                              signOutFetcher.submit(
+                              fetcher.submit(
                                 {},
                                 {
                                   action: "actions/logout",

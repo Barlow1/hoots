@@ -86,13 +86,15 @@ export default class StripeHelper {
 
   async createCustomer({
     email,
+    name,
     linkedAccountId,
   }: {
     email: string;
+    name: string;
     linkedAccountId: string;
   }) {
     const customer = await this.stripe.customers.create(
-      { email },
+      { email, name },
       {
         stripeAccount: linkedAccountId,
       }
@@ -100,14 +102,20 @@ export default class StripeHelper {
     return customer;
   }
 
-  async createSubscriptionPaymentLink({
+  async createCheckoutSessionLink({
     priceId,
     linkedAccountId,
+    successUrl,
+    subscriptionId,
+    email,
   }: {
     priceId: string;
     linkedAccountId: string;
-  }): Promise<Stripe.PaymentLink> {
-    const paymentLink = await this.stripe.paymentLinks.create(
+    successUrl: string;
+    subscriptionId: string;
+    email: string;
+  }): Promise<Stripe.Checkout.Session> {
+    const checkoutSession = await this.stripe.checkout.sessions.create(
       {
         line_items: [
           {
@@ -115,9 +123,54 @@ export default class StripeHelper {
             quantity: 1,
           },
         ],
+        subscription_data: {
+          application_fee_percent: 10,
+        },
+        customer_email: email,
+        success_url: successUrl,
+        mode: "subscription",
+        metadata: {
+          subscriptionId,
+        },
       },
       { stripeAccount: linkedAccountId }
     );
-    return paymentLink;
+    return checkoutSession as Stripe.Checkout.Session & {
+      subscription: Stripe.Subscription;
+    };
+  }
+
+  async createBillingPortalSession({
+    customerId,
+    returnUrl,
+    linkedAccountId,
+  }: {
+    customerId: string;
+    returnUrl: string;
+    linkedAccountId: string;
+  }) {
+    const session = await this.stripe.billingPortal.sessions.create(
+      {
+        customer: customerId,
+        return_url: returnUrl,
+      },
+      {
+        stripeAccount: linkedAccountId,
+      }
+    );
+    return session;
+  }
+
+  async cancelSubscription({
+    subscriptionId,
+    linkedAccountId,
+  }: {
+    subscriptionId: string;
+    linkedAccountId: string;
+  }) {
+    const session = await this.stripe.subscriptions.del(subscriptionId, {
+      stripeAccount: linkedAccountId,
+    });
+    return session;
   }
 }

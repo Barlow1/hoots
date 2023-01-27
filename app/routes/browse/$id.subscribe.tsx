@@ -10,37 +10,62 @@ import Avatar from "~/components/Avatar";
 import Button from "~/components/Buttons/IconButton";
 import { H3, H5, Paragraph } from "~/components/Typography";
 import { getPlansByMentorId } from "~/utils/plan.server";
-import { getFreshUser } from "~/utils/profile.server";
 import StripeHelper from "~/utils/stripe.server";
+import { createSubscription } from "~/utils/subscription.server";
 import { getUserSession, requireUser } from "~/utils/user.session.server";
 
 type LoaderData = typeof loader;
 
 export const action: ActionFunction = async ({ request }) => {
+  const baseUrl = new URL(request.url).origin;
   const requestText = await request.text();
   const form = new URLSearchParams(requestText);
   const values = {
     stripePriceId: form.get("stripePriceId") ?? "",
     mentorStripeAccountId: form.get("mentorStripeAccountId") ?? "",
+    mentorId: form.get("mentorId") ?? "",
+    mentorFirstName: form.get("mentorFirstName") ?? "",
+    mentorLastName: form.get("mentorLastName") ?? "",
+    costInCents: Number(form.get("costInCents") ?? ""),
   };
   const user = await requireUser(request);
-  const freshUser = await getFreshUser(user.id);
   const userSession = await getUserSession(request);
   const stripe = new StripeHelper();
 
-  invariant(freshUser.stripeCustomerId, "stripe customer id is required");
   invariant(values.stripePriceId, "stripe price id is required");
   invariant(
     values.mentorStripeAccountId,
     "mentor stripe account id is required"
   );
 
-  const paymentLink = await stripe.createSubscriptionPaymentLink({
-    priceId: values.stripePriceId,
+  const customer = await stripe.createCustomer({
+    email: user.email,
+    name: `${user.firstName} ${user.lastName}`,
     linkedAccountId: values.mentorStripeAccountId,
   });
 
-  return redirect(paymentLink.url, {
+  const subscription = await createSubscription({
+    userId: user.id,
+    mentorId: values.mentorId,
+    stripeCustomerId: customer.id,
+    stripeLinkedAccountId: values.mentorStripeAccountId,
+    name:
+      values.mentorFirstName && values.mentorLastName
+        ? `${values.mentorFirstName} ${values.mentorLastName} Mentorship Plan`
+        : "Unknown subscription",
+    stripePriceId: values.stripePriceId,
+    costInCents: values.costInCents,
+  });
+
+  const paymentLink = await stripe.createCheckoutSessionLink({
+    priceId: values.stripePriceId,
+    email: user.email,
+    linkedAccountId: values.mentorStripeAccountId,
+    successUrl: baseUrl,
+    subscriptionId: subscription.id,
+  });
+
+  return redirect(paymentLink.url ?? "/", {
     headers: { "Set-Cookie": await userSession.commit() },
   });
 };
@@ -103,7 +128,8 @@ export default function Apply() {
         </div>
         <Paragraph>
           Congratulations! Your mentorship application was approved by{" "}
-          {mentorFirstName}.
+          {mentorFirstName}. Start your subscription to begin crushing your
+          goals! (You can cancel at any&nbsp;time.)
         </Paragraph>
         {defaultPlan ? (
           <div className="bg-white dark:bg-zinc-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
@@ -150,6 +176,14 @@ export default function Apply() {
                 hidden
                 name="stripePriceId"
                 value={(defaultPlan.default_price as Stripe.Price).id}
+              />
+              <input
+                hidden
+                name="costInCents"
+                value={
+                  (defaultPlan.default_price as Stripe.Price).unit_amount ??
+                  undefined
+                }
               />
               <input
                 hidden

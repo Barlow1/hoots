@@ -69,10 +69,11 @@ model Mentor {
   mentees            Profile[]     @relation(fields: [menteeIDs], references: [id], name: "MentorConnection")
   sharedGoalIDs      String[]      @db.ObjectId
   sharedGoals        Goal[]        @relation(name: "SharedWithMentors", fields: [sharedGoalIDs], references: [id])
+  Subscription       Subscription?
 }
 
 model Plan {
-  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
   stripeProductId String
   numCalls        Int
   mentorProfile   Mentor @relation(fields: [mentorProfileId], references: [id])
@@ -98,7 +99,23 @@ model Profile {
   mentors            Mentor[]                  @relation(fields: [mentorIDs], references: [id], name: "MentorConnection")
   goals              Goal[]                    @relation("Goals")
   goalIDs            String[]
-  stripeCustomerId   String?                   
+  stripeCustomerId   String?
+  Subscription       Subscription[]
+}
+
+model Subscription {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  profile               Profile? @relation(fields: [profileId], references: [id])
+  profileId             String?  @unique
+  mentor                Mentor?  @relation(fields: [mentorId], references: [id])
+  mentorId              String?  @unique
+  stripeCustomerId      String
+  active                Boolean
+  stripeLinkedAccountId String
+  stripeSubscriptionId  String?
+  name                  String
+  stripePriceId         String
+  costInCents           Int
 }
 
 model Application {
