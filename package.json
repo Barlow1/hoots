@@ -6,11 +6,12 @@
   "scripts": {
     "build": "npm run build:css && remix build",
     "dev": "remix dev",
-    "start": "concurrently \"npm run dev:css\" \"npm run dev:netlify\" ",
+    "start": "concurrently \"npm run dev:css\" \"npm run dev:netlify\" \"npm run stripe-listen\" ",
     "dev:netlify": "cross-env NODE_ENV=development netlify dev",
     "build:css": "concurrently \"tailwindcss -o ./app/styles/tailwind.css\" \"postcss styles --base styles --dir app/styles --env production\"",
     "dev:css": "concurrently \"postcss styles --base styles --dir app/styles -w\" \"tailwindcss -o ./app/styles/tailwind.css --watch\"",
-    "lint": "eslint app/**/*.{tsx,ts}"
+    "lint": "eslint app/**/*.{tsx,ts}",
+    "stripe-listen": "stripe listen --forward-to localhost:3000/stripe/hook"
   },
   "dependencies": {
     "@floating-ui/react-dom-interactions": "^0.12.0",

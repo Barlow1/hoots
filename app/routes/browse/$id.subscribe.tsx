@@ -1,6 +1,7 @@
 import { faEnvelope, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Mentor, Profile } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
 import { Form, useLoaderData, useTransition } from "@remix-run/react";
@@ -9,10 +10,11 @@ import invariant from "tiny-invariant";
 import Avatar from "~/components/Avatar";
 import Button from "~/components/Buttons/IconButton";
 import { H3, H5, Paragraph } from "~/components/Typography";
+import { routes } from "~/routes";
 import { getPlansByMentorId } from "~/utils/plan.server";
 import StripeHelper from "~/utils/stripe.server";
 import { createSubscription } from "~/utils/subscription.server";
-import { getUserSession, requireUser } from "~/utils/user.session.server";
+import { requireUser } from "~/utils/user.session.server";
 
 type LoaderData = typeof loader;
 
@@ -29,7 +31,6 @@ export const action: ActionFunction = async ({ request }) => {
     costInCents: Number(form.get("costInCents") ?? ""),
   };
   const user = await requireUser(request);
-  const userSession = await getUserSession(request);
   const stripe = new StripeHelper();
 
   invariant(values.stripePriceId, "stripe price id is required");
@@ -61,18 +62,17 @@ export const action: ActionFunction = async ({ request }) => {
     priceId: values.stripePriceId,
     email: user.email,
     linkedAccountId: values.mentorStripeAccountId,
-    successUrl: baseUrl,
+    successUrl: `${baseUrl}${routes.manageSubscriptions}`,
     subscriptionId: subscription.id,
   });
 
-  return redirect(paymentLink.url ?? "/", {
-    headers: { "Set-Cookie": await userSession.commit() },
-  });
+  return redirect(paymentLink.url ?? "/");
 };
 
 export const loader = async ({ request, params }: LoaderArgs) => {
-  await requireUser(request);
+  const user = await requireUser(request);
   const baseUrl = new URL(request.url).origin;
+  const prisma = new PrismaClient();
   const mentor = await fetch(
     `${baseUrl}/.netlify/functions/get-mentor?id=${params.id}`
   )
@@ -80,6 +80,17 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     .catch(() => {
       console.error("Failed to get mentor, please try again in a few minutes.");
     });
+  prisma
+    .$connect()
+    .catch((err) => console.error("Failed to connect to db", err));
+  const freshUser = await prisma.profile.findUnique({
+    where: {
+      id: user.id,
+    },
+  });
+  if (!freshUser || !freshUser.mentorIDs.includes(mentor.id)) {
+    return redirect(routes.home);
+  }
   const stripe = new StripeHelper();
   const plans = await getPlansByMentorId(mentor.id);
   const products = await stripe.listProducts({

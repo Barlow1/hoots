@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import formData from "form-data";
 import Mailgun from "mailgun.js";
+import type { MailgunMessageData } from "mailgun.js/interfaces/Messages";
 
 export interface IMailgunMessage {
   toName: string;
@@ -10,6 +11,7 @@ export interface IMailgunMessage {
   subject: string;
   template: string;
   variables: { [key: string]: string };
+  version?: string;
 }
 
 export async function sendEmail({
@@ -20,6 +22,7 @@ export async function sendEmail({
   subject,
   template,
   variables,
+  version,
 }: IMailgunMessage) {
   let DOMAIN = "DOMAIN_EXAMPLE";
   let API_KEY = "KEY_EXAMPLE";
@@ -32,10 +35,11 @@ export async function sendEmail({
   }
   const mg = new Mailgun(formData);
   const mgClient = mg.client({ username: "api", key: API_KEY });
-  const data = {
+  const data: MailgunMessageData = {
     from: `${fromName} <hello@inhoots.com>`,
     to: `${toName} <${email}>`,
     subject,
+    "t:version": version,
     "h:X-Mailgun-Variables": JSON.stringify(variables),
     template,
     message,
