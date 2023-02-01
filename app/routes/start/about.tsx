@@ -90,7 +90,7 @@ export const action: ActionFunction = async ({
       userSession.setUser(userResp);
       data = { status: "success" };
       if (shouldCreateMentorProfile) {
-        return redirect(`${routes.newMentorProfile}${url.search}`, {
+        return redirect(`${routes.mentorProfile}${url.search}`, {
           headers: { "Set-Cookie": await userSession.commit() },
         });
       }

@@ -192,6 +192,7 @@ function NewMentorProfile() {
                 <Button
                   type="submit"
                   variant="primary"
+                  disabled={transition.state === "submitting"}
                   isLoading={transition.state === "submitting"}
                 >
                   Save

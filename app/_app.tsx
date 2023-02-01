@@ -17,7 +17,7 @@ function App({ children, user }: AppProps) {
       routes.login,
       routes.signup,
       routes.start,
-      routes.newMentorProfile,
+      routes.mentorProfile,
       routes.startCheckEmail,
       routes.startVerifyEmail,
     ].includes(location.pathname)

@@ -16,6 +16,12 @@ export function useMentorProfile() {
   const { mentorProfile } = useRootData();
   return mentorProfile;
 }
+
+export function useEnv() {
+  const { env } = useRootData();
+  return env;
+}
+
 export function useRequiredUser() {
   const { user } = useRootData();
   if (!user) throw new Error('User is required when using useUser');

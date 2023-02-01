@@ -19,7 +19,7 @@ import {
 import React, { useEffect } from "react";
 import * as gtag from "~/utils/gtags.client";
 import { useTheme } from "hooks/useTheme";
-import { getUser } from "./utils/user.session.server";
+import { getUser, getUserSession } from "./utils/user.session.server";
 // eslint-disable-next-line import/no-cycle
 import App from "./_app";
 import { getSocialMetas } from "./utils/seo";
@@ -46,7 +46,6 @@ export const meta: MetaFunction = ({ data }) => {
 
 export type LoaderData = {
   env: {
-    DATABASE_URL: string;
     API_URL: string;
   };
   user: Profile | null;
@@ -62,8 +61,9 @@ export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
   const themeSession = await getThemeSession(request);
   const theme = themeSession.getTheme();
-  let mentorProfile = null;
-  if (user) {
+  const userSession = await getUserSession(request);
+  let mentorProfile = await userSession.getMentorProfile();
+  if (user && !mentorProfile) {
     const prisma = new PrismaClient();
     prisma
       .$connect()
@@ -73,19 +73,25 @@ export const loader: LoaderFunction = async ({ request }) => {
         profileId: user.id,
       },
     });
+    userSession.setMentorProfile(mentorProfile);
   }
+
   const cookies = request.headers.get("Cookie") ?? "";
 
-  return json({
-    env: {
-      DATABASE_URL: process.env.DATABASE_URL,
-      API_URL: baseUrl,
+  return json(
+    {
+      env: {
+        API_URL: baseUrl,
+      },
+      user,
+      cookies,
+      mentorProfile,
+      theme,
     },
-    user,
-    cookies,
-    mentorProfile,
-    theme,
-  });
+    {
+      headers: { "Set-Cookie": await userSession.commit() },
+    }
+  );
 };
 
 export function Root() {

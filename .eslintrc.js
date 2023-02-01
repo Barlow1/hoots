@@ -30,6 +30,7 @@ module.exports = {
     "react/jsx-no-useless-fragment": 0,
     "react/display-name": 0,
     "no-underscore-dangle": 0,
-    "react/no-unescaped-entities": 0
+    "react/no-unescaped-entities": 0,
+    "import/prefer-default-export": 0,
   },
 };

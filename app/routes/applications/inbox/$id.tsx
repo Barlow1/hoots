@@ -112,10 +112,12 @@ export const action: ActionFunction = async ({ request }) => {
         email: values.menteeEmail,
         subject: "Hoots - Mentorship Application Approved",
         template: "mentor-application-approval",
+        version: 'subscribe',
         variables: {
           firstName: values.menteeFirstName,
           mentorFirstName: user.firstName,
           mentorLastName: user.lastName,
+          subscriptionLink: `${baseUrl}${routes.browse}/${application.mentorId}/subscribe`,
         },
       });
     } catch (e) {
