@@ -1,4 +1,4 @@
-import { Form, Link, useActionData } from "@remix-run/react";
+import { Form, Link, useActionData, useTransition } from "@remix-run/react";
 import type { ActionFunction, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { getUserSession } from "~/utils/user.session.server";
@@ -6,6 +6,7 @@ import { getDisplayUrl } from "~/utils/url";
 import { getSocialMetas } from "~/utils/seo";
 import Field from "~/components/FormElements/Field";
 import { H2, Paragraph } from "~/components/Typography";
+import Button from "~/components/Buttons/IconButton";
 import Logo from "../assets/Logo.svg";
 import { routes } from "../routes";
 
@@ -65,6 +66,7 @@ export const action: ActionFunction = async ({
 
 export default function Login() {
   const submission = useActionData();
+  const transition = useTransition();
   return (
     <>
       <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -128,12 +130,15 @@ export default function Login() {
                 {submission?.error}
               </Paragraph>
               <div>
-                <button
+                <Button
                   type="submit"
-                  className="flex w-full justify-center rounded-md border border-transparent bg-brand-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+                  className="w-full m-0 mt-4"
+                  variant="primary"
+                  disabled={transition.state === "submitting"}
+                  isLoading={transition.state === "submitting"}
                 >
-                  Sign in
-                </button>
+                  Sign In
+                </Button>
               </div>
             </Form>
 
