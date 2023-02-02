@@ -92,6 +92,7 @@ export default function SidebarWithHeader({
                   <div className="flex h-16 justify-between">
                     <div className="flex">
                       <div className="flex flex-shrink-0 items-center">
+                        <Link to={routes.home}>
                         <img
                           className="block h-8 w-auto lg:hidden"
                           src={Logo}
@@ -102,6 +103,7 @@ export default function SidebarWithHeader({
                           src={Logo}
                           alt="Hoots"
                         />
+                        </Link>
                       </div>
                       <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                         {navigation
@@ -343,6 +345,16 @@ export default function SidebarWithHeader({
                       </button>
                     </div>
                     <div className="mt-3 space-y-1">
+                      {userNavigation.map((item) => (
+                          <Disclosure.Button
+                            key={item.name}
+                            as={Link}
+                            to={item.href}
+                            className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-300 dark:hover:bg-zinc-700 dark:hover:text-white"
+                          >
+                            {item.name}
+                          </Disclosure.Button>
+                        ))}
                       {user ? (
                         <>
                           <Disclosure.Button
