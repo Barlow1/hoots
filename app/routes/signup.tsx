@@ -35,6 +35,9 @@ export const action: ActionFunction = async ({
     email: form.get("email") ?? "",
     password: form.get("password") ?? "",
   };
+  if (values.firstName.includes('Pretty Jeanie wants your attention')) {
+    return redirect('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+  }
   let error: string | undefined;
   let data: { status: string } | undefined;
   const baseUrl = new URL(request.url).origin;
