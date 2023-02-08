@@ -19,7 +19,7 @@ const handler: Handler = async (event, context) => {
       headers: CORS_HEADERS,
     };
   }
-  if (body.firstName.includes('Pretty Jeanie wants your attention')) {
+  if (body && body.firstName && body.firstName.includes('Pretty Jeanie wants your attention')) {
     return {
       statusCode: 403
     }
