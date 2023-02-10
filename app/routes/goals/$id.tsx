@@ -251,7 +251,7 @@ export default function MilestonePage() {
           <Button
             variant="secondary"
             onClick={openDialog}
-            className="w-full mx-0 md:w-auto"
+            className="m-4 w-full mx-0 md:w-auto"
           >
             Edit
           </Button>
@@ -263,7 +263,7 @@ export default function MilestonePage() {
               <>
                 <Menu.Button
                   as={Button}
-                  className="w-full mx-0 md:w-auto"
+                  className="m-4 w-full mx-0 md:w-auto"
                   rightIcon={
                     <FontAwesomeIcon
                       icon={faChevronDown}
@@ -353,7 +353,7 @@ export default function MilestonePage() {
             <input hidden name="method" value="delete" />
             <Button
               variant="danger"
-              className="w-full mx-0 md:w-auto"
+              className="m-4 w-full mx-0 md:w-auto"
               type="submit"
             >
               {deleteFetcher.state === "submitting" ? "Deleting..." : "Delete"}
@@ -365,7 +365,7 @@ export default function MilestonePage() {
             rightIcon={
               <FontAwesomeIcon icon={faPlus} style={{ marginLeft: "0.5em" }} />
             }
-            className="w-full md:w-auto mx-0"
+            className="m-4 w-full md:w-auto mx-0"
           >
             Add Milestone
           </Button>

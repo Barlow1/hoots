@@ -120,7 +120,7 @@ function Dashboard() {
               >
                 <Button
                   variant="primary"
-                  className="mx-6 w-full"
+                  className="m-4 mx-6 w-full"
                   rightIcon={
                     <FontAwesomeIcon className="ml-2" icon={faPerson} />
                   }
@@ -136,7 +136,7 @@ function Dashboard() {
               >
                 <Button
                   variant="primary"
-                  className="mx-6 w-full"
+                  className="m-4 mx-6 w-full"
                   rightIcon={
                     <FontAwesomeIcon className="ml-2" icon={faListDots} />
                   }
@@ -153,7 +153,7 @@ function Dashboard() {
                 >
                   <Button
                     variant="primary"
-                    className="mx-6 w-full"
+                    className="m-4 mx-6 w-full"
                     rightIcon={
                       <FontAwesomeIcon
                         className="ml-2"
@@ -207,7 +207,7 @@ function Dashboard() {
               >
                 <Button
                   variant="primary"
-                  className="mx-6 w-full"
+                  className="m-4 mx-6 w-full"
                   rightIcon={
                     <FontAwesomeIcon className="ml-2" icon={faAward} />
                   }

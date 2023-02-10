@@ -134,6 +134,7 @@ function Browse() {
                   <TooltipTrigger>
                     <Button
                       aria-label="Search"
+                      className="m-4"
                       onClick={updateQueryAndNavigate}
                       leftIcon={<FontAwesomeIcon icon={faMagnifyingGlass} />}
                       variant="primary"

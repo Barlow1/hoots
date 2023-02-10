@@ -214,7 +214,7 @@ export function GoalsContainer({
               icon: <Avatar size="xs" src={user.img ?? undefined} />,
             }))}
             label="Goals Shared Menu"
-            className="w-full mx-0 md:w-auto"
+            className="m-4 w-full mx-0 md:w-auto"
             menuClassName="w-full md:w-auto"
           >
             Shared with me
@@ -227,7 +227,7 @@ export function GoalsContainer({
             onClick={() => openDialog("")}
             rightIcon={<FontAwesomeIcon icon={faAdd} className="ml-2" />}
             variant="primary"
-            className="w-full md:w-auto mx-0"
+            className="m-4 w-full md:w-auto mx-0"
           >
             Add Goal
           </Button>
