@@ -10,3 +10,7 @@ circle.background-progress {
   fill: transparent;
   stroke: #edebe9;
 }
+
+.grecaptcha-badge {
+  visibility: hidden;
+}

@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Form, Link, useActionData, useTransition } from "@remix-run/react";
-import type { ActionFunction, MetaFunction } from "@remix-run/node";
+import type {
+  ActionFunction,
+  LinksFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { getUserSession } from "~/utils/user.session.server";
 import { createVerificationLink } from "~/utils/email-verification.server";
@@ -11,8 +15,14 @@ import { H2, Paragraph } from "~/components/Typography";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Field from "~/components/FormElements/Field";
 import Button from "~/components/Buttons/IconButton";
+import { GoogleReCaptcha } from "react-google-recaptcha-v3";
 import Logo from "../assets/Logo.svg";
+import signUpStyleUrl from "../styles/signup.css";
 import { routes } from "../routes";
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: signUpStyleUrl },
+];
 
 export const meta: MetaFunction = ({ data, parentsData }) => {
   const { requestInfo } = parentsData.root;
@@ -35,8 +45,8 @@ export const action: ActionFunction = async ({
     email: form.get("email") ?? "",
     password: form.get("password") ?? "",
   };
-  if (values.firstName.includes('Pretty Jeanie wants your attention')) {
-    return redirect('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+  if (values.firstName.includes("Pretty Jeanie wants your attention")) {
+    return redirect("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
   }
   let error: string | undefined;
   let data: { status: string } | undefined;
@@ -87,6 +97,12 @@ export default function SignupCard() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const submission = useActionData();
   const transition = useTransition();
+  const [token, setToken] = useState<string | undefined>();
+
+  const onVerify = useCallback((captchaToken: string) => {
+    setToken(captchaToken);
+  }, []);
+
   return (
     <>
       <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -173,12 +189,13 @@ export default function SignupCard() {
                   type="submit"
                   className="w-full m-0 mt-4"
                   variant="primary"
-                  disabled={transition.state === "submitting"}
+                  disabled={transition.state === "submitting" || !token}
                   isLoading={transition.state === "submitting"}
                 >
                   Sign Up
                 </Button>
               </div>
+              <GoogleReCaptcha onVerify={onVerify} />
             </Form>
 
             {/* <div className="mt-6">

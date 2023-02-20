@@ -19,6 +19,7 @@ import {
 import React, { useEffect } from "react";
 import * as gtag from "~/utils/gtags.client";
 import { useTheme } from "hooks/useTheme";
+import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import { getUser, getUserSession } from "./utils/user.session.server";
 // eslint-disable-next-line import/no-cycle
 import App from "./_app";
@@ -105,9 +106,11 @@ export function Root() {
             __html: `window.env = ${JSON.stringify(data.env)}`,
           }}
         />
-        <App user={data.user}>
-          <Outlet />
-        </App>
+        <GoogleReCaptchaProvider reCaptchaKey="6LcW9pskAAAAAABkFC8vGQZKPXrsIiXIlWKUDxmQ">
+          <App user={data.user}>
+            <Outlet />
+          </App>
+        </GoogleReCaptchaProvider>
       </Document>
     </ThemeProvider>
   );
