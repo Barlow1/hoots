@@ -6,7 +6,7 @@ module.exports = {
       ? "./server.js"
       : undefined,
   ignoredRouteFiles: ["**/.*"],
-  serverDependenciesToBundle: ["react-merge-refs", "@babel/runtime"],
+  serverDependenciesToBundle: ["react-merge-refs", "react-slider"],
   // appDirectory: "app",
   // assetsBuildDirectory: "public/build",
   // serverBuildPath: ".netlify/functions-internal/server.js",

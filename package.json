@@ -14,7 +14,6 @@
     "stripe-listen": "stripe listen --forward-to localhost:3000/stripe/hook"
   },
   "dependencies": {
-    "@babel/runtime": "^7.21.5",
     "@floating-ui/react-dom-interactions": "^0.12.0",
     "@fortawesome/fontawesome-svg-core": "^6.2.0",
     "@fortawesome/free-brands-svg-icons": "^6.2.0",
