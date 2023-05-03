@@ -11,7 +11,8 @@
     "build:css": "postcss styles --base styles --dir app/styles --env production",
     "dev:css": "postcss styles --base styles --dir app/styles -w",
     "lint": "eslint app/**/*.{tsx,ts}",
-    "stripe-listen": "stripe listen --forward-to localhost:3000/stripe/hook"
+    "stripe-listen": "stripe listen --forward-to localhost:3000/stripe/hook",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@floating-ui/react-dom-interactions": "^0.12.0",
