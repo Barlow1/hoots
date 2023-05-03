@@ -8,6 +8,7 @@ import type {
 import { json } from "@remix-run/node";
 import {
   Links,
+  LiveReload,
   Meta,
   Outlet,
   Scripts,
@@ -143,7 +144,7 @@ function Document({
   const [theme] = useTheme();
 
   useEffect(() => {
-    if (gaTrackingId?.length) {
+    if (window.location.hostname !== "localhost" && gaTrackingId?.length) {
       gtag.pageview(location.pathname, gaTrackingId);
     }
   }, [location]);
@@ -177,6 +178,7 @@ function Document({
         {children}
         <Scripts />
         <ScrollRestoration />
+        <LiveReload port={8002} />
         <div id="hoots-portal" />
       </body>
     </html>

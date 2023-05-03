@@ -16,6 +16,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Field from "~/components/FormElements/Field";
 import Button from "~/components/Buttons/IconButton";
 import { GoogleReCaptcha } from "react-google-recaptcha-v3";
+import SocialLogin from "~/components/SocialLogin";
 import Logo from "../assets/Logo.svg";
 import signUpStyleUrl from "../styles/signup.css";
 import { routes } from "../routes";
@@ -197,7 +198,7 @@ export default function SignupCard() {
               </div>
               <GoogleReCaptcha onVerify={onVerify} />
             </Form>
-
+            <SocialLogin />
             {/* <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">

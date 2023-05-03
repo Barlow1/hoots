@@ -64,9 +64,9 @@ const clientThemeCode = `
   const meta = document.querySelector('meta[name=color-scheme]');
   if (meta) {
     if (theme === 'dark') {
-      meta.content = 'dark light';
+      meta.content = 'dark';
     } else if (theme === 'light') {
-      meta.content = 'light dark';
+      meta.content = 'light';
     }
   } else {
     console.warn(
