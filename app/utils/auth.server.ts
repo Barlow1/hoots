@@ -1,6 +1,7 @@
 import type { Profile } from "@prisma/client";
 import { Authenticator } from "remix-auth";
 import {
+  GitHubStrategy,
   GoogleStrategy,
   SocialsProvider,
   TwitterStrategy,
@@ -54,7 +55,6 @@ authenticator.use(
       // alwaysReauthorize: false // otherwise, ask for permission every time
     },
     async ({ profile, context }) => {
-      console.log(profile);
       if (!profile.email) {
         throw new Error(
           "No email is associated with your twitter account, please try a different login method."
@@ -65,12 +65,38 @@ authenticator.use(
       const nameParts = profile.name.split(" ");
 
       const values = {
-        firstName: nameParts[0],
-        lastName: nameParts[-1],
+        firstName: nameParts.at(0) ?? "",
+        lastName: nameParts.at(-1) ?? "",
         email: profile.email,
         img: profile.profile_image_url_https,
         verified: profile.verified,
         password: profile.email,
+      };
+
+      return oauth({ values, baseUrl });
+    }
+  )
+);
+
+authenticator.use(
+  new GitHubStrategy(
+    {
+      clientID: process.env.GITHUB_CLIENT_ID ?? "",
+      clientSecret: process.env.GITHUB_CLIENT_SECRET ?? "",
+      callbackURL: getCallback(SocialsProvider.GITHUB),
+    },
+    async ({ profile, context }) => {
+      const baseUrl = context?.baseUrl as string;
+
+      const nameParts = profile._json.name.split(" ");
+
+      const values = {
+        firstName: nameParts.at(0) ?? "",
+        lastName: nameParts.at(-1) ?? "",
+        email: profile._json.email,
+        img: profile._json.avatar_url,
+        verified: true,
+        password: profile._json.email,
       };
 
       return oauth({ values, baseUrl });
