@@ -1,6 +1,10 @@
 import type { Profile } from "@prisma/client";
 import { Authenticator } from "remix-auth";
-import { GoogleStrategy, SocialsProvider } from "remix-auth-socials";
+import {
+  GoogleStrategy,
+  SocialsProvider,
+  TwitterStrategy,
+} from "remix-auth-socials";
 import { sessionStorage } from "~/utils/user.session.server";
 import { oauth } from "./profile.server";
 
@@ -34,6 +38,41 @@ authenticator.use(
         verified: profile._json.email_verified,
         password: profile._json.email,
       };
+      return oauth({ values, baseUrl });
+    }
+  )
+);
+
+authenticator.use(
+  new TwitterStrategy(
+    {
+      clientID: process.env.TWITTER_CLIENT_ID ?? "",
+      clientSecret: process.env.TWITTER_CLIENT_SECRET ?? "",
+      callbackURL: getCallback(SocialsProvider.TWITTER),
+      includeEmail: true, // Optional parameter. Default: false.
+      /** TODO: add back once remix-social-auth is updated */
+      // alwaysReauthorize: false // otherwise, ask for permission every time
+    },
+    async ({ profile, context }) => {
+      console.log(profile);
+      if (!profile.email) {
+        throw new Error(
+          "No email is associated with your twitter account, please try a different login method."
+        );
+      }
+      const baseUrl = context?.baseUrl as string;
+
+      const nameParts = profile.name.split(" ");
+
+      const values = {
+        firstName: nameParts[0],
+        lastName: nameParts[-1],
+        email: profile.email,
+        img: profile.profile_image_url_https,
+        verified: profile.verified,
+        password: profile.email,
+      };
+
       return oauth({ values, baseUrl });
     }
   )
