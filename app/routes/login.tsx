@@ -1,5 +1,8 @@
 import { Form, Link, useActionData, useTransition } from "@remix-run/react";
-import type { ActionFunction, MetaFunction } from "@remix-run/node";
+import type {
+  ActionFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { getUserSession } from "~/utils/user.session.server";
 import { getDisplayUrl } from "~/utils/url";
@@ -7,6 +10,7 @@ import { getSocialMetas } from "~/utils/seo";
 import Field from "~/components/FormElements/Field";
 import { H2, Paragraph } from "~/components/Typography";
 import Button from "~/components/Buttons/IconButton";
+import SocialLogin from "~/components/SocialLogin";
 import Logo from "../assets/Logo.svg";
 import { routes } from "../routes";
 
@@ -141,7 +145,7 @@ export default function Login() {
                 </Button>
               </div>
             </Form>
-
+            <SocialLogin />
             {/* <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">

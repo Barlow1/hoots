@@ -5,20 +5,21 @@ import { routes } from "~/routes";
 const date = new Date();
 const userSessionExpirationDate = new Date(date.setDate(date.getDate() + 30));
 
-const { getSession, commitSession, destroySession } =
-  createCookieSessionStorage({
-    // a Cookie from `createCookie` or the CookieOptions to create one
-    cookie: {
-      name: "Hoots_user",
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      expires: userSessionExpirationDate, // 30 days
-    },
-  });
+const sessionStorage = createCookieSessionStorage({
+  // a Cookie from `createCookie` or the CookieOptions to create one
+  cookie: {
+    name: "Hoots_user",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    expires: userSessionExpirationDate, // 30 days
+  },
+});
 
 async function getUserSession(request: Request) {
-  const session = await getSession(request.headers.get("Cookie"));
+  const session = await sessionStorage.getSession(
+    request.headers.get("Cookie")
+  );
   return {
     getUser: () => {
       const user = session.get("user");
@@ -31,12 +32,14 @@ async function getUserSession(request: Request) {
     },
     setMentorProfile: (mentorProfile: Partial<Mentor>) =>
       session.set("mentorProfile", mentorProfile),
-    commit: () => commitSession(session),
-    destroy: () => destroySession(session),
+    commit: () => sessionStorage.commitSession(session),
+    destroy: () => sessionStorage.destroySession(session),
   };
 }
 
-export { getUserSession, getSession, commitSession };
+const { getSession, commitSession } = sessionStorage;
+
+export { getUserSession, sessionStorage, getSession, commitSession };
 
 export const getUser = async (request: Request) => {
   const userSession = await getUserSession(request);

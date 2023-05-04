@@ -1,6 +1,7 @@
-import { Handler } from "@netlify/functions";
+import type { Handler } from "@netlify/functions";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from 'bcrypt';
+
 const SALT_ROUNDS = 10;
 
 const CORS_HEADERS = {
@@ -64,7 +65,7 @@ const handler: Handler = async (event, context) => {
             "Content-Type": "application/json",
           },
         };
-      } else {
+      } 
         const encrypted = bcrypt.hashSync(body.password, SALT_ROUNDS);
         user = await prisma.profile.create({
           data: {
@@ -74,7 +75,7 @@ const handler: Handler = async (event, context) => {
             lastName: body.lastName,
           },
         });
-      }
+      
     }
     return {
       statusCode: 200,

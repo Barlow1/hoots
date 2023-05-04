@@ -1,16 +1,14 @@
-import { startTransition, StrictMode } from 'react';
-import { hydrateRoot } from 'react-dom/client';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { RemixBrowser } from '@remix-run/react';
+import { RemixBrowser } from "@remix-run/react";
+import { startTransition, StrictMode } from "react";
+import { hydrateRoot } from "react-dom/client";
 
 function hydrate() {
-
   startTransition(() => {
     hydrateRoot(
       document,
       <StrictMode>
         <RemixBrowser />
-      </StrictMode>,
+      </StrictMode>
     );
   });
 }
