@@ -24,6 +24,7 @@ import Avatar from "~/components/Avatar";
 import Field from "~/components/FormElements/Field";
 import Button from "~/components/Buttons/IconButton";
 import Select from "~/components/FormElements/Select";
+import { IndustryList } from "~/constants";
 import { routes } from "../../routes";
 import Logo from "../../assets/Logo.svg";
 
@@ -119,12 +120,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 function Preferences() {
-  const IndustryList = [
-    { id: "0", name: "Marketing" },
-    { id: "1", name: "Engineering" },
-    { id: "2", name: "Product Design" },
-    { id: "3", name: "Small Business" },
-  ];
   const user = useUser();
   const data = useActionData();
   const transition = useTransition();

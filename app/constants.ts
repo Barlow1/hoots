@@ -1,0 +1,36 @@
+export const industryEmojis = {
+  Marketing: "📈",
+  Engineering: "💻",
+  "Product Design": "🎨",
+  "Small Business": "🏢",
+  Finance: "💰",
+  Healthcare: "⚕️",
+  Education: "🎓",
+  "Information Technology": "💻",
+  Hospitality: "🏨",
+  Retail: "🛍️",
+  "Media and Entertainment": "🎬",
+  Law: "⚖️",
+  Construction: "🚧",
+  Automotive: "🚗",
+  "Art and Design": "🎨",
+  Science: "🔬",
+  Transportation: "🚚",
+  "Real Estate": "🏠",
+  "Food and Beverage": "🍔",
+  Sports: "⚽",
+  Telecommunications: "📞",
+  Fashion: "👗",
+  Architecture: "🏛️",
+  Energy: "⚡",
+  Government: "🏛️",
+  "Non-profit": "🤝",
+};
+
+
+export const IndustryList = [
+  { id: "0", name: "Marketing", emoji: industryEmojis.Marketing },
+  { id: "1", name: "Engineering", emoji: industryEmojis.Engineering },
+  { id: "2", name: "Product Design", emoji: industryEmojis["Product Design"] },
+  { id: "3", name: "Small Business", emoji: industryEmojis["Small Business"] },
+];

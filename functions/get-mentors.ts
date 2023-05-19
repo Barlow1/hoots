@@ -11,6 +11,7 @@ const handler: Handler = async (event, context) => {
   const query = event.queryStringParameters?.query;
   const costMin = event.queryStringParameters?.min_cost;
   const costMax = event.queryStringParameters?.max_cost;
+  const industries = event.queryStringParameters?.industry?.split(",");
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -27,7 +28,7 @@ const handler: Handler = async (event, context) => {
   console.log("query", query);
   try {
     let mentors: any = [];
-    const filtersSelected = costMin || costMax;
+    const filtersSelected = costMin || costMax || industries;
     console.log("filterSelected", filtersSelected);
 
     // just query no filters
@@ -51,24 +52,42 @@ const handler: Handler = async (event, context) => {
       // no query just filters
     } else if (!query && filtersSelected) {
       console.log("inside filter no query");
-      mentors = await prisma.mentor.aggregateRaw({
+      const options: any = {
         pipeline: [
           {
             $search: {
               index: "default",
-              range: {
-                path: "cost",
-                gte: Number(costMin),
-                lte: Number(costMax),
-              },
+              compound: {},
             },
           },
         ],
-      });
+      };
+      if (costMax && costMin) {
+        options.pipeline[0].$search.compound.must = [
+          {
+            range: {
+              path: "cost",
+              gte: Number(costMin),
+              lte: Number(costMax),
+            },
+          },
+        ];
+      }
+      if (industries?.[0]) {
+        options.pipeline[0].$search.compound.filter = [
+          {
+            text: {
+              query: industries,
+              path: "industry",
+            },
+          },
+        ];
+      }
+      mentors = await prisma.mentor.aggregateRaw(options);
       // both query & filters
     } else if (query && filtersSelected) {
       console.log("inside both query & filters");
-      mentors = await prisma.mentor.aggregateRaw({
+      const options: any = {
         pipeline: [
           {
             $search: {
@@ -84,20 +103,33 @@ const handler: Handler = async (event, context) => {
                     },
                   },
                 ],
-                must: [
-                  {
-                    range: {
-                      path: "cost",
-                      gte: Number(costMin),
-                      lte: Number(costMax),
-                    },
-                  },
-                ],
               },
             },
           },
         ],
-      });
+      };
+      if (costMax && costMin) {
+        options.pipeline[0].$search.compound.must = [
+          {
+            range: {
+              path: "cost",
+              gte: Number(costMin),
+              lte: Number(costMax),
+            },
+          },
+        ];
+      }
+      if (industries?.[0]) {
+        options.pipeline[0].$search.compound.filter = [
+          {
+            text: {
+              query: industries,
+              path: "industry",
+            },
+          },
+        ];
+      }
+      mentors = await prisma.mentor.aggregateRaw(options);
     } else {
       console.log("inside find many");
       mentors = await prisma.mentor.findMany();
