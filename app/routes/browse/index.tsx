@@ -24,6 +24,7 @@ import { H3, Paragraph } from "~/components/Typography";
 import Tag from "~/components/Tag";
 import Button from "~/components/Buttons/IconButton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/Tooltip";
+import { industryEmojis } from "~/constants";
 import { routes } from "../../routes";
 
 type Route = {
@@ -36,34 +37,7 @@ function isString(value: FormDataEntryValue | undefined): value is string {
   return typeof value === "string";
 }
 
-const industryEmojis = {
-  Marketing: "📈",
-  Engineering: "💻",
-  "Product Design": "🎨",
-  "Small Business": "🏢",
-  Finance: "💰",
-  Healthcare: "⚕️",
-  Education: "🎓",
-  "Information Technology": "💻",
-  Hospitality: "🏨",
-  Retail: "🛍️",
-  "Media and Entertainment": "🎬",
-  Law: "⚖️",
-  Construction: "🚧",
-  Automotive: "🚗",
-  "Art and Design": "🎨",
-  Science: "🔬",
-  Transportation: "🚚",
-  "Real Estate": "🏠",
-  "Food and Beverage": "🍔",
-  Sports: "⚽",
-  Telecommunications: "📞",
-  Fashion: "👗",
-  Architecture: "🏛️",
-  Energy: "⚡",
-  Government: "🏛️",
-  "Non-profit": "🤝",
-};
+
 
 const buildMentorFetchUrl = (
   baseUrl: string | undefined,

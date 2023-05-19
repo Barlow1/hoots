@@ -36,6 +36,9 @@ function FilterDialog({ defaultValues, action }: FilterDialogProps) {
     defaultValues.max_cost ? Number(defaultValues.max_cost) : MAX_MENTOR_COST
   );
 
+  const [hasPriceFilterBeenChanged, setHasPriceFilterBeenChanged] =
+    useState(false);
+
   const fetcher = useFetcher();
 
   const [prevSearchParams] = useSearchParams();
@@ -151,6 +154,9 @@ function FilterDialog({ defaultValues, action }: FilterDialogProps) {
                               step={1}
                               min={0}
                               max={MAX_MENTOR_COST}
+                              onBeforeChange={() =>
+                                setHasPriceFilterBeenChanged(true)
+                              }
                               className="w-full h-1 pr-2 my-2 bg-gray-200 dark:bg-zinc-700 rounded-md cursor-grab"
                               thumbClassName="absolute w-5 h-5 cursor-grab bg-indigo-500 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 dark:ring-offset-zinc-800 -top-[6px]"
                               renderThumb={(props, state) => (
@@ -194,7 +200,8 @@ function FilterDialog({ defaultValues, action }: FilterDialogProps) {
                                 type="number"
                                 id="minimum"
                                 name="min_cost"
-                                value={minCostValue}
+                                placeholder="0"
+                                value={hasPriceFilterBeenChanged ? minCostValue : undefined}
                                 min={0}
                                 onChange={onMinCostValueChange}
                               />
@@ -211,7 +218,8 @@ function FilterDialog({ defaultValues, action }: FilterDialogProps) {
                                 type="number"
                                 id="maximum"
                                 name="max_cost"
-                                value={maxCostValue}
+                                placeholder={`${MAX_MENTOR_COST}+`}
+                                value={hasPriceFilterBeenChanged ? maxCostValue : undefined}
                                 min={0}
                                 onChange={onMaxCostValueChange}
                               />
@@ -239,6 +247,7 @@ function FilterDialog({ defaultValues, action }: FilterDialogProps) {
                     </div>
                     <input
                       hidden
+                      readOnly
                       name="prevSearchParams"
                       value={JSON.stringify(
                         Object.fromEntries(prevSearchParams.entries())

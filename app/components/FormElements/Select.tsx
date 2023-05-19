@@ -7,6 +7,7 @@ import clsx from "clsx";
 interface Option {
   id: string;
   name: string;
+  emoji?: string;
 }
 
 type SelectProps<TMultiple = boolean> = TMultiple extends false
@@ -69,7 +70,8 @@ export default function Select(props: SelectProps) {
     if (multiple && selected && Array.isArray(selected)) {
       return selected.length
         ? selected.reduce(
-            (prev, curr, indx) => indx === 0 ? prev + curr.name : `${prev}, ${curr.name}`,
+            (prev, curr, indx) =>
+              indx === 0 ? prev + curr.name : `${prev}, ${curr.name}`,
             ``
           )
         : placeholder;
@@ -144,7 +146,7 @@ export default function Select(props: SelectProps) {
                             "block truncate"
                           )}
                         >
-                          {option.name}
+                          {option.emoji} {option.name}
                         </span>
 
                         {selected ? (

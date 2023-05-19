@@ -57,21 +57,22 @@ const handler: Handler = async (event, context) => {
           {
             $search: {
               index: "default",
-              compound: {
-                must: [
-                  {
-                    range: {
-                      path: "cost",
-                      gte: Number(costMin),
-                      lte: Number(costMax),
-                    },
-                  },
-                ],
-              },
+              compound: {},
             },
           },
         ],
       };
+      if (costMax && costMin) {
+        options.pipeline[0].$search.compound.must = [
+          {
+            range: {
+              path: "cost",
+              gte: Number(costMin),
+              lte: Number(costMax),
+            },
+          },
+        ];
+      }
       if (industries?.[0]) {
         options.pipeline[0].$search.compound.filter = [
           {
@@ -102,20 +103,22 @@ const handler: Handler = async (event, context) => {
                     },
                   },
                 ],
-                must: [
-                  {
-                    range: {
-                      path: "cost",
-                      gte: Number(costMin),
-                      lte: Number(costMax),
-                    },
-                  },
-                ],
               },
             },
           },
         ],
       };
+      if (costMax && costMin) {
+        options.pipeline[0].$search.compound.must = [
+          {
+            range: {
+              path: "cost",
+              gte: Number(costMin),
+              lte: Number(costMax),
+            },
+          },
+        ];
+      }
       if (industries?.[0]) {
         options.pipeline[0].$search.compound.filter = [
           {
