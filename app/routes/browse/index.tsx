@@ -1,8 +1,14 @@
 import type { Mentor } from "@prisma/client";
 import type { ChangeEvent } from "react";
 import { useState } from "react";
-import type { LoaderFunction, MetaFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction} from "@remix-run/node";
+import {
+  redirect,
+  json,
+} from "@remix-run/node";
 import {
   Link,
   useLoaderData,
@@ -11,7 +17,6 @@ import {
 } from "@remix-run/react";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { FilterValues } from "~/components/FilterDialog";
 import FilterDialog from "~/components/FilterDialog";
 import { getSocialMetas } from "~/utils/seo";
 import { getDisplayUrl } from "~/utils/url";
@@ -27,19 +32,54 @@ type Route = {
 
 const TAG_LIMIT = 5;
 
+function isString(value: FormDataEntryValue | undefined): value is string {
+  return typeof value === "string";
+}
+
+const industryEmojis = {
+  Marketing: "📈",
+  Engineering: "💻",
+  "Product Design": "🎨",
+  "Small Business": "🏢",
+  Finance: "💰",
+  Healthcare: "⚕️",
+  Education: "🎓",
+  "Information Technology": "💻",
+  Hospitality: "🏨",
+  Retail: "🛍️",
+  "Media and Entertainment": "🎬",
+  Law: "⚖️",
+  Construction: "🚧",
+  Automotive: "🚗",
+  "Art and Design": "🎨",
+  Science: "🔬",
+  Transportation: "🚚",
+  "Real Estate": "🏠",
+  "Food and Beverage": "🍔",
+  Sports: "⚽",
+  Telecommunications: "📞",
+  Fashion: "👗",
+  Architecture: "🏛️",
+  Energy: "⚡",
+  Government: "🏛️",
+  "Non-profit": "🤝",
+};
+
 const buildMentorFetchUrl = (
   baseUrl: string | undefined,
   query: string | null,
   minCost: string | null,
-  maxCost: string | null
+  maxCost: string | null,
+  industry: string | null
 ) => {
   let getMentorsUrl = `${baseUrl}/.netlify/functions/get-mentors`;
 
-  if (query || minCost || maxCost) {
+  if (query || minCost || maxCost || industry) {
     const params = new URLSearchParams({
       query: query || "",
       min_cost: minCost || "",
       max_cost: maxCost || "",
+      industry: industry || "",
     });
     getMentorsUrl += `?${params}`;
   }
@@ -55,15 +95,32 @@ export const meta: MetaFunction = ({ parentsData }) => {
   });
 };
 
+export const action: ActionFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const filterValues = Object.fromEntries((await request.formData()).entries());
+  const filterParams = isString(filterValues.prevSearchParams)
+    ? new URLSearchParams(JSON.parse(filterValues.prevSearchParams))
+    : new URLSearchParams();
+  console.log("filterParams", filterParams);
+  isString(filterValues.min_cost) &&
+    filterParams.set("min_cost", filterValues.min_cost.toString());
+  isString(filterValues.max_cost) &&
+    filterParams.set("max_cost", filterValues.max_cost.toString());
+  isString(filterValues.industry) &&
+    filterParams.set("industry", filterValues.industry);
+  return redirect(`${url.pathname}?${filterParams}`);
+};
+
 export const loader: LoaderFunction = async ({ request }) => {
   const baseUrl = new URL(request.url).origin;
   const url = new URL(request.url);
   const query = url.searchParams.get("query");
   const minCost = url.searchParams.get("min_cost");
   const maxCost = url.searchParams.get("max_cost");
+  const industry = url.searchParams.get("industry");
 
   const mentors = await fetch(
-    buildMentorFetchUrl(baseUrl, query, minCost, maxCost)
+    buildMentorFetchUrl(baseUrl, query, minCost, maxCost, industry)
   )
     .then((reponse) => reponse.json())
     .then((mentorList) =>
@@ -108,13 +165,6 @@ function Browse() {
     setQuery(event.target.value);
   };
 
-  const onFilterSave = (filterValues: FilterValues) => {
-    const filterParams = new URLSearchParams(location.search);
-    filterParams.set("min_cost", filterValues.min_cost.toString());
-    filterParams.set("max_cost", filterValues.max_cost.toString());
-    navigate(`${location.pathname}?${filterParams}`);
-  };
-
   return (
     <div>
       <div className="grid">
@@ -151,9 +201,12 @@ function Browse() {
               </label>
             </div>
             <FilterDialog
-              onSave={onFilterSave}
-              minCost={searchParams.get("min_cost") ?? undefined}
-              maxCost={searchParams.get("max_cost") ?? undefined}
+              defaultValues={{
+                max_cost: searchParams.get("max_cost") ?? undefined,
+                min_cost: searchParams.get("min_cost") ?? undefined,
+                industry: searchParams.get("industry")?.split(",") ?? undefined,
+              }}
+              action="/browse"
             />
           </div>
         </div>
@@ -188,6 +241,14 @@ function Browse() {
                 </div>
                 <div className="flex flex-1 flex-col space-y-2 p-4">
                   <H3 className="font-bold">{mentor.name}</H3>
+                  <Paragraph>
+                    {
+                      industryEmojis[
+                        mentor.industry as keyof typeof industryEmojis
+                      ]
+                    }{" "}
+                    {mentor.industry}
+                  </Paragraph>
                   <Paragraph>💼 {mentor.occupation}</Paragraph>
                   <Paragraph>🏢 {mentor.company}</Paragraph>
                   <Paragraph>🕒 {mentor.experience} years</Paragraph>
