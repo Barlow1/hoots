@@ -1,5 +1,6 @@
 import {
   faFacebook,
+  faGithub,
   faLinkedin,
   faTwitter,
 } from "@fortawesome/free-brands-svg-icons";
@@ -8,9 +9,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { Mentor } from "@prisma/client";
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { ArrowLeftIcon } from "@heroicons/react/20/solid";
-import Button from "~/components/Buttons/IconButton";
 import { getFacebookHref } from "~/utils/facebook";
 import { getLinkedInHref } from "~/utils/linkedIn";
 import { getSocialMetas } from "~/utils/seo";
@@ -19,8 +19,10 @@ import { getDisplayUrl } from "~/utils/url";
 import MenuButton from "~/components/Buttons/MenuButton";
 import CTAButton from "~/components/Buttons/CTAButton";
 import Tag from "~/components/Tag";
-import { H2, Paragraph } from "~/components/Typography";
+import { H2, H4, H6, Paragraph } from "~/components/Typography";
 import Avatar from "~/components/Avatar";
+import { routes } from "~/routes";
+import IconLink from "~/components/Buttons/IconLink";
 
 type LoaderData = { data: { mentor: Mentor; shareUrl: string } };
 
@@ -54,88 +56,144 @@ export function MentorPage() {
   const { mentor } = data;
   const { shareUrl } = data;
   const title = "I'm mentoring on Hoots 🦉 Can't wait to meet with you!";
+
   return (
     <div className="justify-center" key={mentor?.id}>
       <div className="flex justify-between mb-5">
-        <Button
+        <IconLink
           leftIcon={
             <ArrowLeftIcon
               className="-ml-0.5 mr-2 h-4 w-4"
               aria-hidden="true"
             />
           }
-          onClick={() => {
-            window.history.back();
-          }}
+          to={routes.browse}
         >
           Back
-        </Button>
-        <MenuButton
-          options={[
-            {
-              title: "Share on Twitter",
-              href: getTwitterHref({
-                url: shareUrl,
-                title,
-              }),
-              icon: <FontAwesomeIcon icon={faTwitter} />,
-            },
-            {
-              title: "Share on LinkedIn",
-              href: getLinkedInHref({
-                url: shareUrl,
-              }),
-              icon: <FontAwesomeIcon icon={faLinkedin} />,
-            },
-            {
-              title: "Share on Facebook",
-              href: getFacebookHref({
-                url: shareUrl,
-              }),
-              icon: <FontAwesomeIcon icon={faFacebook} />,
-            },
-          ]}
-          label="Share Mentor Profile"
-        >
-          <FontAwesomeIcon icon={faEllipsis} />
-        </MenuButton>
+        </IconLink>
       </div>
-      <div className="flex justify-center max-w-xl mx-auto">
+      <div className="flex justify-start max-w-5xl mx-auto">
         <div className="flex flex-col">
-          <div className="flex justify-center pb-5">
-            <Avatar
-              src={mentor?.img ?? undefined}
-              alt={`${mentor?.name} profile picture`}
-              size="lg"
-            />
-          </div>
-          <H2 className="font-bold">{mentor?.name}</H2>
-          <Paragraph>💼 {mentor?.occupation}</Paragraph>
-          <Paragraph>🏢 {mentor?.company}</Paragraph>
-          <Paragraph>🕒 {mentor?.experience} years</Paragraph>
-          <div className="flex">
-            <Paragraph>💲 {mentor.cost || "FREE"}</Paragraph>
-            <span className="ml-1 text-lg font-medium text-gray-500 dark:text-gray-400">
-              {mentor.cost ? "/ month" : null}
-            </span>
-          </div>
-          <div className="py-1 flex flex-wrap">
-            {mentor?.tags.map((tag: any) => (
-              <Tag key={tag}>{tag}</Tag>
-            ))}
-          </div>
-          <Paragraph>{mentor?.bio}</Paragraph>
-          <CTAButton
-            icon={
-              <FontAwesomeIcon
-                icon={faPaperPlane}
-                style={{ marginLeft: "0.5em" }}
+          <div className="flex flex-col md:flex-row pb-10">
+            <div>
+              <Avatar
+                src={mentor?.img ?? undefined}
+                alt={`${mentor?.name} profile picture`}
+                size="lg"
+                border
               />
-            }
-            href="apply"
-          >
-            Apply
-          </CTAButton>
+            </div>
+            <div className="md:ml-5">
+              <H2 className="font-bold">{mentor?.name}</H2>
+              <Paragraph>{mentor?.occupation}</Paragraph>
+              <div className="flex">
+                <Paragraph>
+                  {mentor.cost ? "$" : ""}
+                  {mentor.cost || "FREE"}
+                </Paragraph>
+                <span className="ml-1 text-lg font-medium text-gray-500 dark:text-gray-400">
+                  {mentor.cost ? "/ month" : null}
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-2 md:mt-0 md:ml-auto flex space-x-5">
+              <span>
+                <MenuButton
+                  direction="left"
+                  className="h-10"
+                  options={[
+                    {
+                      title: "Share on Twitter",
+                      href: getTwitterHref({
+                        url: shareUrl,
+                        title,
+                      }),
+                      icon: <FontAwesomeIcon icon={faTwitter} />,
+                    },
+                    {
+                      title: "Share on LinkedIn",
+                      href: getLinkedInHref({
+                        url: shareUrl,
+                      }),
+                      icon: <FontAwesomeIcon icon={faLinkedin} />,
+                    },
+                    {
+                      title: "Share on Facebook",
+                      href: getFacebookHref({
+                        url: shareUrl,
+                      }),
+                      icon: <FontAwesomeIcon icon={faFacebook} />,
+                    },
+                  ]}
+                  label="Share Mentor Profile"
+                >
+                  <FontAwesomeIcon icon={faEllipsis} />
+                </MenuButton>
+              </span>
+              <span>
+                <CTAButton
+                  variant="primarySmall"
+                  icon={
+                    <FontAwesomeIcon
+                      icon={faPaperPlane}
+                      style={{ marginLeft: "0.5em" }}
+                    />
+                  }
+                  href="apply"
+                >
+                  Apply
+                </CTAButton>
+              </span>
+            </div>
+          </div>
+          <div className="grid grid-cols-12 gap-6">
+            <div className="shadow-md dark:bg-zinc-800 bg-gray-100 col-span-12 lg:col-span-6 h-full w-full rounded-md p-5">
+              <H4 className="mb-1">About Me</H4>
+              <Paragraph>{mentor?.bio}</Paragraph>
+            </div>
+            <div className="shadow-md dark:bg-zinc-800 bg-gray-100 col-span-12 lg:col-span-6 h-full w-full rounded-md p-5">
+              <div className="grid gap-2">
+                <div>
+                  <H6 className="mb-1">Skills</H6>
+                  <div className="py-1 flex flex-wrap">
+                    {mentor?.tags.map((tag: any) => (
+                      <Tag key={tag}>{tag}</Tag>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <H6 className="mb-1">Experience</H6>
+                  <Paragraph>🕒 {mentor?.experience} years</Paragraph>
+                  <Paragraph>💼 {mentor?.industry}</Paragraph>
+                  <Paragraph>🏢 {mentor?.company}</Paragraph>
+                </div>
+                {mentor.website ? (
+                  <div>
+                    <H6 className="mb-1">Website</H6>
+                    <Link to={mentor.website ?? ""}>{mentor.website}</Link>
+                  </div>
+                ) : null}
+                <div className="flex space-x-2">
+                  {mentor.github ? (
+                    <Link to={mentor.github ?? ""}>
+                      <FontAwesomeIcon className="h-7 w-7" icon={faGithub} />
+                    </Link>
+                  ) : null}
+                  {mentor.twitter ? (
+                    <Link to={mentor.twitter ?? ""}>
+                      <FontAwesomeIcon className="h-7 w-7" icon={faTwitter} />
+                    </Link>
+                  ) : null}
+                  {mentor.linkedIn ? (
+                    <Link to={mentor.linkedIn ?? ""}>
+                      <FontAwesomeIcon className="h-7 w-7" icon={faLinkedin} />
+                    </Link>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
