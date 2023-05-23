@@ -7,6 +7,8 @@ module.exports = {
       : undefined,
   ignoredRouteFiles: ["**/.*"],
   serverDependenciesToBundle: ["react-merge-refs", "react-slider"],
+  tailwind: true,
+  postcss: true,
   // appDirectory: "app",
   // assetsBuildDirectory: "public/build",
   // serverBuildPath: ".netlify/functions-internal/server.js",

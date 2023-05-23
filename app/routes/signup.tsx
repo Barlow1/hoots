@@ -18,7 +18,7 @@ import Button from "~/components/Buttons/IconButton";
 import { GoogleReCaptcha } from "react-google-recaptcha-v3";
 import SocialLogin from "~/components/SocialLogin";
 import Logo from "../assets/Logo.svg";
-import signUpStyleUrl from "../styles/signup.css";
+import signUpStyleUrl from "../../styles/signup.css";
 import { routes } from "../routes";
 
 export const links: LinksFunction = () => [

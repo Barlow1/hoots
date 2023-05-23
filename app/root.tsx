@@ -26,8 +26,8 @@ import { getUser, getUserSession } from "./utils/user.session.server";
 import App from "./_app";
 import { getSocialMetas } from "./utils/seo";
 import { getDisplayUrl } from "./utils/url";
-import tailwindStyleUrls from "./styles/tailwind.css";
-import globalStyleUrl from "./styles/global.css";
+import tailwindStyleUrls from "../styles/tailwind.css";
+import globalStyleUrl from "../styles/global.css";
 import ThemeProvider, {
   NonFlashOfWrongThemeEls,
 } from "./components/ThemeProvider";

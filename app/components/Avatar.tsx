@@ -9,23 +9,33 @@ function Avatar({
   src,
   alt,
   size = "sm",
+  border = false,
   ...rest
 }: {
   src?: string;
-  size?: "sm" | "md" | "lg" | "xs" ;
+  size?: "sm" | "md" | "lg" | "xs";
+  border?: boolean;
 } & React.ImgHTMLAttributes<HTMLImageElement>) {
   return (
     <>
       {src ? (
         <img
-          className={`inline-block ${sizes[size]} h- rounded-full object-cover`}
+          className={`inline-block ${
+            sizes[size]
+          } h- rounded-full object-cover ${
+            border ? "border-4 dark:border-zinc-800 border-white shadow-md" : ""
+          }`}
           src={src}
           alt={alt}
           {...rest}
         />
       ) : (
         <span
-          className={`inline-block ${sizes[size]} overflow-hidden rounded-full bg-gray-100`}
+          className={`inline-block ${
+            sizes[size]
+          } overflow-hidden rounded-full bg-gray-100 ${
+            border ? "border-4 dark:border-zinc-800 border-white shadow-md" : ""
+          }`}
         >
           <svg
             className="h-full w-full text-gray-300"
