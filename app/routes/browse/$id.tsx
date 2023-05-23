@@ -156,7 +156,7 @@ export function MentorPage() {
               <div className="grid gap-2">
                 <div>
                   <H6 className="mb-1">Skills</H6>
-                  <div className="py-1 flex flex-wrap">
+                  <div className="gap-y-2 flex flex-wrap">
                     {mentor?.tags.map((tag: any) => (
                       <Tag key={tag}>{tag}</Tag>
                     ))}
