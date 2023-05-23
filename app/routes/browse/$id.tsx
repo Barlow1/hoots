@@ -72,7 +72,7 @@ export function MentorPage() {
           Back
         </IconLink>
       </div>
-      <div className="flex justify-start max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <div className="flex flex-col">
           <div className="flex flex-col md:flex-row pb-10">
             <div>
